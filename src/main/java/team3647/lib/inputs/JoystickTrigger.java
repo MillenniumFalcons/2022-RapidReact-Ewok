@@ -12,19 +12,19 @@ import edu.wpi.first.wpilibj2.command.button.Button;
 
 /** Add your docs here. */
 public class JoystickTrigger extends Button {
-  double mthrehsold;
-  int maxisNumber;
-  GenericHID mjoystick;
+    double mthrehsold;
+    int maxisNumber;
+    GenericHID mjoystick;
 
-  public JoystickTrigger(GenericHID joystick, int axisNumber, double threshold) {
-    super(() -> joystick.getRawAxis(axisNumber) > threshold);
-    mthrehsold = threshold;
-    mjoystick = joystick;
-    maxisNumber = axisNumber;
-  }
+    public JoystickTrigger(GenericHID joystick, int axisNumber, double threshold) {
+        super(() -> joystick.getRawAxis(axisNumber) > threshold);
+        mthrehsold = threshold;
+        mjoystick = joystick;
+        maxisNumber = axisNumber;
+    }
 
-  /** @return the triggerValue */
-  public double getTriggerValue() {
-    return mjoystick.getRawAxis(maxisNumber);
-  }
+    /** @return the triggerValue */
+    public double getTriggerValue() {
+        return mjoystick.getRawAxis(maxisNumber);
+    }
 }
