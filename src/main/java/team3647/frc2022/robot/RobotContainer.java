@@ -4,9 +4,8 @@
 
 package team3647.frc2022.robot;
 
-import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
+import team3647.lib.inputs.Joysticks;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -15,23 +14,13 @@ import edu.wpi.first.wpilibj2.command.Command;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-    // The robot's subsystems and commands are defined here...
-    // edu.wpi.first.wpilibj.PowerDistribution replaces PDP.java from 3647 lib
-    // edu.wpi.first.wpilibj.Compressor replaces Compressor.java from 3647 lib
-    // edu.wpi.first.wpilibj.Solenoid replaces Solenoid.java from 3647 lib
+    private Joysticks mainController = new Joysticks(0);
+    private Joysticks coController = new Joysticks(1);
 
-    /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
-        // Configure the button bindings
         configureButtonBindings();
     }
 
-    /**
-     * Use this method to define your button->command mappings. Buttons can be created by
-     * instantiating a {@link GenericHID} or one of its subclasses ({@link
-     * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
-     * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
-     */
     private void configureButtonBindings() {}
 
     /**
