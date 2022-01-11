@@ -18,6 +18,7 @@ public class ArcadeDrive extends CommandBase {
         m_drivetrain = drivetrain;
         m_throttle = throttle;
         m_turn = turn;
+        addRequirements(drivetrain);
     }
 
     // Called when the command is initially scheduled.
