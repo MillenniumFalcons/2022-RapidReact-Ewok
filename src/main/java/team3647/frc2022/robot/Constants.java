@@ -1,14 +1,9 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package team3647.frc2022.robot;
 
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.sensors.PigeonIMU;
-
 import edu.wpi.first.math.MatBuilder;
 import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -62,7 +57,8 @@ public final class Constants {
         public static final double kV = 0; // Volts
         public static final double kA = 0; // Volts
 
-        public static final SimpleMotorFeedforward kFeedforward = new SimpleMotorFeedforward(kS, kV, kA);
+        public static final SimpleMotorFeedforward kFeedforward =
+                new SimpleMotorFeedforward(kS, kV, kA);
 
         public static final double kWheelDiameterMeters = 0.1524;
         public static final double kTrackWidth = 0;
@@ -72,12 +68,15 @@ public final class Constants {
         public static final double kFalconTicksPerRotation = 2048;
         public static final double kGearboxReduction = 1;
 
-        public static final double kWheelRotationToMeters = kWheelDiameterMeters * Math.PI * kGearboxReduction;
+        public static final double kWheelRotationToMeters =
+                kWheelDiameterMeters * Math.PI * kGearboxReduction;
 
         // Multiply by 10 because velocity is in ticks/100ms
-        public static final double kFalconVelocityToMpS = kWheelRotationToMeters * 10 / kFalconTicksPerRotation;
+        public static final double kFalconVelocityToMpS =
+                kWheelRotationToMeters * 10 / kFalconTicksPerRotation;
 
-        public static final double kFalconTicksToMeters = kWheelRotationToMeters / kFalconTicksPerRotation;
+        public static final double kFalconTicksToMeters =
+                kWheelRotationToMeters / kFalconTicksPerRotation;
 
         static {
             kLeftMasterConfig.slot0.kP = 0.35;
@@ -101,10 +100,8 @@ public final class Constants {
             kRightSlave.setInverted(InvertType.FollowMaster);
         }
 
-        private CDrivetrain() {
-        }
+        private CDrivetrain() {}
     }
 
-    private Constants() {
-    }
+    private Constants() {}
 }
