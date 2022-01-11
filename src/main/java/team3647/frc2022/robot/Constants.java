@@ -42,8 +42,8 @@ public final class Constants {
         //increasing the standard deviation makes estimator trusts the data more
         //need to figure out how to use this and tune the stdDevs
         public static final DifferentialDrivePoseEstimator kPoseEstimator = new DifferentialDrivePoseEstimator(
-                new Rotation2d(), new Pose2d(), new MatBuilder<>(Nat.N5(), Nat.N1()).fill(0, 0, 0, 0, 0),
-                new MatBuilder<>(Nat.N3(), Nat.N1()).fill(0, 0, 0), new MatBuilder<>(Nat.N3(), Nat.N1()).fill(0, 0, 0));
+                new Rotation2d(), new Pose2d(), new MatBuilder<>(Nat.N5(), Nat.N1()).fill(0.02, 0.02, 0.01, 0.02, 0.02),
+                new MatBuilder<>(Nat.N3(), Nat.N1()).fill(0.02, 0.02, 0.01), new MatBuilder<>(Nat.N3(), Nat.N1()).fill(0.1, 0.1, 0.01));
 
         
         public static final double kNominalVoltage = 12;
