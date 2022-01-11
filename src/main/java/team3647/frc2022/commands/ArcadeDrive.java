@@ -1,10 +1,7 @@
 package team3647.frc2022.commands;
 
-import java.util.function.BooleanSupplier;
-import java.util.function.DoubleSupplier;
-
-import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import java.util.function.DoubleSupplier;
 import team3647.frc2022.subsystems.Drivetrain;
 
 public class ArcadeDrive extends CommandBase {
@@ -15,9 +12,7 @@ public class ArcadeDrive extends CommandBase {
 
     private final double driveMultiplier = 0.7;
 
-    /**
-     * Creates a new ArcadeDrive.
-     */
+    /** Creates a new ArcadeDrive. */
     public ArcadeDrive(Drivetrain drivetrain, DoubleSupplier throttle, DoubleSupplier turn) {
         // Use addRequirements() here to declare subsystem dependencies.
         m_drivetrain = drivetrain;
@@ -27,9 +22,7 @@ public class ArcadeDrive extends CommandBase {
 
     // Called when the command is initially scheduled.
     @Override
-    public void initialize() {
-
-    }
+    public void initialize() {}
 
     // Called every time the scheduler runs while the command is scheduled.
     @Override
@@ -42,8 +35,7 @@ public class ArcadeDrive extends CommandBase {
 
     // Called once the command ends or is interrupted.
     @Override
-    public void end(boolean interrupted) {
-    }
+    public void end(boolean interrupted) {}
 
     // Returns true when the command should end.
     @Override

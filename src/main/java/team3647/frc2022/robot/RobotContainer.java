@@ -17,25 +17,39 @@ import team3647.lib.inputs.Joysticks;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-  // The robot's subsystems and commands are defined here...
-  // edu.wpi.first.wpilibj.PowerDistribution replaces PDP.java from 3647 lib
-  // edu.wpi.first.wpilibj.Compressor replaces Compressor.java from 3647 lib 
-  // edu.wpi.first.wpilibj.Solenoid replaces Solenoid.java from 3647 lib
-  private final CommandScheduler m_commandScheduler = CommandScheduler.getInstance();
+    // The robot's subsystems and commands are defined here...
+    // edu.wpi.first.wpilibj.PowerDistribution replaces PDP.java from 3647 lib
+    // edu.wpi.first.wpilibj.Compressor replaces Compressor.java from 3647 lib
+    // edu.wpi.first.wpilibj.Solenoid replaces Solenoid.java from 3647 lib
+    private final CommandScheduler m_commandScheduler = CommandScheduler.getInstance();
 
-  private final Joysticks mainController = new Joysticks(0);
-  private final Joysticks coController = new Joysticks(1);
-  
-  private final Drivetrain m_drivetrain = new Drivetrain(Constants.CDrivetrain.kLeftMaster, Constants.CDrivetrain.kRightMaster, Constants.CDrivetrain.kLeftSlave, Constants.CDrivetrain.kRightSlave, 
-    Constants.CDrivetrain.kPigeonIMU, Constants.CDrivetrain.kFeedforward, Constants.CDrivetrain.kPoseEstimator, 
-    Constants.CDrivetrain.kFalconVelocityToMpS, Constants.CDrivetrain.kFalconTicksToMeters, Constants.CDrivetrain.kNominalVoltage);
+    private final Joysticks mainController = new Joysticks(0);
+    private final Joysticks coController = new Joysticks(1);
 
-  /** The container for the robot. Contains subsystems, OI devices, and commands. */
-  public RobotContainer() {
-    // Configure the button bindings
-    m_commandScheduler.setDefaultCommand(m_drivetrain, new ArcadeDrive(m_drivetrain, mainController::getLeftStickY, mainController::getRightStickX));
-    configureButtonBindings();
-  }
+    private final Drivetrain m_drivetrain =
+            new Drivetrain(
+                    Constants.CDrivetrain.kLeftMaster,
+                    Constants.CDrivetrain.kRightMaster,
+                    Constants.CDrivetrain.kLeftSlave,
+                    Constants.CDrivetrain.kRightSlave,
+                    Constants.CDrivetrain.kPigeonIMU,
+                    Constants.CDrivetrain.kFeedforward,
+                    Constants.CDrivetrain.kPoseEstimator,
+                    Constants.CDrivetrain.kFalconVelocityToMpS,
+                    Constants.CDrivetrain.kFalconTicksToMeters,
+                    Constants.CDrivetrain.kNominalVoltage);
+
+    /** The container for the robot. Contains subsystems, OI devices, and commands. */
+    public RobotContainer() {
+        // Configure the button bindings
+        m_commandScheduler.setDefaultCommand(
+                m_drivetrain,
+                new ArcadeDrive(
+                        m_drivetrain,
+                        mainController::getLeftStickY,
+                        mainController::getRightStickX));
+        configureButtonBindings();
+    }
 
     private void configureButtonBindings() {}
 
