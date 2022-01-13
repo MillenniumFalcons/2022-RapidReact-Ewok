@@ -19,9 +19,9 @@ For closed loop we want to be able to move a ball a set amount of distance in th
 We want the surface speed of the belts that are touching the balls.
 
 ## Units
-- Position: inches
-- Velocity: inches/s
-- Acceleration: inches/s^2
+- Position: meters
+- Velocity: m/s
+- Acceleration: m/s^2
 
 
 ## SysId
