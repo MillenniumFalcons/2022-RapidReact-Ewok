@@ -12,10 +12,11 @@ N/A
 
 ## Sensors
 - Falcon built in encoders
-- Limit switch?
+- Limit switch
+- Extra encoder on output shaft
 
 ## Closed loop
-Using built in Falcon 500 encoders.
+Using the external encoder which is placed after backlash.
 
 
 ### Units
