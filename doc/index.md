@@ -1,2 +1,3 @@
 # Initial Documentation for Code
-- [Subsystems](./subsystems.md)
+1. [Control](./control-system.md)
+2. [Subsystems](subsystems/subsystems.md)
