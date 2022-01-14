@@ -49,13 +49,11 @@ public class RobotContainer {
                 m_drivetrain,
                 new ArcadeDrive(
                         m_drivetrain,
-                    mainController::getLeftStickY,
+                        mainController::getLeftStickY,
                         mainController::getRightStickX));
         m_printer.addBoolean("rightMaster invert", m_drivetrain::getRightMasterInvert);
         m_printer.addBoolean("rightSlave invert", m_drivetrain::getRightSlaveInvert);
 
-        
-        
         configureButtonBindings();
     }
 
