@@ -53,6 +53,8 @@ public class RobotContainer {
                         mainController::getRightStickX));
         m_printer.addBoolean("rightMaster invert", m_drivetrain::getRightMasterInvert);
         m_printer.addBoolean("rightSlave invert", m_drivetrain::getRightSlaveInvert);
+        m_printer.addDouble("Robot X", m_drivetrain::getDrivetrainXMeters);
+        m_printer.addDouble("Robot Y", m_drivetrain::getDrivetrainYMeters);
 
         configureButtonBindings();
     }

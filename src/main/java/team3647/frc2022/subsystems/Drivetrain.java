@@ -9,6 +9,7 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.estimator.DifferentialDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive.WheelSpeeds;
@@ -25,7 +26,8 @@ public final class Drivetrain implements PeriodicSubsystem {
     private final PigeonIMU pigeonIMU;
 
     private final SimpleMotorFeedforward feedforward;
-    private final DifferentialDrivePoseEstimator poseEstimator;
+    //private final DifferentialDrivePoseEstimator poseEstimator;
+    private final DifferentialDriveOdometry m_Odometry;
     private PeriodicIO periodicIO = new PeriodicIO();
 
     private final double velocityConversion;
@@ -55,7 +57,8 @@ public final class Drivetrain implements PeriodicSubsystem {
         this.feedforward = feedforward;
         this.velocityConversion = velocityConversion;
         this.displacementConversion = positionConversion;
-        this.poseEstimator = poseEstimator;
+        //this.poseEstimator = poseEstimator;
+        this.m_Odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(periodicIO.heading));
         this.nominalVoltage = nominalVoltage;
     }
 
@@ -90,6 +93,9 @@ public final class Drivetrain implements PeriodicSubsystem {
     @Override
     public void init() {
         setToBrake();
+        resetEncoders();
+        resetOdometry();
+        
     }
 
     @Override
@@ -105,12 +111,13 @@ public final class Drivetrain implements PeriodicSubsystem {
         pigeonIMU.getYawPitchRoll(periodicIO.ypr);
         periodicIO.heading = -Math.IEEEremainder(periodicIO.ypr[0], 360);
 
-        periodicIO.pose =
+        m_Odometry.update(Rotation2d.fromDegrees(periodicIO.heading), periodicIO.leftPosition, periodicIO.rightPosition);
+        /*periodicIO.pose =
                 poseEstimator.update(
                         Rotation2d.fromDegrees(periodicIO.heading),
                         periodicIO.wheelSpeeds,
                         periodicIO.leftPosition,
-                        periodicIO.rightPosition);
+                        periodicIO.rightPosition);*/
     }
 
     @Override
@@ -196,6 +203,14 @@ public final class Drivetrain implements PeriodicSubsystem {
         return periodicIO.pose;
     }
 
+    public double getDrivetrainXMeters() {
+        return periodicIO.pose.getX();
+    }
+
+    public double getDrivetrainYMeters() {
+        return periodicIO.pose.getY();
+    }
+
     public void resetOdometry() {
         setOdometry(new Pose2d(), new Rotation2d());
     }
@@ -204,7 +219,7 @@ public final class Drivetrain implements PeriodicSubsystem {
         resetEncoders();
         pigeonIMU.setYaw(angle.getDegrees());
         periodicIO = new PeriodicIO();
-        poseEstimator.resetPosition(pose, angle);
+        //poseEstimator.resetPosition(pose, angle);
     }
 
     private void resetEncoders() {
