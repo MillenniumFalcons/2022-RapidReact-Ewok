@@ -127,6 +127,14 @@ public final class Drivetrain implements PeriodicSubsystem {
                 periodicIO.rightFeedForward / nominalVoltage);
     }
 
+    public boolean getRightMasterInvert() {
+        return rightMaster.getInverted();
+    }
+
+    public boolean getRightSlaveInvert() {
+        return rightSlave.getInverted();
+    }
+
     @Override
     public void periodic() {
         readPeriodicInputs();

@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import team3647.frc2022.commands.ArcadeDrive;
 import team3647.frc2022.subsystems.Drivetrain;
+import team3647.lib.GroupPrinter;
 import team3647.lib.inputs.Joysticks;
 
 /**
@@ -25,6 +26,8 @@ public class RobotContainer {
 
     private final Joysticks mainController = new Joysticks(0);
     private final Joysticks coController = new Joysticks(1);
+
+    private final GroupPrinter m_printer = GroupPrinter.getInstance();
 
     private final Drivetrain m_drivetrain =
             new Drivetrain(
@@ -46,8 +49,13 @@ public class RobotContainer {
                 m_drivetrain,
                 new ArcadeDrive(
                         m_drivetrain,
-                        mainController::getLeftStickY,
+                    mainController::getLeftStickY,
                         mainController::getRightStickX));
+        m_printer.addBoolean("rightMaster invert", m_drivetrain::getRightMasterInvert);
+        m_printer.addBoolean("rightSlave invert", m_drivetrain::getRightSlaveInvert);
+
+        
+        
         configureButtonBindings();
     }
 

@@ -27,7 +27,7 @@ public final class Constants {
         public static final int kRightMasterID = 3;
         public static final int kRightSlaveID = 4;
 
-        public static final int kPigeonID = 5;
+        public static final int kPigeonID = 16;
 
         public static final TalonFX kLeftMaster = new TalonFX(kLeftMasterID);
         public static final TalonFX kRightMaster = new TalonFX(kRightMasterID);

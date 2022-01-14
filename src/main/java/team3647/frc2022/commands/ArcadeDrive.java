@@ -10,7 +10,7 @@ public class ArcadeDrive extends CommandBase {
     private final DoubleSupplier m_throttle;
     private final DoubleSupplier m_turn;
 
-    private final double driveMultiplier = 0.7;
+    private final double driveMultiplier = 1;
 
     /** Creates a new ArcadeDrive. */
     public ArcadeDrive(Drivetrain drivetrain, DoubleSupplier throttle, DoubleSupplier turn) {
