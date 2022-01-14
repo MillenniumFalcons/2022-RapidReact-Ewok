@@ -46,8 +46,8 @@ public final class Constants {
                         new MatBuilder<>(Nat.N3(), Nat.N1()).fill(0.1, 0.1, 0.01));
 
         public static final double kNominalVoltage = 12;
-        public static final double kStallCurrent = 0;
-        public static final double kMaxCurrent = 0;
+        public static final double kStallCurrent = 35;
+        public static final double kMaxCurrent = 60;
 
         public static final TalonFXConfiguration kLeftMasterConfig = new TalonFXConfiguration();
         public static final TalonFXConfiguration kRightMasterConfig = new TalonFXConfiguration();
@@ -59,7 +59,7 @@ public final class Constants {
         public static final SimpleMotorFeedforward kFeedforward =
                 new SimpleMotorFeedforward(kS, kV, kA);
 
-        public static final double kWheelDiameterMeters = 0.1524;
+        public static final double kWheelDiameterMeters = 0.1016;
         public static final double kTrackWidth = 0;
         public static final double kMaxSpeedMetersPerSecond = 2;
         public static final double kMaxAccelerationMetersPerSecondSquared = 2;
