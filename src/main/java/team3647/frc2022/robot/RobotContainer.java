@@ -53,6 +53,7 @@ public class RobotContainer {
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
+        m_commandScheduler.registerSubsystem(m_drivetrain, m_intake, m_printer);
         // Configure the button bindings
         m_commandScheduler.setDefaultCommand(
                 m_drivetrain,
@@ -73,7 +74,7 @@ public class RobotContainer {
                 new RunCommand(
                         () -> {
                             m_intake.extend();
-                            m_intake.setOpenloop(-0.7);
+                            m_intake.setOpenloop(0.4);
                         },
                         m_intake));
         mainController.leftTrigger.whenReleased(
@@ -83,7 +84,7 @@ public class RobotContainer {
                                     m_intake.setOpenloop(0);
                                 },
                                 m_intake)
-                        .withTimeout(0.2));
+                        .withTimeout(0.1));
     }
 
     /**
