@@ -11,6 +11,7 @@ import team3647.lib.TalonFXSubsystem;
 /** Add your docs here. */
 public class Intake extends TalonFXSubsystem {
     private final Solenoid pistons;
+    private boolean extendIntake = false;
 
     public Intake(
             TalonFX master,
@@ -22,11 +23,17 @@ public class Intake extends TalonFXSubsystem {
     }
 
     public void extend() {
-        pistons.set(true);
+        extendIntake = true;
     }
 
     public void retract() {
-        pistons.set(false);
+        extendIntake = false;
+    }
+
+    @Override
+    public void writePeriodicOutputs() {
+        super.writePeriodicOutputs();
+        pistons.set(extendIntake);
     }
 
     @Override

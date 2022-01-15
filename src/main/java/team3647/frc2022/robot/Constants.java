@@ -10,6 +10,8 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.estimator.DifferentialDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.Solenoid;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -21,6 +23,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
  */
 public final class Constants {
     public static final double kFalconTicksPerRotation = 2048;
+    public static final PneumaticsModuleType kPCMType = PneumaticsModuleType.CTREPCM;
 
     public static final class CDrivetrain {
         public static final int kLeftMasterID = 1;
@@ -104,10 +107,27 @@ public final class Constants {
 
     public static final class CIntake {
         public static final int kMasterID = 5; // CHECK!
-        public static final int kSolenoidPin = 6;
+        public static final int kSolenoidPin = 0;
+        public static final InvertType kMasterInverted = InvertType.None;
+        public static final TalonFXConfiguration kMasterConfig = new TalonFXConfiguration();
+
         public static final double kWheelDiameterMeters = 0.0508;
+
         public static final double nativeVelToSurfaceMpS =
                 10 * kWheelDiameterMeters / kFalconTicksPerRotation;
+        public static final TalonFX kIntakeMotor = new TalonFX(kMasterID);
+        public static final Solenoid kPistons = new Solenoid(kPCMType, kSolenoidPin);
+
+        static {
+            kMasterConfig.slot0.kP = 0;
+            kMasterConfig.slot0.kI = 0;
+            kMasterConfig.slot0.kD = 0;
+            kMasterConfig.slot0.kF = 0;
+
+            kMasterConfig.voltageCompSaturation = 12;
+
+            kIntakeMotor.configAllSettings(kMasterConfig);
+        }
     }
 
     private Constants() {}

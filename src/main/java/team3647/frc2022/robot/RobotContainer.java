@@ -6,8 +6,10 @@ package team3647.frc2022.robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import team3647.frc2022.commands.ArcadeDrive;
 import team3647.frc2022.subsystems.Drivetrain;
+import team3647.frc2022.subsystems.Intake;
 import team3647.lib.GroupPrinter;
 import team3647.lib.inputs.Joysticks;
 
@@ -42,6 +44,13 @@ public class RobotContainer {
                     Constants.CDrivetrain.kFalconTicksToMeters,
                     Constants.CDrivetrain.kNominalVoltage);
 
+    private final Intake m_intake =
+            new Intake(
+                    Constants.CIntake.kIntakeMotor,
+                    Constants.CIntake.nativeVelToSurfaceMpS,
+                    0,
+                    Constants.CIntake.kPistons);
+
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
         // Configure the button bindings
@@ -59,7 +68,23 @@ public class RobotContainer {
         configureButtonBindings();
     }
 
-    private void configureButtonBindings() {}
+    private void configureButtonBindings() {
+        mainController.leftTrigger.whenActive(
+                new RunCommand(
+                        () -> {
+                            m_intake.extend();
+                            m_intake.setOpenloop(-0.7);
+                        },
+                        m_intake));
+        mainController.leftTrigger.whenReleased(
+                new RunCommand(
+                                () -> {
+                                    m_intake.retract();
+                                    m_intake.setOpenloop(0);
+                                },
+                                m_intake)
+                        .withTimeout(0.2));
+    }
 
     /**
      * Use this to pass the autonomous command to the main {@link Robot} class.
