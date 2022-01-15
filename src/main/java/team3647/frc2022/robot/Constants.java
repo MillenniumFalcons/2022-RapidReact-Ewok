@@ -20,6 +20,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+    public static final double kFalconTicksPerRotation = 2048;
 
     public static final class CDrivetrain {
         public static final int kLeftMasterID = 1;
@@ -64,7 +65,6 @@ public final class Constants {
         public static final double kMaxSpeedMetersPerSecond = 2;
         public static final double kMaxAccelerationMetersPerSecondSquared = 2;
 
-        public static final double kFalconTicksPerRotation = 2048;
         public static final double kGearboxReduction = 1;
 
         public static final double kWheelRotationToMeters =
@@ -100,6 +100,14 @@ public final class Constants {
         }
 
         private CDrivetrain() {}
+    }
+
+    public static final class CIntake {
+        public static final int kMasterID = 5; // CHECK!
+        public static final int kSolenoidPin = 6;
+        public static final double kWheelDiameterMeters = 0.0508;
+        public static final double nativeVelToSurfaceMpS =
+                10 * kWheelDiameterMeters / kFalconTicksPerRotation;
     }
 
     private Constants() {}
