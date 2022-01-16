@@ -27,7 +27,7 @@ public final class Drivetrain implements PeriodicSubsystem {
 
     private final SimpleMotorFeedforward feedforward;
     // private final DifferentialDrivePoseEstimator poseEstimator;
-    private final DifferentialDriveOdometry m_Odometry;
+    private final DifferentialDriveOdometry odometry;
     private PeriodicIO periodicIO = new PeriodicIO();
 
     private final double velocityConversion;
@@ -58,7 +58,7 @@ public final class Drivetrain implements PeriodicSubsystem {
         this.velocityConversion = velocityConversion;
         this.displacementConversion = positionConversion;
         // this.poseEstimator = poseEstimator;
-        this.m_Odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(periodicIO.heading));
+        this.odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(periodicIO.heading));
         this.nominalVoltage = nominalVoltage;
     }
 
@@ -110,7 +110,7 @@ public final class Drivetrain implements PeriodicSubsystem {
         pigeonIMU.getYawPitchRoll(periodicIO.ypr);
         periodicIO.heading = -Math.IEEEremainder(periodicIO.ypr[0], 360);
 
-        m_Odometry.update(
+        odometry.update(
                 Rotation2d.fromDegrees(periodicIO.heading),
                 periodicIO.leftPosition,
                 periodicIO.rightPosition);
