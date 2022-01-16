@@ -3,7 +3,6 @@ package team3647.frc2022.robot;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.RemoteSensorSource;
-import com.ctre.phoenix.motorcontrol.can.BaseTalonPIDSetConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.sensors.PigeonIMU;
@@ -139,19 +138,20 @@ public final class Constants {
         public static final TalonFXConfiguration kMasterConfig = new TalonFXConfiguration();
 
         public static final TalonFX kHoodMotor = new TalonFX(kMotorID);
-        
-        static {
-                kMasterConfig.slot0.kP = 0;
-                kMasterConfig.slot0.kI = 0;
-                kMasterConfig.slot0.kD = 0;
-                kMasterConfig.slot0.kF = 0;
 
-                kMasterConfig.voltageCompSaturation = 12;
-                kMasterConfig.primaryPID.selectedFeedbackSensor = FeedbackDevice.RemoteSensor0;
-                kMasterConfig.remoteFilter0.remoteSensorDeviceID = kCANCoderID;
-                kMasterConfig.remoteFilter0.remoteSensorSource = RemoteSensorSource.TalonFX_SelectedSensor; 
-                
-                kHoodMotor.configAllSettings(kMasterConfig);
+        static {
+            kMasterConfig.slot0.kP = 0;
+            kMasterConfig.slot0.kI = 0;
+            kMasterConfig.slot0.kD = 0;
+            kMasterConfig.slot0.kF = 0;
+
+            kMasterConfig.voltageCompSaturation = 12;
+            kMasterConfig.primaryPID.selectedFeedbackSensor = FeedbackDevice.RemoteSensor0;
+            kMasterConfig.remoteFilter0.remoteSensorDeviceID = kCANCoderID;
+            kMasterConfig.remoteFilter0.remoteSensorSource =
+                    RemoteSensorSource.TalonFX_SelectedSensor;
+
+            kHoodMotor.configAllSettings(kMasterConfig);
         }
     }
 

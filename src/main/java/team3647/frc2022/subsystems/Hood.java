@@ -10,8 +10,13 @@ public class Hood extends TalonFXSubsystem {
     private final double minPos;
     private final double maxPos;
 
-    public Hood(TalonFX master, DigitalInput revLimitSwitch, double minPos, double maxPos, double velocityConversion,
-    double positionConversion) {
+    public Hood(
+            TalonFX master,
+            DigitalInput revLimitSwitch,
+            double minPos,
+            double maxPos,
+            double velocityConversion,
+            double positionConversion) {
         super(master, velocityConversion, positionConversion);
         this.limitSwitch = revLimitSwitch;
         this.minPos = minPos;
