@@ -5,6 +5,7 @@
 package team3647.frc2022.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
@@ -25,8 +26,8 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void robotInit() {
-        // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
-        // autonomous chooser on the dashboard.
+        LiveWindow.disableAllTelemetry();
+        LiveWindow.setEnabled(false);
         m_robotContainer = new RobotContainer();
     }
 
