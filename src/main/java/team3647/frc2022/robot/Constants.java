@@ -65,7 +65,7 @@ public final class Constants {
         public static final SimpleMotorFeedforward kFeedforward =
                 new SimpleMotorFeedforward(kS, kV, kA);
 
-        public static final double kWheelDiameterMeters = 0.1016;
+        public static final double kWheelDiameterMeters = 0.1016; // 4inches
         public static final double kTrackWidth = 0;
         public static final double kMaxSpeedMetersPerSecond = 2;
         public static final double kMaxAccelerationMetersPerSecondSquared = 2;
@@ -148,8 +148,7 @@ public final class Constants {
             kMasterConfig.voltageCompSaturation = 12;
             kMasterConfig.primaryPID.selectedFeedbackSensor = FeedbackDevice.RemoteSensor0;
             kMasterConfig.remoteFilter0.remoteSensorDeviceID = kCANCoderID;
-            kMasterConfig.remoteFilter0.remoteSensorSource =
-                    RemoteSensorSource.TalonFX_SelectedSensor;
+            kMasterConfig.remoteFilter0.remoteSensorSource = RemoteSensorSource.CANCoder;
 
             kHoodMotor.configAllSettings(kMasterConfig);
         }
