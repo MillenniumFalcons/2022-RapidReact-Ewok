@@ -8,22 +8,30 @@ import team3647.lib.TalonFXSubsystem;
 
 public class Flywheel extends TalonFXSubsystem {
     private final SimpleMotorFeedforward ff;
-    private double RPMtoMetersPerSecond;
     private double metersPerSecond;
+    private final double RPMtoMetersPerSecond;
 
     public Flywheel(
             TalonFX master,
             TalonFX follower,
             SimpleMotorFeedforward ff,
             double velocityConversion,
-            double positionConversion) {
+            double positionConversion,
+            double RPMtoMetersPerSecond) {
         super(master, velocityConversion, positionConversion);
         addFollower(follower, FollowerType.PercentOutput, InvertType.InvertMotorOutput);
         this.ff = ff;
+        this.RPMtoMetersPerSecond = RPMtoMetersPerSecond;
         // setToBrake();
     }
 
-    public void setFlywheelRPM(double demand) {
+    public void setFlywheelRPM(double RPM) {
+        double feedforward = ff.calculate(RPM);
+        setVelocity(RPM, feedforward);
+    }
+
+    public void setFlywheelMPS(double MPS) {
+        double demand = MPS / RPMtoMetersPerSecond;
         double feedforward = ff.calculate(demand);
         setVelocity(demand, feedforward);
     }
