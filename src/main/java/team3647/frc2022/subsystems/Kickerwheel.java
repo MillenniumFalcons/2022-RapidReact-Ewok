@@ -16,7 +16,7 @@ public class Kickerwheel extends TalonFXSubsystem {
         this.ff = ff;
     }
 
-    public void setKickRPM(double demand) {
+    public void setKickerRPM(double demand) {
         // TODO: acceleration in ff
         // PIO with timestamps and measure current and last velocity
         double feedforward = ff.calculate(demand);
