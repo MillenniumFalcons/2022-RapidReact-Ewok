@@ -8,7 +8,7 @@ import team3647.lib.TalonFXSubsystem;
 
 public class Flywheel extends TalonFXSubsystem {
     private final SimpleMotorFeedforward ff;
-    private double metersPerSecond;
+    private double surfaceSpeed;
     private final double RPMtoMetersPerSecond;
 
     public Flywheel(
@@ -30,7 +30,7 @@ public class Flywheel extends TalonFXSubsystem {
         setVelocity(RPM, feedforward);
     }
 
-    public void setFlywheelMPS(double MPS) {
+    public void setFlywheelSurfaceSpeed(double MPS) {
         double demand = MPS / RPMtoMetersPerSecond;
         double feedforward = ff.calculate(demand);
         setVelocity(demand, feedforward);
@@ -39,11 +39,11 @@ public class Flywheel extends TalonFXSubsystem {
     @Override
     public void readPeriodicInputs() {
         super.readPeriodicInputs();
-        metersPerSecond = getVelocity() * RPMtoMetersPerSecond;
+        surfaceSpeed = getVelocity() * RPMtoMetersPerSecond;
     }
 
-    public double getMetersPerSecond() {
-        return metersPerSecond;
+    public double getSurfaceSpeed() {
+        return surfaceSpeed;
     }
 
     public void setToBrake() {
