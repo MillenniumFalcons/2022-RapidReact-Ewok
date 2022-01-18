@@ -34,9 +34,7 @@ public final class Drivetrain implements PeriodicSubsystem {
     private final double displacementConversion;
 
     private final double nominalVoltage;
-
-    public static final double kDefaultQuickStopThreshold = 0.2;
-    public static final double kDefaultQuickStopAlpha = 0.1;
+    private final double kDt;
 
     public Drivetrain(
             TalonFX leftMaster,
@@ -48,7 +46,8 @@ public final class Drivetrain implements PeriodicSubsystem {
             DifferentialDrivePoseEstimator poseEstimator,
             double velocityConversion,
             double positionConversion,
-            double nominalVoltage) {
+            double nominalVoltage,
+            double kDt) {
         this.leftMaster = leftMaster;
         this.leftSlave = leftSlave;
         this.rightMaster = rightMaster;
@@ -60,6 +59,7 @@ public final class Drivetrain implements PeriodicSubsystem {
         // this.poseEstimator = poseEstimator;
         this.odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(periodicIO.heading));
         this.nominalVoltage = nominalVoltage;
+        this.kDt = kDt;
     }
 
     public static class PeriodicIO {
@@ -162,8 +162,16 @@ public final class Drivetrain implements PeriodicSubsystem {
             end();
             return;
         }
-        periodicIO.leftFeedForward = feedforward.calculate(wheelSpeeds.leftMetersPerSecond);
-        periodicIO.rightFeedForward = feedforward.calculate(wheelSpeeds.rightMetersPerSecond);
+        periodicIO.leftFeedForward =
+                feedforward.calculate(
+                        periodicIO.wheelSpeeds.leftMetersPerSecond,
+                        wheelSpeeds.leftMetersPerSecond,
+                        kDt);
+        periodicIO.rightFeedForward =
+                feedforward.calculate(
+                        periodicIO.wheelSpeeds.rightMetersPerSecond,
+                        wheelSpeeds.rightMetersPerSecond,
+                        kDt);
 
         periodicIO.leftOutput = wheelSpeeds.leftMetersPerSecond / velocityConversion;
         periodicIO.rightOutput = wheelSpeeds.rightMetersPerSecond / velocityConversion;
@@ -227,25 +235,6 @@ public final class Drivetrain implements PeriodicSubsystem {
     private void resetEncoders() {
         leftMaster.setSelectedSensorPosition(0);
         rightMaster.setSelectedSensorPosition(0);
-    }
-
-    /**
-     * Returns 0.0 if the given value is within the specified range around zero. The remaining range
-     * between the deadband and 1.0 is scaled from 0.0 to 1.0.
-     *
-     * @param value value to clip
-     * @param deadband range around zero
-     */
-    private double applyDeadband(double value, double deadband) {
-        if (Math.abs(value) > deadband) {
-            if (value > 0.0) {
-                return (value - deadband) / (1.0 - deadband);
-            } else {
-                return (value + deadband) / (1.0 - deadband);
-            }
-        } else {
-            return 0.0;
-        }
     }
 
     @Override

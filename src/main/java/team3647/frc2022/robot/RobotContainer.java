@@ -42,13 +42,17 @@ public class RobotContainer {
                     Constants.CDrivetrain.kPoseEstimator,
                     Constants.CDrivetrain.kFalconVelocityToMpS,
                     Constants.CDrivetrain.kFalconTicksToMeters,
-                    Constants.CDrivetrain.kNominalVoltage);
+                    Constants.CDrivetrain.kNominalVoltage,
+                    Constants.kDt);
 
     private final Intake m_intake =
             new Intake(
                     Constants.CIntake.kIntakeMotor,
                     Constants.CIntake.nativeVelToSurfaceMpS,
                     0,
+                    Constants.CIntake.kNominalVoltage,
+                    Constants.kDt,
+                    Constants.CIntake.kFeedForward,
                     Constants.CIntake.kPistons);
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */

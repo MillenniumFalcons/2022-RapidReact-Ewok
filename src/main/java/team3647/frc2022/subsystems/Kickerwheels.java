@@ -4,10 +4,10 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import team3647.lib.TalonFXSubsystem;
 
-public class Flywheel extends TalonFXSubsystem {
+public class Kickerwheels extends TalonFXSubsystem {
     private final SimpleMotorFeedforward ff;
 
-    public Flywheel(
+    public Kickerwheels(
             TalonFX master,
             double velocityConversion,
             double positionConversion,
@@ -18,13 +18,13 @@ public class Flywheel extends TalonFXSubsystem {
         this.ff = ff;
     }
 
-    /** @param vel velocity in m/s, positive is outside (to shoot) */
-    public void setSurfaceSpeed(double vel) {
+    /** @param vel velocity in m/s */
+    public void setSurfaceVelocity(double vel) {
         setVelocity(vel, ff.calculate(getVelocity(), vel, kDt));
     }
 
     @Override
     public String getName() {
-        return "Flywheel";
+        return "Kickerwheels";
     }
 }

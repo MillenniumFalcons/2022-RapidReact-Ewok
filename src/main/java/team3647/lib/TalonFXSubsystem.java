@@ -15,14 +15,22 @@ public abstract class TalonFXSubsystem implements PeriodicSubsystem {
     private final List<TalonFX> followers = new LinkedList<>();
     private final double positionConversion;
     private final double velocityConversion;
+    private final double nominalVoltage;
+    protected final double kDt;
 
     private PeriodicIO periodicIO = new PeriodicIO();
 
     protected TalonFXSubsystem(
-            TalonFX master, double velocityConversion, double positionConversion) {
+            TalonFX master,
+            double velocityConversion,
+            double positionConversion,
+            double nominalVoltage,
+            double kDt) {
         this.master = master;
         this.velocityConversion = velocityConversion;
         this.positionConversion = positionConversion;
+        this.nominalVoltage = nominalVoltage;
+        this.kDt = kDt;
     }
 
     public static class PeriodicIO {
@@ -50,7 +58,7 @@ public abstract class TalonFXSubsystem implements PeriodicSubsystem {
                 periodicIO.controlMode,
                 periodicIO.demand,
                 DemandType.ArbitraryFeedForward,
-                periodicIO.feedforward);
+                periodicIO.feedforward / nominalVoltage);
     }
 
     @Override
@@ -68,7 +76,7 @@ public abstract class TalonFXSubsystem implements PeriodicSubsystem {
      * Raw PID (not motion magic)
      *
      * @param position in SI units (degrees/meters/etc..)
-     * @param feedforward in [-1,1]
+     * @param feedforward in volts
      */
     protected void setPosition(double position, double feedforward) {
         periodicIO.controlMode = ControlMode.Position;
@@ -80,7 +88,7 @@ public abstract class TalonFXSubsystem implements PeriodicSubsystem {
      * Motion Magic position
      *
      * @param position in SI units (degrees/meters/etc..)
-     * @param feedforward in [-1,1]
+     * @param feedforward in volts
      */
     protected void setPositionMotionMagic(double position, double feedforward) {
         periodicIO.controlMode = ControlMode.MotionMagic;
@@ -90,7 +98,7 @@ public abstract class TalonFXSubsystem implements PeriodicSubsystem {
 
     /**
      * @param velocity in the units of velocityConversion (RPM?, Surface speed?)
-     * @param feedforward in [-1,1]
+     * @param feedforward in volts
      */
     protected void setVelocity(double velocity, double feedforward) {
         periodicIO.controlMode = ControlMode.Velocity;

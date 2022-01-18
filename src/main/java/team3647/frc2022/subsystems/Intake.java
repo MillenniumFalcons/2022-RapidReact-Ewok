@@ -5,20 +5,26 @@
 package team3647.frc2022.subsystems;
 
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.Solenoid;
 import team3647.lib.TalonFXSubsystem;
 
 /** Add your docs here. */
 public class Intake extends TalonFXSubsystem {
     private final Solenoid pistons;
+    private final SimpleMotorFeedforward ff;
     private boolean extendIntake = false;
 
     public Intake(
             TalonFX master,
             double velocityConversion,
             double positionConversion,
+            double nominalVoltage,
+            double kDt,
+            SimpleMotorFeedforward ff,
             Solenoid pistons) {
-        super(master, velocityConversion, positionConversion);
+        super(master, velocityConversion, positionConversion, nominalVoltage, kDt);
+        this.ff = ff;
         this.pistons = pistons;
     }
 
@@ -28,6 +34,11 @@ public class Intake extends TalonFXSubsystem {
 
     public void retract() {
         extendIntake = false;
+    }
+
+    /** @param vel velocity in m/s */
+    public void setSurfaceVelocity(double vel) {
+        setVelocity(vel, ff.calculate(getVelocity(), vel, kDt));
     }
 
     @Override

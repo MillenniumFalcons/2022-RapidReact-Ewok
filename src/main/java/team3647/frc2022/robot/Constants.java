@@ -26,6 +26,7 @@ import edu.wpi.first.wpilibj.Solenoid;
 public final class Constants {
     public static final double kFalconTicksPerRotation = 2048;
     public static final PneumaticsModuleType kPCMType = PneumaticsModuleType.CTREPCM;
+    public static final double kDt = 0.02; // 20ms loop
 
     public static final class CDrivetrain {
         public static final int kLeftMasterID = 1;
@@ -112,6 +113,13 @@ public final class Constants {
         public static final int kSolenoidPin = 0;
         public static final InvertType kMasterInverted = InvertType.None;
         public static final TalonFXConfiguration kMasterConfig = new TalonFXConfiguration();
+        public static final double kS = 0;
+        public static final double kV = 0;
+        public static final double kA = 0;
+        public static final SimpleMotorFeedforward kFeedForward =
+                new SimpleMotorFeedforward(kS, kV, kA);
+
+        public static final double kNominalVoltage = 12;
 
         public static final double kWheelDiameterMeters = 0.0508;
 
