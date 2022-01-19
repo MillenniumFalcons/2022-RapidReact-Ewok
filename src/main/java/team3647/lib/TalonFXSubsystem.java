@@ -125,6 +125,10 @@ public abstract class TalonFXSubsystem implements PeriodicSubsystem {
         return periodicIO.velocity;
     }
 
+    public double getPosition() {
+        return periodicIO.position;
+    }
+
     protected void addFollower(TalonFX follower, FollowerType followerType, InvertType invertType) {
         follower.follow(master, followerType);
         follower.setInverted(invertType);

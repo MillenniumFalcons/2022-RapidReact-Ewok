@@ -5,6 +5,7 @@ import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.RemoteSensorSource;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
+import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.PigeonIMU;
 import edu.wpi.first.math.MatBuilder;
 import edu.wpi.first.math.Nat;
@@ -136,8 +137,8 @@ public final class Constants {
         public static final int kMotorID = 7;
         public static final int kCANCoderID = 12;
         public static final TalonFXConfiguration kMasterConfig = new TalonFXConfiguration();
-
         public static final TalonFX kHoodMotor = new TalonFX(kMotorID);
+        public static final CANCoder kEncoder = new CANCoder(kCANCoderID);
 
         static {
             kMasterConfig.slot0.kP = 0;

@@ -22,7 +22,6 @@ public class Flywheel extends TalonFXSubsystem {
         addFollower(follower, FollowerType.PercentOutput, InvertType.InvertMotorOutput);
         this.ff = ff;
         this.RPMtoMetersPerSecond = RPMtoMetersPerSecond;
-        // setToBrake();
     }
 
     public void setFlywheelRPM(double RPM) {
@@ -44,10 +43,6 @@ public class Flywheel extends TalonFXSubsystem {
 
     public double getSurfaceSpeed() {
         return surfaceSpeed;
-    }
-
-    public void setToBrake() {
-        super.setToBrake();
     }
 
     @Override

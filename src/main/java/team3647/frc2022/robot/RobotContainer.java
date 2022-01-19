@@ -6,10 +6,8 @@ package team3647.frc2022.robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.RunCommand;
 import team3647.frc2022.commands.ArcadeDrive;
 import team3647.frc2022.subsystems.Drivetrain;
-import team3647.frc2022.subsystems.Intake;
 import team3647.lib.GroupPrinter;
 import team3647.lib.inputs.Joysticks;
 
@@ -44,16 +42,17 @@ public class RobotContainer {
                     Constants.CDrivetrain.kFalconTicksToMeters,
                     Constants.CDrivetrain.kNominalVoltage);
 
-    private final Intake m_intake =
-            new Intake(
-                    Constants.CIntake.kIntakeMotor,
-                    Constants.CIntake.nativeVelToSurfaceMpS,
-                    0,
-                    Constants.CIntake.kPistons);
+    /*private final Intake m_intake =
+    new Intake(
+            Constants.CIntake.kIntakeMotor,
+            Constants.CIntake.nativeVelToSurfaceMpS,
+            0,
+            Constants.CIntake.kPistons); */
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
-        m_commandScheduler.registerSubsystem(m_drivetrain, m_intake, m_printer);
+        m_drivetrain.init();
+        m_commandScheduler.registerSubsystem(m_drivetrain, /*m_intake,*/ m_printer);
         // Configure the button bindings
         m_commandScheduler.setDefaultCommand(
                 m_drivetrain,
@@ -63,14 +62,14 @@ public class RobotContainer {
                         mainController::getRightStickX));
         m_printer.addBoolean("rightMaster invert", m_drivetrain::getRightMasterInvert);
         m_printer.addBoolean("rightSlave invert", m_drivetrain::getRightSlaveInvert);
-        m_printer.addDouble("Robot X", m_drivetrain::getDrivetrainXMeters);
-        m_printer.addDouble("Robot Y", m_drivetrain::getDrivetrainYMeters);
+        // m_printer.addDouble("Robot X", m_drivetrain::getDrivetrainXMeters);
+        // m_printer.addDouble("Robot Y", m_drivetrain::getDrivetrainYMeters);
 
         configureButtonBindings();
     }
 
     private void configureButtonBindings() {
-        mainController.leftTrigger.whenActive(
+        /*mainController.leftTrigger.whenActive(
                 new RunCommand(
                         () -> {
                             m_intake.extend();
@@ -84,7 +83,7 @@ public class RobotContainer {
                                     m_intake.setOpenloop(0);
                                 },
                                 m_intake)
-                        .withTimeout(0.1));
+                        .withTimeout(0.1));*/
     }
 
     /**
