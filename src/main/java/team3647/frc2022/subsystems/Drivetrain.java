@@ -11,6 +11,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive.WheelSpeeds;
 import team3647.lib.PeriodicSubsystem;
@@ -64,11 +65,11 @@ public final class Drivetrain implements PeriodicSubsystem {
 
     public static class PeriodicIO {
         // inputs
+        public double timestamp = 0;
         /** Meters per second */
         public DifferentialDriveWheelSpeeds wheelSpeeds = new DifferentialDriveWheelSpeeds();
 
         public Pose2d pose = new Pose2d();
-
         public double ypr[] = new double[] {0, 0, 0};
 
         /** Meters */
@@ -99,6 +100,7 @@ public final class Drivetrain implements PeriodicSubsystem {
 
     @Override
     public void readPeriodicInputs() {
+        periodicIO.timestamp = Timer.getFPGATimestamp();
         periodicIO.leftPosition = leftMaster.getSelectedSensorPosition() * displacementConversion;
         periodicIO.rightPosition = rightMaster.getSelectedSensorPosition() * displacementConversion;
 

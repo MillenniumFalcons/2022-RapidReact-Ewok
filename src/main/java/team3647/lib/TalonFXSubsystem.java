@@ -6,6 +6,7 @@ import com.ctre.phoenix.motorcontrol.FollowerType;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import edu.wpi.first.wpilibj.Timer;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -38,6 +39,7 @@ public abstract class TalonFXSubsystem implements PeriodicSubsystem {
         public double position = 0;
         public double velocity = 0;
         public double current = 0;
+        public double timestamp = 0;
 
         // Outputs
         public ControlMode controlMode = ControlMode.Disabled;
@@ -50,6 +52,7 @@ public abstract class TalonFXSubsystem implements PeriodicSubsystem {
         periodicIO.position = master.getSelectedSensorVelocity() * velocityConversion;
         periodicIO.velocity = master.getSelectedSensorVelocity() * positionConversion;
         periodicIO.current = master.getStatorCurrent();
+        periodicIO.timestamp = Timer.getFPGATimestamp();
     }
 
     @Override
@@ -75,7 +78,7 @@ public abstract class TalonFXSubsystem implements PeriodicSubsystem {
     /**
      * Raw PID (not motion magic)
      *
-     * @param position in SI units (degrees/meters/etc..)
+     * @param position in units of positionConvertsion (degrees/meters/etc..)
      * @param feedforward in volts
      */
     protected void setPosition(double position, double feedforward) {
@@ -87,7 +90,7 @@ public abstract class TalonFXSubsystem implements PeriodicSubsystem {
     /**
      * Motion Magic position
      *
-     * @param position in SI units (degrees/meters/etc..)
+     * @param position in units of positionConvertsion (degrees/meters/etc..)
      * @param feedforward in volts
      */
     protected void setPositionMotionMagic(double position, double feedforward) {
@@ -106,14 +109,21 @@ public abstract class TalonFXSubsystem implements PeriodicSubsystem {
         periodicIO.demand = velocity / velocityConversion;
     }
 
+    /** Sets all motors to brake mode */
     public void setToBrake() {
         setNeutralMode(NeutralMode.Brake);
     }
 
+    /** Sets all motors to coast mode */
     public void setToCoast() {
         setNeutralMode(NeutralMode.Coast);
     }
 
+    /**
+     * Sets master and all followers to the mode
+     *
+     * @param mode either Brake or Coast
+     */
     public void setNeutralMode(NeutralMode mode) {
         master.setNeutralMode(mode);
         for (TalonFX follower : followers) {
@@ -121,16 +131,33 @@ public abstract class TalonFXSubsystem implements PeriodicSubsystem {
         }
     }
 
+    /** Sets the selected sensor to 0 (default) */
     public void resetEncoder() {
         setEncoder(0);
     }
 
+    /**
+     * sets the selected sensor to position
+     *
+     * @param position position in output units
+     */
     public void setEncoder(double position) {
         master.setSelectedSensorPosition(position / positionConversion);
     }
 
+    /** @return the velocity in the output units */
     public double getVelocity() {
         return periodicIO.velocity;
+    }
+
+    /** @return ths position in the output units */
+    public double getPosition() {
+        return periodicIO.position;
+    }
+
+    /** @return the timestamp for the position and velocity measurements */
+    public double getTimestamp() {
+        return periodicIO.timestamp;
     }
 
     protected void addFollower(TalonFX follower, FollowerType followerType, InvertType invertType) {
