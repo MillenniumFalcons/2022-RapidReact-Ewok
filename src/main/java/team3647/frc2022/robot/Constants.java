@@ -15,6 +15,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
+import team3647.frc2022.subsystems.VisionController;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -161,6 +162,24 @@ public final class Constants {
 
             kHoodMotor.configAllSettings(kMasterConfig);
         }
+    }
+
+    public static final class CVision {
+        public static final String camName = "gloworm";
+
+        public static final double kGoalHeight = 0;
+        public static final double kCameraHeight = 0;
+
+        public static final double kFOV = 75;
+        public static final double kSensorHeight = 2952;
+        public static final double kSensorWidth = 3984;
+        public static final double kPixelSize = 6;
+        public static final double camAngle = 23.3;
+        public static final double kImageCaptureLatency = 11.0 / 1000.0;
+
+        public static final VisionController.CamConstants camConstants =
+                new VisionController.CamConstants(
+                        kGoalHeight, kCameraHeight, camAngle, kImageCaptureLatency);
     }
 
     private Constants() {}

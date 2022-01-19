@@ -32,6 +32,6 @@
     "editor.codeActionsOnSave": {
       "source.fixAll.spotlessGradle": true
     },
-    "editor.defaultFormatter": "richardwillis.vscode-spotless-gradle"
+    "editor.defaultFormatter": "redhat.java"
   }
 }

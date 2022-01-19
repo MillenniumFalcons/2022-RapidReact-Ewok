@@ -7,10 +7,11 @@ package team3647.frc2022.robot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import team3647.frc2022.commands.ArcadeDrive;
+import team3647.frc2022.inputs.Joysticks;
 import team3647.frc2022.subsystems.Drivetrain;
 import team3647.frc2022.subsystems.Intake;
+import team3647.frc2022.subsystems.VisionController;
 import team3647.lib.GroupPrinter;
-import team3647.lib.inputs.Joysticks;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -53,6 +54,9 @@ public class RobotContainer {
                     Constants.kDt,
                     Constants.CIntake.kFeedForward,
                     Constants.CIntake.kPistons);
+
+    private final VisionController m_visionController =
+            new VisionController(Constants.CVision.camName, Constants.CVision.camConstants);
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {

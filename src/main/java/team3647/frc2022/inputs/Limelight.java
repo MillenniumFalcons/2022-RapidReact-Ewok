@@ -1,4 +1,4 @@
-package team3647.lib.inputs;
+package team3647.frc2022.inputs;
 
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;

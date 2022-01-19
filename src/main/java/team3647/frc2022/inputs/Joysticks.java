@@ -1,4 +1,4 @@
-package team3647.lib.inputs;
+package team3647.frc2022.inputs;
 
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
