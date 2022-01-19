@@ -51,10 +51,6 @@ public class PivotClimber extends TalonFXSubsystem {
         super.setOpenloop(percentOutput);
     }
 
-    public boolean isAngled() {
-        return pivotPistons.get();
-    }
-
     @Override
     public String getName() {
 
