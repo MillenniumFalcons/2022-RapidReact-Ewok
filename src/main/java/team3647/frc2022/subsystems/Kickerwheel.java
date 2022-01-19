@@ -14,8 +14,10 @@ public class Kickerwheel extends TalonFXSubsystem {
             SimpleMotorFeedforward ff,
             double velocityConversion,
             double positionConversion,
+            double nominalVoltage,
+            double kDt,
             double RPMtoMetersPerSecond) {
-        super(master, velocityConversion, positionConversion);
+        super(master, velocityConversion, positionConversion, nominalVoltage, kDt);
         this.ff = ff;
         this.RPMtoMetersPerSecond = RPMtoMetersPerSecond;
     }
