@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import team3647.frc2022.commands.ArcadeDrive;
 import team3647.frc2022.subsystems.Drivetrain;
+import team3647.frc2022.subsystems.Intake;
 import team3647.lib.GroupPrinter;
 import team3647.lib.inputs.Joysticks;
 
@@ -40,14 +41,18 @@ public class RobotContainer {
                     Constants.CDrivetrain.kPoseEstimator,
                     Constants.CDrivetrain.kFalconVelocityToMpS,
                     Constants.CDrivetrain.kFalconTicksToMeters,
-                    Constants.CDrivetrain.kNominalVoltage);
+                    Constants.CDrivetrain.kNominalVoltage,
+                    Constants.kDt);
 
-    /*private final Intake m_intake =
-    new Intake(
-            Constants.CIntake.kIntakeMotor,
-            Constants.CIntake.nativeVelToSurfaceMpS,
-            0,
-            Constants.CIntake.kPistons); */
+    private final Intake m_intake =
+            new Intake(
+                    Constants.CIntake.kIntakeMotor,
+                    Constants.CIntake.nativeVelToSurfaceMpS,
+                    0,
+                    Constants.CIntake.kNominalVoltage,
+                    Constants.kDt,
+                    Constants.CIntake.kFeedForward,
+                    Constants.CIntake.kPistons);
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {

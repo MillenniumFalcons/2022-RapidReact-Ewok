@@ -22,9 +22,11 @@ public class PivotClimber extends TalonFXSubsystem {
             SimpleMotorFeedforward ff,
             double velocityConversion,
             double positionConversion,
+            double nominalVoltage,
+            double kDt,
             double minLength,
             double maxLength) {
-        super(leftMaster, velocityConversion, positionConversion);
+        super(leftMaster, velocityConversion, positionConversion, nominalVoltage, kDt);
         addFollower(rightMaster, FollowerType.PercentOutput, InvertType.InvertMotorOutput);
         this.ff = ff;
         this.pivotPistons = pivotPistons;
