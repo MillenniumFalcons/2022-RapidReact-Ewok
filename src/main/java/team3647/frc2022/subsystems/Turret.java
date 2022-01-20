@@ -1,8 +1,6 @@
 package team3647.frc2022.subsystems;
 
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.DigitalInput;
 import team3647.lib.TalonFXSubsystem;
 
@@ -10,9 +8,8 @@ public class Turret extends TalonFXSubsystem {
 
     private final double maxAngle;
     private final double minAngle;
-    private final SimpleMotorFeedforward ff;
-    private final double positionConversion;
     private final DigitalInput limitSwitch;
+    private final double staticFrictionVolts;
 
     public Turret(
             TalonFX master,
@@ -22,52 +19,49 @@ public class Turret extends TalonFXSubsystem {
             double kDt,
             double maxAngle,
             double minAngle,
-            SimpleMotorFeedforward ff,
-            int limitSwitchPin) {
+            int limitSwitchPin,
+            double staticFrictionVolts) {
         super(master, velocityConversion, positionConversion, nominalVoltage, kDt);
         this.maxAngle = maxAngle;
         this.minAngle = minAngle;
-        this.positionConversion = positionConversion;
-        this.ff = ff;
         limitSwitch = new DigitalInput(limitSwitchPin);
-        
-        
-
+        this.staticFrictionVolts = staticFrictionVolts;
+        resetEncoder();
     }
-    // manually control the turret
-    //public void setOpenloop(double demand) {
-        //setOpenloop(demand);
-   // }
-    // position feedforward
-    // https://github.com/MillenniumFalcons/2021-InfiniteRecharge-Offseason/blob/b3ea4822218feef30e609dc408b3ec652a179025/src/main/java/team3647/frc2020/subsystems/TalonSRXSubsystem.java#L160
+
+    /** @param angle in degree, [-180,180] */
     public void setAngle(double angle) {
 
-        double curretPosition = getPosition(); // returns [-200,200]
-        double targetPosition;
+        double currentAngle = getAngle(); // returns [-200,200]
+        angle -= 360.0 * Math.round(angle / 360.0); // angles in [-180, 180]
+        double targetAngle = angle;
 
-        angle -= 360.0*Math.round(angle/360.0); // angles in [-180, 180]
-        
+        /*Convert target angle to pick the shortest rotate direction if target angle lies in [160,180] or [-180,-160]*/
+        if ((angle >= minAngle + 360 && angle <= 180)
+                || (angle <= maxAngle - 360 && angle >= -180)) {
 
-        double clockwiseDistance;
-        double counterClockwiseDistance;
-        double demand;
-
-        if(angle > curretPosition){
-            counterClockwiseDistance = Math.abs(angle - curretPosition);
-            clockwiseDistance = Math.abs((360-angle)+curretPosition);
-            if (){
-                
+            if (targetAngle > currentAngle) {
+                /*For example, target angle is 170 while current angle is -200, make target -190 instead */
+                if (targetAngle > currentAngle + 180) {
+                    targetAngle -= 360;
+                }
+            } else {
+                /*For example, target angle is -170 while current angle is 90, make target 190 insteadd */
+                if (targetAngle < currentAngle - 180) {
+                    targetAngle += 360;
+                }
             }
         }
 
-        setPosition(
-                targetPosition,
-                ff.calculate(Math.signum(demand * positionConversion - getPosition())));
-
+        setPosition(targetAngle, staticFrictionVolts);
     }
 
     public double getAngle() {
         return getPosition();
+    }
+
+    public boolean getLimitSwitchValue() {
+        return limitSwitch.get();
     }
 
     @Override
