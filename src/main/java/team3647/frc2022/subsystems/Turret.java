@@ -32,32 +32,37 @@ public class Turret extends TalonFXSubsystem {
     /** @param angle in degree, [-180,180] */
     public void setAngle(double angle) {
 
-        double currentAngle = getAngle(); // returns [-200,200]
+        double currentPosition = getPosition(); // returns [-200,200]
         angle -= 360.0 * Math.round(angle / 360.0); // angles in [-180, 180]
-        double targetAngle = angle;
+        double targetPosition = angle;
+        boolean targetInOverlap =
+                (angle >= minAngle + 360 && angle <= 180)
+                        || (angle <= maxAngle - 360 && angle >= -180);
 
         /*Convert target angle to pick the shortest rotate direction if target angle lies in [160,180] or [-180,-160]*/
-        if ((angle >= minAngle + 360 && angle <= 180)
-                || (angle <= maxAngle - 360 && angle >= -180)) {
+        if (targetInOverlap) {
 
-            if (targetAngle > currentAngle) {
+            if (targetPosition > currentPosition) {
                 /*For example, target angle is 170 while current angle is -200, make target -190 instead */
-                if (targetAngle > currentAngle + 180) {
-                    targetAngle -= 360;
+                if (targetPosition > currentPosition + 180) {
+                    targetPosition -= 360;
                 }
             } else {
                 /*For example, target angle is -170 while current angle is 90, make target 190 insteadd */
-                if (targetAngle < currentAngle - 180) {
-                    targetAngle += 360;
+                if (targetPosition < currentPosition - 180) {
+                    targetPosition += 360;
                 }
             }
         }
 
-        setPosition(targetAngle, staticFrictionVolts);
+        setPosition(targetPosition, staticFrictionVolts);
     }
 
+    /*return angle in[-180,180]*/
     public double getAngle() {
-        return getPosition();
+        double angle = getPosition();
+        angle -= 360.0 * Math.round(angle / 360.0);
+        return angle;
     }
 
     public boolean getLimitSwitchValue() {
