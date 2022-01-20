@@ -36,7 +36,7 @@ public class Intake extends TalonFXSubsystem {
         extendIntake = false;
     }
 
-    /** @param vel velocity in m/s */
+    /** @param vel velocity in m/s, negative is into robot, positive is out */
     public void setSurfaceVelocity(double vel) {
         setVelocity(vel, ff.calculate(getVelocity(), vel, kDt));
     }
