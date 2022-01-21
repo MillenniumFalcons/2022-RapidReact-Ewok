@@ -8,7 +8,7 @@ public class Turret extends TalonFXSubsystem {
 
     private final double maxAngle;
     private final double minAngle;
-    private final DigitalInput limitSwitch;
+    private final DigitalInput resetLimitSwitch;
     private final double staticFrictionVolts;
 
     public Turret(
@@ -19,12 +19,12 @@ public class Turret extends TalonFXSubsystem {
             double kDt,
             double maxAngle,
             double minAngle,
-            int limitSwitchPin,
+            DigitalInput resetLimitSwitch,
             double staticFrictionVolts) {
         super(master, velocityConversion, positionConversion, nominalVoltage, kDt);
         this.maxAngle = maxAngle;
         this.minAngle = minAngle;
-        limitSwitch = new DigitalInput(limitSwitchPin);
+        this.resetLimitSwitch = resetLimitSwitch;
         this.staticFrictionVolts = staticFrictionVolts;
         resetEncoder();
     }
@@ -55,10 +55,15 @@ public class Turret extends TalonFXSubsystem {
             }
         }
 
-        setPosition(targetPosition, staticFrictionVolts);
+        // Multiply the static friction volts by -1 if our target position is less than current
+        // position; if we need to move backwards, the volts needs to be negative
+        double directionAdjustedVolts =
+                staticFrictionVolts * Math.signum(targetPosition - currentPosition);
+
+        setPosition(targetPosition, directionAdjustedVolts);
     }
 
-    /*return angle in[-180,180]*/
+    /** @return angle in [-180,180] */
     public double getAngle() {
         double angle = getPosition();
         angle -= 360.0 * Math.round(angle / 360.0);
@@ -66,7 +71,7 @@ public class Turret extends TalonFXSubsystem {
     }
 
     public boolean getLimitSwitchValue() {
-        return limitSwitch.get();
+        return resetLimitSwitch.get();
     }
 
     @Override

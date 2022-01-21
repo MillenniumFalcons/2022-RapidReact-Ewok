@@ -1,13 +1,10 @@
 package team3647.frc2022.subsystems;
 
-import com.ctre.phoenix.motorcontrol.FollowerType;
-import com.ctre.phoenix.motorcontrol.InvertType;
-import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.Solenoid;
-import team3647.lib.TalonFXSubsystem;
+import team3647.lib.PeriodicSubsystem;
 
-public class PivotClimber extends TalonFXSubsystem {
+public class PivotClimber implements PeriodicSubsystem {
     public static enum ClimberAngle {
         ANGLED(true),
         STRAIGHT(false);
@@ -24,29 +21,27 @@ public class PivotClimber extends TalonFXSubsystem {
     private final double maxLengthAngled;
     private final double maxLengthStraight;
     private final double voltageToHoldRobot;
+    private final ClimberArm leftArm;
+    private final ClimberArm rightArm;
     private ClimberAngle climberAngle;
 
     public PivotClimber(
-            TalonFX leftMaster,
-            TalonFX rightMaster,
+            ClimberArm leftArm,
+            ClimberArm rightArm,
             Solenoid pivotPistons,
-            double velocityConversion,
-            double positionConversion,
-            double nominalVoltage,
-            double kDt,
             double minLength,
             double maxLengthAngled,
             double maxLengthStraight,
             double voltageToHoldRobot) {
-        super(leftMaster, velocityConversion, positionConversion, nominalVoltage, kDt);
-        addFollower(rightMaster, FollowerType.PercentOutput, InvertType.InvertMotorOutput);
+
         this.pivotPistons = pivotPistons;
         this.minLength = minLength;
         this.maxLengthAngled = maxLengthAngled;
         this.maxLengthStraight = maxLengthStraight;
         this.voltageToHoldRobot = voltageToHoldRobot;
+        this.leftArm = leftArm;
+        this.rightArm = rightArm;
         setState(ClimberAngle.STRAIGHT);
-        setToBrake();
     }
 
     public void setAngled() {
@@ -61,10 +56,12 @@ public class PivotClimber extends TalonFXSubsystem {
         climberAngle = angle;
     }
 
-    public void setLengthMotionMagic(double length) {
+    public void moveMotionMagic(double length) {
         double maxLength =
                 ClimberAngle.STRAIGHT.equals(climberAngle) ? maxLengthStraight : maxLengthAngled;
-        super.setPositionMotionMagic(MathUtil.clamp(length, minLength, maxLength), 0);
+        length = MathUtil.clamp(length, minLength, maxLength);
+        leftArm.moveMotionMagic(length);
+        rightArm.moveMotionMagic(length);
     }
 
     /**
@@ -73,19 +70,35 @@ public class PivotClimber extends TalonFXSubsystem {
      * @param position
      */
     public void holdPosition(double position) {
-        super.setPosition(position, voltageToHoldRobot);
+        leftArm.holdAtPosition(position, voltageToHoldRobot);
+        rightArm.holdAtPosition(position, voltageToHoldRobot);
+    }
+
+    public void setOpenloop(double demand) {
+        leftArm.setOpenloop(demand);
+        rightArm.setOpenloop(demand);
+    }
+
+    public double getLeftPosition() {
+        return leftArm.getPosition();
+    }
+
+    public double getRightPosition() {
+        return rightArm.getPosition();
+    }
+
+    public void setToBrake() {
+        leftArm.setToBrake();
+        rightArm.setToBrake();
     }
 
     @Override
     public void writePeriodicOutputs() {
-        super.writePeriodicOutputs();
         pivotPistons.set(climberAngle.solenoidVal);
     }
 
     @Override
     public String getName() {
-
-        // TODO Auto-generated method stub
         return "Pivot Climber";
     }
 }

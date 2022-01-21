@@ -5,21 +5,28 @@ import team3647.lib.PeriodicSubsystem;
 
 public class BallStopper implements PeriodicSubsystem {
     private final Solenoid stopPistons;
+    private boolean extend;
 
     public BallStopper(Solenoid stopPistons) {
         this.stopPistons = stopPistons;
+        retract();
     }
 
     public void extend() {
-        set(true);
+        extend = true;
     }
 
     public void retract() {
-        set(false);
+        extend = false;
     }
 
     public void set(boolean value) {
-        stopPistons.set(value);
+        extend = value;
+    }
+
+    @Override
+    public void writePeriodicOutputs() {
+        stopPistons.set(extend);
     }
 
     @Override
