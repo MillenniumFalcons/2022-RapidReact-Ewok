@@ -4,6 +4,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.interpolation.TimeInterpolatableBuffer;
 import edu.wpi.first.math.util.Units;
 import java.util.Optional;
@@ -22,6 +23,7 @@ public class RobotTracker {
             TimeInterpolatableBuffer.createBuffer(kBufferLengthSeconds);
     private final TimeInterpolatableBuffer<Pose2d> robotToTurret =
             TimeInterpolatableBuffer.createBuffer(kBufferLengthSeconds);
+    private Twist2d measuredVelocity = new Twist2d();
 
     public RobotTracker(Turret turret, Drivetrain drivetrain) {}
 
@@ -32,6 +34,13 @@ public class RobotTracker {
     public void addTurretRotationObservation(double timestamp, Pose2d observation) {
         robotToTurret.addSample(timestamp, observation);
     }
+
+    public void setRobotVelocityObservation(Twist2d measuredVelocity) {
+        this.measuredVelocity = measuredVelocity;
+    }
+
+    public void addVisionMeasurment(
+            double timestamp, Iterable<Translation2d> camToTargetTranslations) {}
 
     public Optional<Pose2d> getFieldToRobot(double timestamp) {
         return Optional.ofNullable(fieldToRobot.getSample(timestamp));
@@ -56,7 +65,9 @@ public class RobotTracker {
                                 rtr.getRotation())));
     }
 
-    public void addVisionMeasurment(double timestamp, Translation2d camToTarget) {}
+    public Twist2d getMeasuredVelocity() {
+        return measuredVelocity;
+    }
 
     /**
      * Basically what the goal tracker does is every time the vision system sees a target it adds
@@ -66,7 +77,7 @@ public class RobotTracker {
      * current tracked is too old, or new target is too far away, then assume new target
      */
     /**
-     * The aiming parameters is sorting all the tracked goals and getting the "best" one using some
-     * custom comparator
+     * When we get aiming parameters we need to sort all the tracked goals and get the "best" one
+     * using some custom comparator
      */
 }
