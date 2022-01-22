@@ -17,7 +17,6 @@ public class PivotClimber implements PeriodicSubsystem {
 
     private final Solenoid pivotPistons;
 
-    private final double minLength;
     private final double maxLengthAngled;
     private final double maxLengthStraight;
     private final double voltageToHoldRobot;
@@ -29,13 +28,11 @@ public class PivotClimber implements PeriodicSubsystem {
             ClimberArm leftArm,
             ClimberArm rightArm,
             Solenoid pivotPistons,
-            double minLength,
             double maxLengthAngled,
             double maxLengthStraight,
             double voltageToHoldRobot) {
 
         this.pivotPistons = pivotPistons;
-        this.minLength = minLength;
         this.maxLengthAngled = maxLengthAngled;
         this.maxLengthStraight = maxLengthStraight;
         this.voltageToHoldRobot = voltageToHoldRobot;
@@ -59,7 +56,7 @@ public class PivotClimber implements PeriodicSubsystem {
     public void moveMotionMagic(double length) {
         double maxLength =
                 ClimberAngle.STRAIGHT.equals(climberAngle) ? maxLengthStraight : maxLengthAngled;
-        length = MathUtil.clamp(length, minLength, maxLength);
+        length = MathUtil.clamp(length, 0, maxLength);
         leftArm.moveMotionMagic(length);
         rightArm.moveMotionMagic(length);
     }

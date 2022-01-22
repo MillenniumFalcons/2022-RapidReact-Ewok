@@ -7,11 +7,14 @@ package team3647.frc2022.robot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import team3647.frc2022.commands.ArcadeDrive;
+import team3647.frc2022.commands.ClimberUpDown;
 import team3647.frc2022.commands.OpenLoop;
 import team3647.frc2022.constants.*;
+import team3647.frc2022.subsystems.ClimberArm;
 import team3647.frc2022.subsystems.ColumnBottom;
 import team3647.frc2022.subsystems.ColumnTop;
 import team3647.frc2022.subsystems.Drivetrain;
+import team3647.frc2022.subsystems.PivotClimber;
 import team3647.frc2022.subsystems.VerticalRollers;
 import team3647.lib.GroupPrinter;
 import team3647.lib.inputs.Joysticks;
@@ -23,10 +26,50 @@ import team3647.lib.inputs.Joysticks;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-    // The robot's subsystems and commands are defined here...
-    // edu.wpi.first.wpilibj.PowerDistribution replaces PDP.java from 3647 lib
-    // edu.wpi.first.wpilibj.Compressor replaces Compressor.java from 3647 lib
-    // edu.wpi.first.wpilibj.Solenoid replaces Solenoid.java from 3647 lib
+    /** The container for the robot. Contains subsystems, OI devices, and commands. */
+    public RobotContainer() {
+        m_drivetrain.init();
+        m_commandScheduler.registerSubsystem(
+                m_drivetrain, /*m_intake,*/
+                m_printer,
+                m_columnTop,
+                m_columnBottom,
+                m_verticalRollers,
+                m_leftArm,
+                m_rightArm,
+                m_pivotClimber);
+        // Configure the button bindings
+        m_drivetrain.setDefaultCommand(
+                new ArcadeDrive(
+                        m_drivetrain,
+                        mainController::getLeftStickY,
+                        mainController::getRightStickX));
+
+        m_columnBottom.setDefaultCommand(new OpenLoop(m_columnBottom, coController::getLeftStickY));
+        m_verticalRollers.setDefaultCommand(
+                new OpenLoop(m_columnBottom, coController::getLeftStickY));
+        m_columnTop.setDefaultCommand(new OpenLoop(m_columnBottom, coController::getLeftStickY));
+
+        m_pivotClimber.setDefaultCommand(
+                new ClimberUpDown(
+                        m_pivotClimber,
+                        mainController::getLeftTriggerValue,
+                        mainController::getRightTriggerValue));
+        configureButtonBindings();
+    }
+
+    private void configureButtonBindings() {}
+
+    /**
+     * Use this to pass the autonomous command to the main {@link Robot} class.
+     *
+     * @return the command to run in autonomous
+     */
+    public Command getAutonomousCommand() {
+        // An ExampleCommand will run in autonomous
+        return null;
+    }
+
     private final CommandScheduler m_commandScheduler = CommandScheduler.getInstance();
 
     private final Joysticks mainController = new Joysticks(0);
@@ -57,15 +100,14 @@ public class RobotContainer {
     //                 GlobalConstants.kDt,
     //                 IntakeConstants.kFeedForward,
     //                 IntakeConstants.kPistons);
-
-    private final ColumnTop m_columnTop =
-            new ColumnTop(
-                    ColumnTopConstants.kColumnMotor,
-                    ColumnTopConstants.kNativeVelToSurfaceMpS,
-                    ColumnTopConstants.kPosConverstion,
-                    ColumnTopConstants.kNominalVoltage,
+    private final VerticalRollers m_verticalRollers =
+            new VerticalRollers(
+                    VerticalRollersConstants.kColumnMotor,
+                    VerticalRollersConstants.kNativeVelToSurfaceMpS,
+                    VerticalRollersConstants.kPosConverstion,
+                    VerticalRollersConstants.kNominalVoltage,
                     GlobalConstants.kDt,
-                    ColumnTopConstants.kFeedForward);
+                    VerticalRollersConstants.kFeedForward);
 
     private final ColumnBottom m_columnBottom =
             new ColumnBottom(
@@ -76,47 +118,35 @@ public class RobotContainer {
                     GlobalConstants.kDt,
                     ColumnBottomConstants.kFeedForward);
 
-    private final VerticalRollers m_verticalRollers =
-            new VerticalRollers(
-                    VerticalRollersConstants.kColumnMotor,
-                    VerticalRollersConstants.kNativeVelToSurfaceMpS,
-                    VerticalRollersConstants.kPosConverstion,
-                    VerticalRollersConstants.kNominalVoltage,
+    private final ColumnTop m_columnTop =
+            new ColumnTop(
+                    ColumnTopConstants.kColumnMotor,
+                    ColumnTopConstants.kNativeVelToSurfaceMpS,
+                    ColumnTopConstants.kPosConverstion,
+                    ColumnTopConstants.kNominalVoltage,
                     GlobalConstants.kDt,
-                    VerticalRollersConstants.kFeedForward);
+                    ColumnTopConstants.kFeedForward);
 
-    /** The container for the robot. Contains subsystems, OI devices, and commands. */
-    public RobotContainer() {
-        m_drivetrain.init();
-        m_commandScheduler.registerSubsystem(
-                m_drivetrain, /*m_intake,*/
-                m_printer,
-                m_columnTop,
-                m_columnBottom,
-                m_verticalRollers);
-        // Configure the button bindings
-        m_drivetrain.setDefaultCommand(
-                new ArcadeDrive(
-                        m_drivetrain,
-                        mainController::getLeftStickY,
-                        mainController::getRightStickX));
-
-        m_columnBottom.setDefaultCommand(new OpenLoop(m_columnBottom, coController::getLeftStickY));
-        m_verticalRollers.setDefaultCommand(
-                new OpenLoop(m_columnBottom, coController::getLeftStickY));
-        m_columnTop.setDefaultCommand(new OpenLoop(m_columnBottom, coController::getLeftStickY));
-        configureButtonBindings();
-    }
-
-    private void configureButtonBindings() {}
-
-    /**
-     * Use this to pass the autonomous command to the main {@link Robot} class.
-     *
-     * @return the command to run in autonomous
-     */
-    public Command getAutonomousCommand() {
-        // An ExampleCommand will run in autonomous
-        return null;
-    }
+    private final ClimberArm m_leftArm =
+            new ClimberArm(
+                    ClimberConstants.kLeftMotor,
+                    ClimberConstants.kNativeVelToMpS,
+                    ClimberConstants.kPosConverstion,
+                    ClimberConstants.kNominalVoltage,
+                    GlobalConstants.kDt);
+    private final ClimberArm m_rightArm =
+            new ClimberArm(
+                    ClimberConstants.kRightMotor,
+                    ClimberConstants.kNativeVelToMpS,
+                    ClimberConstants.kPosConverstion,
+                    ClimberConstants.kNominalVoltage,
+                    GlobalConstants.kDt);
+    private final PivotClimber m_pivotClimber =
+            new PivotClimber(
+                    m_leftArm,
+                    m_rightArm,
+                    ClimberConstants.kPivotPistons,
+                    ClimberConstants.kMaxLengthAngled,
+                    ClimberConstants.kMaxLengthStraight,
+                    ClimberConstants.kVoltageToHoldRobot);
 }
