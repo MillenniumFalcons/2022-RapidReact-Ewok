@@ -16,6 +16,7 @@ public class MultiTargetTracker {
                     tracked.removeOldObservations();
                 } else {
                     tracked.attemptUpdate(timestamp, target);
+                    foundCorrespondingTarget = true;
                 }
             }
             if (!foundCorrespondingTarget) {
