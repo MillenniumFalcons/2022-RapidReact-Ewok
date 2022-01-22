@@ -25,6 +25,6 @@ public class ColumnTop extends TalonFXSubsystem {
 
     @Override
     public String getName() {
-        return "ColumnTop";
+        return "Column Top";
     }
 }

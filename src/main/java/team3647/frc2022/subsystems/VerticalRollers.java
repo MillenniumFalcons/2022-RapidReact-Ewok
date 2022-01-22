@@ -25,6 +25,6 @@ public class VerticalRollers extends TalonFXSubsystem {
 
     @Override
     public String getName() {
-        return "ColumnTop";
+        return "Vertical Rollers";
     }
 }
