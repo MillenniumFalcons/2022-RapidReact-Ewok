@@ -4,10 +4,10 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import team3647.lib.TalonFXSubsystem;
 
-public class Kickerwheels extends TalonFXSubsystem {
+public class ColumnBottom extends TalonFXSubsystem {
     private final SimpleMotorFeedforward ff;
 
-    public Kickerwheels(
+    public ColumnBottom(
             TalonFX master,
             double velocityConversion,
             double positionConversion,
@@ -25,6 +25,6 @@ public class Kickerwheels extends TalonFXSubsystem {
 
     @Override
     public String getName() {
-        return "Kickerwheels";
+        return "Column Bottom";
     }
 }
