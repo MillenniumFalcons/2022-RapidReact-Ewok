@@ -65,31 +65,11 @@ public class RobotContainer {
                         m_drivetrain,
                         mainController::getLeftStickY,
                         mainController::getRightStickX));
-        m_printer.addBoolean("rightMaster invert", m_drivetrain::getRightMasterInvert);
-        m_printer.addBoolean("rightSlave invert", m_drivetrain::getRightSlaveInvert);
-        // m_printer.addDouble("Robot X", m_drivetrain::getDrivetrainXMeters);
-        // m_printer.addDouble("Robot Y", m_drivetrain::getDrivetrainYMeters);
 
         configureButtonBindings();
     }
 
-    private void configureButtonBindings() {
-        /*mainController.leftTrigger.whenActive(
-                new RunCommand(
-                        () -> {
-                            m_intake.extend();
-                            m_intake.setOpenloop(0.4);
-                        },
-                        m_intake));
-        mainController.leftTrigger.whenReleased(
-                new RunCommand(
-                                () -> {
-                                    m_intake.retract();
-                                    m_intake.setOpenloop(0);
-                                },
-                                m_intake)
-                        .withTimeout(0.1));*/
-    }
+    private void configureButtonBindings() {}
 
     /**
      * Use this to pass the autonomous command to the main {@link Robot} class.
