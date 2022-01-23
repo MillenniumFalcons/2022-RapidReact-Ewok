@@ -7,7 +7,6 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.interpolation.TimeInterpolatableBuffer;
 import edu.wpi.first.math.util.Units;
-import java.util.Optional;
 import team3647.frc2022.subsystems.Drivetrain;
 import team3647.frc2022.subsystems.Turret;
 
@@ -39,28 +38,29 @@ public class RobotTracker {
         this.measuredVelocity = measuredVelocity;
     }
 
-    public Optional<Pose2d> getFieldToRobot(double timestamp) {
-        return Optional.ofNullable(fieldToRobot.getSample(timestamp));
+    public Pose2d getFieldToRobot(double timestamp) {
+        return fieldToRobot.getSample(timestamp);
     }
 
-    public Optional<Pose2d> getRobotToTurret(double timestamp) {
-        return Optional.ofNullable(robotToTurret.getSample(timestamp));
+    public Pose2d getRobotToTurret(double timestamp) {
+        return robotToTurret.getSample(timestamp);
     }
 
-    public Optional<Pose2d> getFieldToTurret(double timestamp) {
-        return getFieldToRobot(timestamp)
-                .map(
-                        fieldToRobotTS ->
-                                getRobotToTurret(timestamp)
-                                        .map(
-                                                robotToTurretTS ->
-                                                        robotToTurretTS.relativeTo(fieldToRobotTS)))
-                .orElse(Optional.empty());
+    public Pose2d getFieldToTurret(double timestamp) {
+        var ftr = getFieldToRobot(timestamp);
+        var rtt = getRobotToTurret(timestamp);
+        if (ftr == null || rtt == null) {
+            return null;
+        }
+        return rtt.relativeTo(ftr);
     }
 
-    public Optional<Transform2d> getTurretToTarget(double timestamp, Pose2d fieldToTarget) {
-        return getFieldToTurret(timestamp)
-                .map(fieldToTurretTS -> fieldToTarget.minus(fieldToTurretTS));
+    public Transform2d getTurretToTarget(double timestamp, Pose2d fieldToTarget) {
+        var ftTurret = getFieldToTurret(timestamp);
+        if (ftTurret == null || fieldToTarget == null) {
+            return null;
+        }
+        return fieldToTarget.minus(ftTurret);
         // X->Y = Z->y - Z->X
     }
 
