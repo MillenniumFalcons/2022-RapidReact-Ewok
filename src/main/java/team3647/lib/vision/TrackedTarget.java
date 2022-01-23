@@ -5,7 +5,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.Timer;
 import java.util.Comparator;
 import java.util.TreeMap;
-import team3647.lib.Geometry;
 
 /** 254 GoalTrack class */
 public class TrackedTarget {
@@ -28,10 +27,7 @@ public class TrackedTarget {
             return false;
         }
 
-        double distance =
-                Geometry.tranformPosebyPose(Geometry.poseInverse(smoothedPosition), newObserved)
-                        .getTranslation()
-                        .getNorm();
+        double distance = newObserved.relativeTo(smoothedPosition).getTranslation().getNorm();
         removeOldObservations();
         if (distance < kMaxTracedTargetSmoothingTime) {
             observedPositions.put(timestamp, newObserved);

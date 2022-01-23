@@ -39,9 +39,6 @@ public class RobotTracker {
         this.measuredVelocity = measuredVelocity;
     }
 
-    public void addVisionMeasurment(
-            double timestamp, Iterable<Translation2d> camToTargetTranslations) {}
-
     public Optional<Pose2d> getFieldToRobot(double timestamp) {
         return Optional.ofNullable(fieldToRobot.getSample(timestamp));
     }
@@ -51,18 +48,19 @@ public class RobotTracker {
     }
 
     public Optional<Pose2d> getFieldToTurret(double timestamp) {
-        var ftrO = getFieldToRobot(timestamp);
-        var rtrO = getRobotToTurret(timestamp);
-        if (ftrO.isEmpty() || rtrO.isEmpty()) {
-            return Optional.empty();
-        }
-        var ftr = ftrO.get();
-        var rtr = rtrO.get();
-        return Optional.of(
-                ftr.transformBy(
-                        new Transform2d(
-                                rtr.getTranslation().rotateBy(rtr.getRotation()),
-                                rtr.getRotation())));
+        return getFieldToRobot(timestamp)
+                .map(
+                        fieldToRobotTS ->
+                                getRobotToTurret(timestamp)
+                                        .map(
+                                                robotToTurretTS ->
+                                                        robotToTurretTS.relativeTo(fieldToRobotTS)))
+                .orElse(Optional.empty());
+    }
+
+    public Optional<Transform2d> getTurretToTarget(double timestamp, Pose2d fieldToTarget) {
+        return getFieldToTurret(timestamp)
+                .map(fieldToTurretTS -> fieldToTarget.minus(fieldToTurretTS));
     }
 
     public Twist2d getMeasuredVelocity() {

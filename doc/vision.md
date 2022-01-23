@@ -30,12 +30,17 @@
 ### Try to aim
 1. `RobotTracker` keeps track of robot pose on the field over time
 2. `RobotTracker` keeps track of turret rotation over time
-3. ?? asks `MultiTargetTracker` for all tracked targets, A a list of `TrackedTarget`
-4. ?? sorts the `List<TrackedTarget>` using the `TrackedTargetComparator`
-5. ?? gets the first element of the list and constructs a new `AimingParameters` object
-5. ?? converts fieldToTarget to turretToTarget ( inverse(robotToTurret) <- inverse(fieldToRobot) <- fieldToTarget)
-6. ?? gets the drivetrain speed `Twist2d` (dx, dy=0, dtheta)
-7. ?? uses turretToTarget rotation2d component for calculating turret position error
-7. ?? uses drivetrain speed to calculate turret FF
-8. ?? uses turretToTarget norm of translation2d to get distance
-9. ?? uses distance to estimate needed flywheel velcoity and hood angle.
+3. `AimTurret` command wants the latest position and FF to set to the turret from ??
+4. `AccelerateFlywheel` command wants distance to target from ??
+5. `AimHood` command wants distance to target from ??
+6. ?? asks `MultiTargetTracker` for all tracked targets, A a list of `TrackedTarget`
+7. ?? sorts the `List<TrackedTarget>` using the `TrackedTargetComparator`
+8. ?? gets the first element of the list and constructs a new `AimingParameters` object
+8. ?? asks `RobotTracker` to convert fieldToTarget to turretToTarget ( inverse(robotToTurret) <- inverse(fieldToRobot) <- fieldToTarget)
+10. ?? gets the drivetrain speed `Twist2d` (dx, dy=0, dtheta) from `RobotTracker`
+11. ?? gets the turretToTarget(timestamp) from `RobotTracker`
+12. ?? uses turretToTarget rotation2d component for calculating turret position error
+13. ?? uses drivetrain speed to calculate turret FF
+14. ?? returns values to the `AimTurret`
+15. ?? uses turretToTarget norm of translation2d to get distance
+16. ?? returns values to `AccelerateFlywheel` and `AimHood`
