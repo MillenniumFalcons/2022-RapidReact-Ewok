@@ -61,6 +61,7 @@ public class RobotTracker {
     public Optional<Transform2d> getTurretToTarget(double timestamp, Pose2d fieldToTarget) {
         return getFieldToTurret(timestamp)
                 .map(fieldToTurretTS -> fieldToTarget.minus(fieldToTurretTS));
+        // X->Y = Z->y - Z->X
     }
 
     public Twist2d getMeasuredVelocity() {
