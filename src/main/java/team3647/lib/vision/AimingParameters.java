@@ -9,6 +9,7 @@ public class AimingParameters {
     private final double rangeMeters;
     private final Pose2d fieldToRobot;
     private final Pose2d fieldToGoal;
+    private final Pose2d robotToGoal;
     private final Rotation2d robotToGoalRotation;
     private final double lastSeenTimestamp;
     private final double stability;
@@ -17,7 +18,7 @@ public class AimingParameters {
             Pose2d fieldToRobot, Pose2d fieldToGoal, double lastSeenTimestamp, double stability) {
         this.fieldToRobot = fieldToRobot;
         this.fieldToGoal = fieldToGoal;
-        final Pose2d robotToGoal =
+        this.robotToGoal =
                 Geometry.tranformPosebyPose(Geometry.poseInverse(fieldToRobot), fieldToGoal);
         this.rangeMeters = robotToGoal.getTranslation().getNorm();
         this.robotToGoalRotation =

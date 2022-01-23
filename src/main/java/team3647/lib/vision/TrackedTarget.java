@@ -10,10 +10,10 @@ import team3647.lib.Geometry;
 /** 254 GoalTrack class */
 public class TrackedTarget {
     private static final double kCamFrameRate = 90;
-    private static final double kMaxTrackedTargetAge = 2.5;
+    private static final double kMaxTrackedTargetAge = 2.5; // seconds
     private static final double kMaxTracedTargetSmoothingTime = 0.5;
-    private final int id;
 
+    private final int id;
     private final TreeMap<Double, Pose2d> observedPositions = new TreeMap<>();
     private Pose2d smoothedPosition;
 
@@ -27,15 +27,18 @@ public class TrackedTarget {
         if (!this.isAlive()) {
             return false;
         }
+
         double distance =
-                Geometry.tranformPosebyPose(Geometry.poseInverse(newObserved), newObserved)
+                Geometry.tranformPosebyPose(Geometry.poseInverse(smoothedPosition), newObserved)
                         .getTranslation()
                         .getNorm();
         removeOldObservations();
         if (distance < kMaxTracedTargetSmoothingTime) {
             observedPositions.put(timestamp, newObserved);
+            smoothedPosition = isAlive() ? smoothPosition() : null;
             return true;
         }
+        smoothedPosition = isAlive() ? smoothPosition() : null;
         return false;
     }
 
@@ -58,7 +61,6 @@ public class TrackedTarget {
     public void removeOldObservations() {
         double threshold = Timer.getFPGATimestamp() - kMaxTrackedTargetAge;
         observedPositions.entrySet().removeIf(entry -> entry.getKey() < threshold);
-        smoothedPosition = isAlive() ? smoothPosition() : null;
     }
 
     private Pose2d smoothPosition() {
