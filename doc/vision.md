@@ -44,3 +44,27 @@
 14. ?? returns values to the `AimTurret`
 15. ?? uses turretToTarget norm of translation2d to get distance
 16. ?? returns values to `AccelerateFlywheel` and `AimHood`
+
+## Coordinate pipeline
+### Capture
+1. Camera -> Target
+2. Turret -> Camera
+3. robot -> Turret
+4. field -> robot
+
+ `camToTarget.relativeTo(turretToCam).relativeTo(robotToTurret).relativeTo(fieldToRobot)`
+
+field -> ... -> Target
+
+### Aim
+1. field -> ... -> Target
+2. robot -> field
+3. turret -> robot
+
+```
+robotToField = new Tranform2d(robotToField, new Pose2d());
+turretToRobot = new Transform2d(turretToRobot, new Pose2d());
+```
+`fieldToTarget.tranformBy(robotToField.plus(turretToRobot))`
+
+turret -> ... -> Target

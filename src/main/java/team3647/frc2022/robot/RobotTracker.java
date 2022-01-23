@@ -17,7 +17,7 @@ public class RobotTracker {
 
     private final Rotation2d camPitch = Rotation2d.fromDegrees(45);
     private final Translation2d robotToTurretFixed = new Translation2d(Units.inchesToMeters(7), 0);
-    private final Translation2d camToTurret = new Translation2d(Units.inchesToMeters(7), 0);
+    private final Translation2d turretToCam = new Translation2d(Units.inchesToMeters(7), 0);
 
     private final TimeInterpolatableBuffer<Pose2d> fieldToRobot =
             TimeInterpolatableBuffer.createBuffer(kBufferLengthSeconds);
