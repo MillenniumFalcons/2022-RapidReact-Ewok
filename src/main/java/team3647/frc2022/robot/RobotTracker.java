@@ -6,25 +6,39 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.interpolation.TimeInterpolatableBuffer;
-import edu.wpi.first.math.util.Units;
 import team3647.frc2022.subsystems.Drivetrain;
 import team3647.frc2022.subsystems.Turret;
 
 /** Inspired by (basically copied lol) 254 RobotState class */
 public class RobotTracker {
-    private final double kBufferLengthSeconds = 2;
+    private final double kBufferLengthSeconds;
 
-    private final Rotation2d camPitch = Rotation2d.fromDegrees(45);
-    private final Translation2d robotToTurretFixed = new Translation2d(Units.inchesToMeters(7), 0);
-    private final Translation2d turretToCam = new Translation2d(Units.inchesToMeters(7), 0);
-
-    private final TimeInterpolatableBuffer<Pose2d> fieldToRobot =
-            TimeInterpolatableBuffer.createBuffer(kBufferLengthSeconds);
-    private final TimeInterpolatableBuffer<Pose2d> robotToTurret =
-            TimeInterpolatableBuffer.createBuffer(kBufferLengthSeconds);
+    private final TimeInterpolatableBuffer<Pose2d> fieldToRobot;
+    private final TimeInterpolatableBuffer<Pose2d> robotToTurret;
+    private final Translation2d kRobotToTurretFixed;
+    private final Drivetrain drivetrain;
+    private final Turret turret;
     private Twist2d measuredVelocity = new Twist2d();
 
-    public RobotTracker(Turret turret, Drivetrain drivetrain) {}
+    public RobotTracker(
+            double bufferLengthSeconds,
+            Drivetrain drivetrain,
+            Turret turret,
+            Translation2d robotToTurretFixed) {
+        this.kBufferLengthSeconds = bufferLengthSeconds;
+        this.drivetrain = drivetrain;
+        this.turret = turret;
+        this.kRobotToTurretFixed = robotToTurretFixed;
+        fieldToRobot = TimeInterpolatableBuffer.createBuffer(kBufferLengthSeconds);
+        robotToTurret = TimeInterpolatableBuffer.createBuffer(kBufferLengthSeconds);
+    }
+
+    public void update() {
+        addFieldToRobotObservation(drivetrain.getTimestamp(), drivetrain.getPose());
+        addTurretRotationObservation(
+                turret.getTimestamp(),
+                new Pose2d(kRobotToTurretFixed, Rotation2d.fromDegrees(turret.getPosition())));
+    }
 
     public void addFieldToRobotObservation(double timestamp, Pose2d observation) {
         fieldToRobot.addSample(timestamp, observation);

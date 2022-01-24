@@ -1,37 +1,33 @@
 package team3647.frc2022.subsystems.vision;
 
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.Timer;
-import java.util.Optional;
 import team3647.lib.PeriodicSubsystem;
 import team3647.lib.inputs.Limelight;
 import team3647.lib.inputs.Limelight.Data;
-import team3647.lib.wpi.TimestampedPose;
 
 public class VisionController implements PeriodicSubsystem {
     private final PeriodicIO periodicIO = new PeriodicIO();
     private final Limelight ll;
     private final double kTargetHeightMeters;
+    private final CamConstants kCamConstants;
 
     public static class CamConstants {
         public final double netTablename;
         public final double lensHeight;
         public final double capLatencySec;
         public final Rotation2d horizontalToLens;
-        public final Pose2d turretToLens;
 
         public CamConstants(
                 double netTablename,
                 double lensHeight,
                 double capLatencySec,
-                Rotation2d horizontalToLens,
-                Pose2d turretToLens) {
+                Rotation2d horizontalToLens) {
             this.netTablename = netTablename;
             this.lensHeight = lensHeight;
             this.capLatencySec = capLatencySec;
             this.horizontalToLens = horizontalToLens;
-            this.turretToLens = turretToLens;
         }
     }
 
@@ -47,9 +43,10 @@ public class VisionController implements PeriodicSubsystem {
         // outputs
     }
 
-    public VisionController(Limelight ll, double kTargetHeightMeters) {
+    public VisionController(Limelight ll, double kTargetHeightMeters, CamConstants constants) {
         this.ll = ll;
         this.kTargetHeightMeters = kTargetHeightMeters;
+        this.kCamConstants = constants;
     }
 
     @Override
@@ -62,8 +59,33 @@ public class VisionController implements PeriodicSubsystem {
         periodicIO.area = ll.get(Data.AREA);
     }
 
-    public Optional<TimestampedPose> getCamToTarget() {
-        return Optional.empty();
+    public Translation2d getCamToTarget() {
+        double denom =
+                Math.tan(Math.toRadians(getYOffset()) + kCamConstants.horizontalToLens.getRadians())
+                        * Math.cos(Math.toRadians(getXOffset()));
+        double num = kTargetHeightMeters - kCamConstants.lensHeight;
+        double range = num / denom;
+        return new Translation2d();
+    }
+
+    public double getLatency() {
+        return periodicIO.latency + kCamConstants.capLatencySec;
+    }
+
+    public double getTimestamp() {
+        return periodicIO.timestamp;
+    }
+
+    public double getXOffset() {
+        return periodicIO.xOffset;
+    }
+
+    public double getYOffset() {
+        return periodicIO.yOffset;
+    }
+
+    public boolean getValidTarget() {
+        return periodicIO.validTarget;
     }
 
     @Override

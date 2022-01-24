@@ -215,6 +215,10 @@ public final class Drivetrain implements PeriodicSubsystem {
         return periodicIO.pose;
     }
 
+    public double getTimestamp() {
+        return periodicIO.timestamp;
+    }
+
     public double getDrivetrainXMeters() {
         return periodicIO.pose.getX();
     }
