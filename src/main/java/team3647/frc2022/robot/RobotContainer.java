@@ -45,9 +45,11 @@ public class RobotContainer {
                         mainController::getLeftStickY,
                         mainController::getRightStickX));
 
-        m_columnBottom.setDefaultCommand(new OpenLoop(m_columnBottom, coController::getLeftStickY));
+        m_columnBottom.setDefaultCommand(
+                new OpenLoop(m_columnBottom, coController::getRightStickY));
         m_verticalRollers.setDefaultCommand(
-                new OpenLoop(m_columnBottom, coController::getLeftStickY));
+                new OpenLoop(m_columnBottom, coController::getRightStickY));
+
         m_columnTop.setDefaultCommand(new OpenLoop(m_columnBottom, coController::getLeftStickY));
 
         m_pivotClimber.setDefaultCommand(
