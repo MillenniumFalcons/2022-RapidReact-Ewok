@@ -24,4 +24,14 @@ Thus, count number of "true" from sensor to count how many balls entered the rob
 ## Issues: ##
 -Since only one sensor, can only count balls entered. <br />
 -Could add another sensor in the top of the column, but runs into the same issue where close balls together with no gap gets registered together. <br />
+-Could count balls exited through a sensor at the flywheel/hood, count the "false" of the sensor to keep track of how many balls exited. Find sum of false and true of flywheel and intake to find the number of balls in the robot 
+-Could also measure the flywheel or kicker belt slow down to count number of balls exited. However, this has the same issue of registering multiple balls as one (flywheel has potential since only one at a time)
 
+# (mega brain) Ball tracking/Vision
+![alt text](https://github.com/MillenniumFalcons/2022-RapidReact/blob/main/doc/reference-pictures/cameraCount.png)
+
+## Logic Explaination ##
+Use ball tracking to count balls. Somehow... Maybe when ball passes a threshold on the screen it counts as in the robot
+
+## Issues: ##
+-idk how it will work since we don't even have ball tracking working yet. :\
