@@ -6,6 +6,7 @@ package team3647.frc2022.robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import team3647.frc2022.commands.ArcadeDrive;
 import team3647.frc2022.commands.ClimberUpDown;
 import team3647.frc2022.commands.OpenLoop;
@@ -58,7 +59,10 @@ public class RobotContainer {
         configureButtonBindings();
     }
 
-    private void configureButtonBindings() {}
+    private void configureButtonBindings() {
+        mainController.buttonX.whenActive(new InstantCommand(m_pivotClimber::setAngled));
+        mainController.buttonB.whenActive(new InstantCommand(m_pivotClimber::setStraight));
+    }
 
     /**
      * Use this to pass the autonomous command to the main {@link Robot} class.
