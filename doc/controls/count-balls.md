@@ -10,27 +10,27 @@ draft of ways to count and keep track of how many balls are in the robot. Assumi
     *Top: FALSE
     *Recorded Number of Balls: 1
     *Actual Number of Balls: 1
-*1 Ball travels through column, reaches middle, untriggers top sensor:
+* 1 Ball travels through column, reaches middle, untriggers top sensor:
     *Bottom: FALSE
     *Top: FALSE
     *Recorded Number of Balls: 1
     *Actual Number of Balls: 1
-*1 Ball travels through column, reaches top, triggers top sensor:
+* 1 Ball travels through column, reaches top, triggers top sensor:
     *Bottom: FALSE
     *Top: TRUE
     *Recorded Number of Balls: 1
     *Actual Number of Balls: 1
-*1 Ball enters bottom sensor as there is ball in top sensor, triggers bottom sensor, triggers top sensor:
+* 1 Ball enters bottom sensor as there is ball in top sensor, triggers bottom sensor, triggers top sensor:
     *Bottom: TRUE
     *Top: TRUE
     *Recorded Number of Balls: 2
     *Actual Number of Balls: 2
-*(Problem) 1 Ball enters right next to another ball through the column, triggers the bottom sensor:
+* (Problem) 1 Ball enters right next to another ball through the column, triggers the bottom sensor:
     *Bottom: TRUE
     *TOP: FALSE
     *Recorded Number of Balls: 1
     *Actual Number of Balls: 2
-*(Problem) 1 Ball travels right next to another ball through column, reaches top, untriggers bottom, triggers top:
+* (Problem) 1 Ball travels right next to another ball through column, reaches top, untriggers bottom, triggers top:
     *Bottom: FALSE
     *TOP: True
     *Recorded Number of Balls: 1
