@@ -77,7 +77,7 @@ draft of ways to count and keep track of how many balls are in the robot. Assumi
 * Switch (more like buttons) triggers when ball runs over it in indexer/column. Use enum of indexer/column state to check if the bottom button is for adding balls or removing balls from the ball count. (If spitting balls out, the bottom triggers will mean balls are removed). Top switch will count how many balls got removed, bottom will count how many balls entered the robot. The balls that get sorted out b/c color will not matter since the switch will be inside the column, where the balls are sorted into the robot.
 
 # 2 Beam Breaks (one top one bottom, but only detecet top 1/4 of the ball instead of the center of the ball)
-![alt text](https://github.com/MillenniumFalcons/2022-RapidReact/blob/main/doc/reference-pictures/switchBreakFourth.png)
+![alt text](https://github.com/MillenniumFalcons/2022-RapidReact/blob/main/doc/reference-pictures/beamBreakFourth.png)
 
 ## Logic Explaination ##
 * 1 Ball enter the column, triggers bottom sensor:
