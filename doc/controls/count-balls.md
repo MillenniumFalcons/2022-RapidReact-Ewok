@@ -1,37 +1,117 @@
 # Ball Counting
-draft of ways to count and keep track of how many balls are in the robot
+draft of ways to count and keep track of how many balls are in the robot. Assuming Ball stopped with existing beam break sensor on robot, 
 
 # 2 Beam Breaks (one on top of column one at bottom)
 ![alt text](https://github.com/MillenniumFalcons/2022-RapidReact/blob/main/doc/reference-pictures/intakeColumnTopBottom.png)
 
 ## Logic Explaination ##
-Top sensor true means ball at top of column, bottom sensor means ball at bottom. <br />
-If both true, means max capacity (illegal) <br />
-If both false, means empty <br />
+* 1 Ball enters through column, triggers bottom sensor:
+    *Bottom: TRUE
+    *Top: FALSE
+    *Recorded Number of Balls: 1
+    *Actual Number of Balls: 1
+*1 Ball travels through column, reaches middle, untriggers top sensor:
+    *Bottom: FALSE
+    *Top: FALSE
+    *Recorded Number of Balls: 1
+    *Actual Number of Balls: 1
+*1 Ball travels through column, reaches top, triggers top sensor:
+    *Bottom: FALSE
+    *Top: TRUE
+    *Recorded Number of Balls: 1
+    *Actual Number of Balls: 1
+*1 Ball enters bottom sensor as there is ball in top sensor, triggers bottom sensor, triggers top sensor:
+    *Bottom: TRUE
+    *Top: TRUE
+    *Recorded Number of Balls: 2
+    *Actual Number of Balls: 2
+*(Problem) 1 Ball enters right next to another ball through the column, triggers the bottom sensor:
+    *Bottom: TRUE
+    *TOP: FALSE
+    *Recorded Number of Balls: 1
+    *Actual Number of Balls: 2
+*(Problem) 1 Ball travels right next to another ball through column, reaches top, untriggers bottom, triggers top:
+    *Bottom: FALSE
+    *TOP: True
+    *Recorded Number of Balls: 1
+    *Actual Number of Balls: 2
 
-## Issues: ##
--Since the sensors are in a column where the balls are in a line, if the balls are tightly next to each other, multiple balls could be registered as one ball. <br />
--Can really only keep track of weather we have no balls, one ball, or max balls (illegal)
+## Simple Explaination ##
+* Beam break trigger on bottom means a ball left/entered the robot.
 
+# 2 Switches (one on top of column one at bottom)
+![alt text](https://github.com/MillenniumFalcons/2022-RapidReact/blob/main/doc/reference-pictures/switchMount.png)
 
-# 1 Beam Break (one at intake)
-![alt text](https://github.com/MillenniumFalcons/2022-RapidReact/blob/main/doc/reference-pictures/intakeSensor.png)
+## Logic Explaination ## 
+* 1 Ball enters through column, triggers bottom switch:
+    *Bottom: TRUE
+    *TOP: FALSE
+    *Recorded Number of Balls: 1
+    *Actual Number of Balls 1:
+* 1 Ball travels through column, reaches middle, untriggers bottom switch:
+    *Bottom: FALSE
+    *TOP: FALSE
+    *Recorded Number of Balls: 1
+    *Actual Number of Balls 1: 
+* 1 Ball travels through column, reaches top, triggers top switch:
+    *Bottom: FALSE
+    *TOP: TRUE
+    *Recorded Number of Balls: 1
+    *Actual Number of Balls 1: 
+* 1 Ball enters through column, 1 Ball at the top of column, triggers bottom switch, triggers top switch:
+    *Bottom: TRUE
+    *Top: TRUE
+    *Recorded Number of Balls: 2
+    *Actual Number of Balls: 2
+* 1 Ball travels right next to another ball through column, reaches top, triggers bottom switch:
+    *Bottom: TRUE
+    *Top: FALSE
+    *Bottom: FALSE
+    *Top: FALSE
+    *Bottom: TRUE
+    *TOP: FALSE
+    *Recorded Number of Balls: 2
+    *Actual Number of Balls: 2
+
+## Simple Explaination ##
+* Switch (more like buttons) triggers when ball runs over it in indexer/column. Use enum of indexer/column state to check if the bottom button is for adding balls or removing balls from the ball count. (If spitting balls out, the bottom triggers will mean balls are removed). Top switch will count how many balls got removed, bottom will count how many balls entered the robot. The balls that get sorted out b/c color will not matter since the switch will be inside the column, where the balls are sorted into the robot.
+
+# 2 Beam Breaks (one top one bottom, but only detecet top 1/4 of the ball instead of the center of the ball)
+![alt text](https://github.com/MillenniumFalcons/2022-RapidReact/blob/main/doc/reference-pictures/switchBreakFourth.png)
 
 ## Logic Explaination ##
-Since intake can only have one ball under it at a time, sensor activation means that a ball entered
-Thus, count number of "true" from sensor to count how many balls entered the robot
+* 1 Ball enter the column, triggers bottom sensor:
+    *Bottom: TRUE
+    *Top: FALSE
+    *Recorded Number of Balls: 1
+    *Actual Number of Balls: 1
+*1 Ball enter column, travels up column, untriggers bottom sensor:
+    *Bottom: FALSE
+    *Top: FALSE
+    *Recorded Number of Balls: 1
+    *Actual Number of Balls: 1
+* 1 travel up column, reaches top sensor, triggers top sensor:
+    *Bottom: FALSE
+    *Top: TRUE
+    *Recorded Number of Balls: 1
+    *Actual Number of Balls: 1
+* 1 Ball travels right next to another ball through column, triggers bottom sensor:
+    *Bottom: TRUE
+    *Top: FALSE
+    *Bottom: FALSE
+    *Top: FALSE
+    *BOTTOM: TRUE
+    *Top: FALSE
+    *Recorded Number of Balls: 2
+    *Actual Number of Balls: 2
 
-## Issues: ##
--Since only one sensor, can only count balls entered. <br />
--Could add another sensor in the top of the column, but runs into the same issue where close balls together with no gap gets registered together. <br />
--Could count balls exited through a sensor at the flywheel/hood, count the "false" of the sensor to keep track of how many balls exited. Find sum of false and true of flywheel and intake to find the number of balls in the robot 
--Could also measure the flywheel or kicker belt slow down to count number of balls exited. However, this has the same issue of registering multiple balls as one (flywheel has potential since only one at a time)
+## Simple Explaination ##
+* Sensors placed on only top 1/4 of the ball so that consecutive balls still get counted seperately because of the gap at the top of two balls. Rest of logic works the same way as the switches logic
+* Below is a picture of the ball and sensor explaination for clarity:
+![alt text](https://github.com/MillenniumFalcons/2022-RapidReact/blob/main/doc/reference-pictures/ballFourthSensor.png)
 
 # (mega brain) Ball tracking/Vision
 ![alt text](https://github.com/MillenniumFalcons/2022-RapidReact/blob/main/doc/reference-pictures/cameraCount.png)
 
-## Logic Explaination ##
-Use ball tracking to count balls. Somehow... Maybe when ball passes a threshold on the screen it counts as in the robot
-
-## Issues: ##
--idk how it will work since we don't even have ball tracking working yet. :\
+## Simple Expaination ## 
+* something with tracking the balls with vision...not sure yet
