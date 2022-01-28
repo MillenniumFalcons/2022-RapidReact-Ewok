@@ -74,7 +74,7 @@ draft of ways to count and keep track of how many balls are in the robot. Assumi
     * Actual Number of Balls: 2
 
 ## Simple Explaination ##
-* Switch (more like buttons) triggers when ball runs over it in indexer/column. Use enum of indexer/column state to check if the bottom button is for adding balls or removing balls from the ball count. (If spitting balls out, the bottom triggers will mean balls are removed). Top switch will count how many balls got removed, bottom will count how many balls entered the robot. The balls that get sorted out b/c color will not matter since the switch will be inside the column, where the balls are sorted into the robot.
+* Switch (more like buttons) triggers when ball runs over it in indexer/column. Use enum of indexer/column state to check if the bottom button is for adding balls or removing balls from the ball count. (If spitting balls out, the bottom triggers will mean balls are removed). Top switch will count how many balls got removed, bottom will count how many balls entered the robot. The balls that get sorted out b/c color will not matter since the switch will be inside the column, where the balls are sorted into the robot. Adds/subtract balls by remember what the sensor state was in the previous loop, and if the state changed, add/subtract
 
 # 2 Beam Breaks (one top one bottom, but only detecet top 1/4 of the ball instead of the center of the ball)
 ![alt text](https://github.com/MillenniumFalcons/2022-RapidReact/blob/main/doc/reference-pictures/beamBreakFourth.png)
@@ -106,7 +106,7 @@ draft of ways to count and keep track of how many balls are in the robot. Assumi
     * Actual Number of Balls: 2
 
 ## Simple Explaination ##
-* Sensors placed on only top 1/4 of the ball so that consecutive balls still get counted seperately because of the gap at the top of two balls. Rest of logic works the same way as the switches logic
+* Sensors placed on only top 1/4 of the ball so that consecutive balls still get counted seperately because of the gap at the top of two balls. Rest of logic works the same way as the switches logic. Adds/subtract balls by remember what the sensor state was in the previous loop, and if the state changed, add/subtract
 * Below is a picture of the ball and sensor explaination for clarity:
 ![alt text](https://github.com/MillenniumFalcons/2022-RapidReact/blob/main/doc/reference-pictures/ballFourthSensor.png)
 
