@@ -19,6 +19,8 @@ public class ClimberUpDown extends CommandBase {
         this.upFunction = upFunction;
         this.downFunction = downFunction;
         addRequirements(pivotClimber);
+        addRequirements(pivotClimber.leftArm);
+        addRequirements(pivotClimber.rightArm);
     }
     // Called when the command is initially scheduled.
     @Override

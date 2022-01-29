@@ -9,14 +9,10 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import team3647.frc2022.commands.ArcadeDrive;
 import team3647.frc2022.commands.ClimberUpDown;
-import team3647.frc2022.commands.OpenLoop;
 import team3647.frc2022.constants.*;
 import team3647.frc2022.subsystems.ClimberArm;
-import team3647.frc2022.subsystems.ColumnBottom;
-import team3647.frc2022.subsystems.ColumnTop;
 import team3647.frc2022.subsystems.Drivetrain;
 import team3647.frc2022.subsystems.PivotClimber;
-import team3647.frc2022.subsystems.VerticalRollers;
 import team3647.lib.GroupPrinter;
 import team3647.lib.inputs.Joysticks;
 
@@ -33,9 +29,9 @@ public class RobotContainer {
         m_commandScheduler.registerSubsystem(
                 m_drivetrain, /*m_intake,*/
                 m_printer,
-                m_columnTop,
-                m_columnBottom,
-                m_verticalRollers,
+                // m_columnTop,
+                // m_columnBottom,
+                // m_verticalRollers,
                 m_leftArm,
                 m_rightArm,
                 m_pivotClimber);
@@ -46,10 +42,11 @@ public class RobotContainer {
                         mainController::getLeftStickY,
                         mainController::getRightStickX));
 
-        m_columnBottom.setDefaultCommand(new OpenLoop(m_columnBottom, coController::getLeftStickY));
-        // m_verticalRollers.setDefaultCommand(
-        //         new OpenLoop(m_columnBottom, coController::getLeftStickY));
-        m_columnTop.setDefaultCommand(new OpenLoop(m_columnBottom, coController::getLeftStickY));
+        // m_columnBottom.setDefaultCommand(new OpenLoop(m_columnBottom,
+        // coController::getLeftStickY));
+        // // m_verticalRollers.setDefaultCommand(
+        // //         new OpenLoop(m_columnBottom, coController::getLeftStickY));
+        // m_columnTop.setDefaultCommand(new OpenLoop(m_columnBottom, coController::getLeftStickY));
 
         m_pivotClimber.setDefaultCommand(
                 new ClimberUpDown(
@@ -104,32 +101,32 @@ public class RobotContainer {
     //                 GlobalConstants.kDt,
     //                 IntakeConstants.kFeedForward,
     //                 IntakeConstants.kPistons);
-    private final VerticalRollers m_verticalRollers =
-            new VerticalRollers(
-                    VerticalRollersConstants.kColumnMotor,
-                    VerticalRollersConstants.kNativeVelToSurfaceMpS,
-                    VerticalRollersConstants.kPosConverstion,
-                    VerticalRollersConstants.kNominalVoltage,
-                    GlobalConstants.kDt,
-                    VerticalRollersConstants.kFeedForward);
+    //     private final VerticalRollers m_verticalRollers =
+    //             new VerticalRollers(
+    //                     VerticalRollersConstants.kColumnMotor,
+    //                     VerticalRollersConstants.kNativeVelToSurfaceMpS,
+    //                     VerticalRollersConstants.kPosConverstion,
+    //                     VerticalRollersConstants.kNominalVoltage,
+    //                     GlobalConstants.kDt,
+    //                     VerticalRollersConstants.kFeedForward);
 
-    private final ColumnBottom m_columnBottom =
-            new ColumnBottom(
-                    ColumnBottomConstants.kColumnMotor,
-                    ColumnBottomConstants.kNativeVelToSurfaceMpS,
-                    ColumnBottomConstants.kPosConverstion,
-                    ColumnBottomConstants.kNominalVoltage,
-                    GlobalConstants.kDt,
-                    ColumnBottomConstants.kFeedForward);
+    //     private final ColumnBottom m_columnBottom =
+    //             new ColumnBottom(
+    //                     ColumnBottomConstants.kColumnMotor,
+    //                     ColumnBottomConstants.kNativeVelToSurfaceMpS,
+    //                     ColumnBottomConstants.kPosConverstion,
+    //                     ColumnBottomConstants.kNominalVoltage,
+    //                     GlobalConstants.kDt,
+    //                     ColumnBottomConstants.kFeedForward);
 
-    private final ColumnTop m_columnTop =
-            new ColumnTop(
-                    ColumnTopConstants.kColumnMotor,
-                    ColumnTopConstants.kNativeVelToSurfaceMpS,
-                    ColumnTopConstants.kPosConverstion,
-                    ColumnTopConstants.kNominalVoltage,
-                    GlobalConstants.kDt,
-                    ColumnTopConstants.kFeedForward);
+    //     private final ColumnTop m_columnTop =
+    //             new ColumnTop(
+    //                     ColumnTopConstants.kColumnMotor,
+    //                     ColumnTopConstants.kNativeVelToSurfaceMpS,
+    //                     ColumnTopConstants.kPosConverstion,
+    //                     ColumnTopConstants.kNominalVoltage,
+    //                     GlobalConstants.kDt,
+    //                     ColumnTopConstants.kFeedForward);
 
     private final ClimberArm m_leftArm =
             new ClimberArm(
