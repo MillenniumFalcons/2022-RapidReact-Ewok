@@ -10,15 +10,15 @@ import team3647.frc2022.subsystems.Hood;
 
 public class HoodZeroingHighVel extends CommandBase {
     private final Hood hood;
+    private final double output;
+    private final double highVelocityThreshold;
     private MedianFilter filter;
     private double medianVelocity;
     private boolean reachHighVelocity = false;
-    private final double highVelocityThreshold;
-    private final double output;
 
     /** Creates a new HoodZeroing. */
     public HoodZeroingHighVel(
-            Hood hood, double output, MedianFilter filter, double highVelocityThreshold) {
+            Hood hood, double output, double highVelocityThreshold, MedianFilter filter) {
         this.hood = hood;
         this.output = output;
         this.filter = filter;
