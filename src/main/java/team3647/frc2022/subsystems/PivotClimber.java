@@ -20,8 +20,8 @@ public class PivotClimber implements PeriodicSubsystem {
     private final double maxLengthAngled;
     private final double maxLengthStraight;
     private final double voltageToHoldRobot;
-    private final ClimberArm leftArm;
-    private final ClimberArm rightArm;
+    public final ClimberArm leftArm;
+    public final ClimberArm rightArm;
     private ClimberAngle climberAngle;
 
     public PivotClimber(
