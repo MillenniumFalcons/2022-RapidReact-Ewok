@@ -16,7 +16,7 @@ Then select a `.java` file and type `Ctrl+Shift+P`:
 
 ### FOR WINDOWS ONLY (if you are getting the line endings error for spotless):
 * go to the bottom right corner of your vscode, you should see CRLF as your line ending type
-* click on it and change the "End of Line Sequence* to LF
+* click on it and change the "End of Line Sequence" to LF
 * this works on a per file basis, meaning you must perform these steps for every file you create on windows
 
 ## Characterization
