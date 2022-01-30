@@ -13,20 +13,14 @@ import team3647.frc2022.subsystems.Hood;
 public class HoodZeroingHardstop extends CommandBase {
     private final Hood hood;
     private final double output;
-    private final double physicalMinAngle;
     private final double lowVelocityThreshold;
     private MedianFilter filter;
     private double medianVelocity;
     private boolean reachHardStop = false;
     /** Creates a new HoodZeroingHardstop. */
     public HoodZeroingHardstop(
-            Hood hood,
-            double output,
-            double lowVelocityThreshold,
-            double physicalMinAngle,
-            MedianFilter filter) {
+            Hood hood, double output, double lowVelocityThreshold, MedianFilter filter) {
         this.hood = hood;
-        this.physicalMinAngle = physicalMinAngle;
         this.output = output;
         this.filter = filter;
         this.lowVelocityThreshold = lowVelocityThreshold;
@@ -43,14 +37,16 @@ public class HoodZeroingHardstop extends CommandBase {
     public void execute() {
         this.hood.setOpenloop(output);
         medianVelocity = filter.calculate(hood.getVelocity());
-        reachHardStop = medianVelocity <= Math.abs(lowVelocityThreshold);
+        reachHardStop = Math.abs(medianVelocity) < lowVelocityThreshold;
     }
 
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
+        if (!interrupted) {
+            this.hood.resetEncoder();
+        }
         this.hood.setOpenloop(0);
-        this.hood.setEncoder(physicalMinAngle); 
     }
 
     // Returns true when the command should end.

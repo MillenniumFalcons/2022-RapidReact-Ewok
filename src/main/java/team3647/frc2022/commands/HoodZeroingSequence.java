@@ -24,7 +24,6 @@ public class HoodZeroingSequence extends SequentialCommandGroup {
         // addCommands(new FooCommand(), new BarCommand());
         addCommands(
                 new HoodZeroingHighVel(hood, output, highVelocityThreshold, filter),
-                new HoodZeroingHardstop(
-                        hood, output, lowVelocityThreshold, physicalMinAngle, filter));
+                new HoodZeroingHardstop(hood, output, lowVelocityThreshold, filter));
     }
 }
