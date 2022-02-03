@@ -2,11 +2,9 @@ package team3647.frc2022.subsystems;
 
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.wpilibj.DigitalInput;
 import team3647.lib.TalonFXSubsystem;
 
 public class Hood extends TalonFXSubsystem {
-    private final DigitalInput limitSwitch;
     private final double minPos;
     private final double maxPos;
 
@@ -16,11 +14,9 @@ public class Hood extends TalonFXSubsystem {
             double positionConversion,
             double nominalVoltage,
             double kDt,
-            DigitalInput revLimitSwitch,
             double minPos,
             double maxPos) {
         super(master, velocityConversion, positionConversion, nominalVoltage, kDt);
-        this.limitSwitch = revLimitSwitch;
         this.minPos = minPos;
         this.maxPos = maxPos;
     }
@@ -31,10 +27,6 @@ public class Hood extends TalonFXSubsystem {
 
     public void setAngle(double angle) {
         super.setPosition(MathUtil.clamp(angle, minPos, maxPos), 0);
-    }
-
-    public boolean getLimitSwitchValue() {
-        return limitSwitch.get();
     }
 
     @Override
