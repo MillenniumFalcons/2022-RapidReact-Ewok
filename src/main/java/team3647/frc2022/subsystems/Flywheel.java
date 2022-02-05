@@ -19,12 +19,13 @@ public class Flywheel extends TalonFXSubsystem {
             SimpleMotorFeedforward ff) {
         super(master, velocityConversion, positionConversion, nominalVoltage, kDt);
         this.addFollower(follower, FollowerType.PercentOutput, InvertType.OpposeMaster);
+        setToCoast();
         this.ff = ff;
     }
 
     /** @param vel velocity in m/s, positive is outside (to shoot) */
     public void setSurfaceSpeed(double vel) {
-        setVelocity(vel, ff.calculate(getVelocity(), vel, kDt));
+        setVelocity(vel, 0);
     }
 
     @Override

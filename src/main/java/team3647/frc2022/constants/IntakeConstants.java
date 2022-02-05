@@ -34,7 +34,7 @@ public final class IntakeConstants {
 
         kMasterConfig.voltageCompSaturation = 12;
 
-        kIntakeMotor.configAllSettings(kMasterConfig);
+        kIntakeMotor.configAllSettings(kMasterConfig, GlobalConstants.kTimeoutMS);
     }
 
     private IntakeConstants() {}

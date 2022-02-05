@@ -5,6 +5,7 @@ import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.FollowerType;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.StatusFrame;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import edu.wpi.first.wpilibj.Timer;
 import java.util.LinkedList;
@@ -18,6 +19,7 @@ public abstract class TalonFXSubsystem implements PeriodicSubsystem {
     private final double velocityConversion;
     private final double nominalVoltage;
     protected final double kDt;
+    private final int kLongTImeoutMS = 255;
 
     private PeriodicIO periodicIO = new PeriodicIO();
 
@@ -40,6 +42,7 @@ public abstract class TalonFXSubsystem implements PeriodicSubsystem {
         public double velocity = 0;
         public double current = 0;
         public double timestamp = 0;
+        public double masterCurrent = 0;
 
         // Outputs
         public ControlMode controlMode = ControlMode.Disabled;
@@ -49,10 +52,11 @@ public abstract class TalonFXSubsystem implements PeriodicSubsystem {
 
     @Override
     public void readPeriodicInputs() {
-        periodicIO.position = master.getSelectedSensorVelocity() * velocityConversion;
-        periodicIO.velocity = master.getSelectedSensorVelocity() * positionConversion;
+        periodicIO.position = master.getSelectedSensorPosition() * positionConversion;
+        periodicIO.velocity = master.getSelectedSensorVelocity() * velocityConversion;
         periodicIO.current = master.getStatorCurrent();
         periodicIO.timestamp = Timer.getFPGATimestamp();
+        periodicIO.masterCurrent = master.getSupplyCurrent();
     }
 
     @Override
@@ -160,9 +164,39 @@ public abstract class TalonFXSubsystem implements PeriodicSubsystem {
         return periodicIO.timestamp;
     }
 
+    public double getMasterCurrent() {
+        return periodicIO.masterCurrent;
+    }
+
     protected void addFollower(TalonFX follower, FollowerType followerType, InvertType invertType) {
         follower.follow(master, followerType);
         follower.setInverted(invertType);
+        setStatusFrames(follower, kLongTImeoutMS);
+
         followers.add(follower);
+    }
+
+    protected void setStatusFrames(TalonFX device, int timeout) {
+        device.setStatusFramePeriod(StatusFrame.Status_1_General, timeout);
+        device.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, timeout);
+        device.setStatusFramePeriod(StatusFrame.Status_4_AinTempVbat, timeout);
+        device.setStatusFramePeriod(StatusFrame.Status_6_Misc, timeout);
+        device.setStatusFramePeriod(StatusFrame.Status_7_CommStatus, timeout);
+        device.setStatusFramePeriod(StatusFrame.Status_9_MotProfBuffer, timeout);
+        device.setStatusFramePeriod(StatusFrame.Status_13_Base_PIDF0, timeout);
+        device.setStatusFramePeriod(StatusFrame.Status_14_Turn_PIDF1, timeout);
+        device.setStatusFramePeriod(StatusFrame.Status_15_FirmwareApiStatus, timeout);
+        device.setStatusFramePeriod(StatusFrame.Status_17_Targets1, timeout);
+    }
+
+    protected void setStatusFramesThatDontMatter(TalonFX device, int timeout) {
+        device.setStatusFramePeriod(StatusFrame.Status_4_AinTempVbat, timeout);
+        device.setStatusFramePeriod(StatusFrame.Status_6_Misc, timeout);
+        device.setStatusFramePeriod(StatusFrame.Status_7_CommStatus, timeout);
+        device.setStatusFramePeriod(StatusFrame.Status_9_MotProfBuffer, timeout);
+        device.setStatusFramePeriod(StatusFrame.Status_13_Base_PIDF0, timeout);
+        device.setStatusFramePeriod(StatusFrame.Status_14_Turn_PIDF1, timeout);
+        device.setStatusFramePeriod(StatusFrame.Status_15_FirmwareApiStatus, timeout);
+        device.setStatusFramePeriod(StatusFrame.Status_17_Targets1, timeout);
     }
 }

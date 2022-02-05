@@ -39,7 +39,7 @@ public final class ClimberConstants {
 
         kLeftConfig.voltageCompSaturation = kNominalVoltage;
 
-        kLeftMotor.configAllSettings(kLeftConfig);
+        kLeftMotor.configAllSettings(kLeftConfig, GlobalConstants.kTimeoutMS);
         kLeftMotor.setInverted(kLeftInvert);
     }
 
@@ -51,7 +51,7 @@ public final class ClimberConstants {
 
         kRightConfig.voltageCompSaturation = kNominalVoltage;
 
-        kRightMotor.configAllSettings(kLeftConfig);
+        kRightMotor.configAllSettings(kLeftConfig, GlobalConstants.kTimeoutMS);
         kLeftMotor.setInverted(kRightInvert);
     }
 }

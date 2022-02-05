@@ -4,6 +4,7 @@ import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DigitalInput;
 
 public final class ColumnTopConstants {
@@ -16,9 +17,9 @@ public final class ColumnTopConstants {
             new SimpleMotorFeedforward(kS, kV, kA);
 
     public static final double kNominalVoltage = 12;
-    public static final double kGearboxReduction = 1;
+    public static final double kGearboxReduction = 2;
 
-    public static final double kWheelDiameterMeters = 0.0508;
+    public static final double kWheelDiameterMeters = Units.inchesToMeters(2);
     public static final double kWheelRotationMeters =
             kWheelDiameterMeters * Math.PI * kGearboxReduction;
 
@@ -32,13 +33,13 @@ public final class ColumnTopConstants {
             new DigitalInput(GlobalConstants.ColumnTopIds.kTopLimitSwitchPin);
 
     static {
-        kMasterConfig.slot0.kP = 0;
+        kMasterConfig.slot0.kP = 0.28;
         kMasterConfig.slot0.kI = 0;
         kMasterConfig.slot0.kD = 0;
         kMasterConfig.slot0.kF = 0;
 
         kMasterConfig.voltageCompSaturation = kNominalVoltage;
 
-        kColumnMotor.configAllSettings(kMasterConfig);
+        kColumnMotor.configAllSettings(kMasterConfig, GlobalConstants.kTimeoutMS);
     }
 }

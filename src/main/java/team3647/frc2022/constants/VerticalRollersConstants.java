@@ -38,6 +38,6 @@ public final class VerticalRollersConstants {
 
         kMasterConfig.voltageCompSaturation = kNominalVoltage;
 
-        kColumnMotor.configAllSettings(kMasterConfig);
+        kColumnMotor.configAllSettings(kMasterConfig, GlobalConstants.kTimeoutMS);
     }
 }

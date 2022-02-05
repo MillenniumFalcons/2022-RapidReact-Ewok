@@ -79,8 +79,8 @@ public final class DrivetrainConstants {
         kRightMasterConfig.supplyCurrLimit.triggerThresholdCurrent = kMaxCurrent;
         kRightMasterConfig.voltageCompSaturation = 12.0;
 
-        kLeftMaster.configAllSettings(kLeftMasterConfig);
-        kRightMaster.configAllSettings(kRightMasterConfig);
+        kLeftMaster.configAllSettings(kLeftMasterConfig, GlobalConstants.kTimeoutMS);
+        kRightMaster.configAllSettings(kRightMasterConfig, GlobalConstants.kTimeoutMS);
         kLeftSlave.follow(kLeftMaster);
         kRightSlave.follow(kRightMaster);
         kRightMaster.setInverted(TalonFXInvertType.Clockwise);

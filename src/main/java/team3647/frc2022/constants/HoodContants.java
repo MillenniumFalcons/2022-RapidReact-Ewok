@@ -20,6 +20,6 @@ public class HoodContants {
 
         kMasterConfig.voltageCompSaturation = 12;
 
-        kHoodMotor.configAllSettings(kMasterConfig);
+        kHoodMotor.configAllSettings(kMasterConfig, GlobalConstants.kTimeoutMS);
     }
 }
