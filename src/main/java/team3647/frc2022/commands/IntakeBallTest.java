@@ -49,7 +49,7 @@ public class IntakeBallTest extends CommandBase {
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-      System.out.println("Stopping flywheel");
+        System.out.println("Stopping flywheel");
         intake.retract();
         verticalRollers.end();
         columnBottom.end();
