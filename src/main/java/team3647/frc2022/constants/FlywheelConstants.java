@@ -5,6 +5,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.util.Units;
+import team3647.lib.drivers.LazyTalonFX;
 
 public final class FlywheelConstants {
 
@@ -18,8 +19,9 @@ public final class FlywheelConstants {
             new SimpleMotorFeedforward(kS, kV, kA);
     public static final double kNominalVoltage = 12;
 
-    public static final TalonFX kMaster = new TalonFX(GlobalConstants.FlywheelIds.kMasterId);
-    public static final TalonFX kFollower = new TalonFX(GlobalConstants.FlywheelIds.kFollowerId);
+    public static final TalonFX kMaster = new LazyTalonFX(GlobalConstants.FlywheelIds.kMasterId);
+    public static final TalonFX kFollower =
+            new LazyTalonFX(GlobalConstants.FlywheelIds.kFollowerId);
     public static final double kGearboxReduction = 2;
     public static final double kWheelDiameterMeters = Units.inchesToMeters(4);
     public static final double kWheelRotationMeters = kWheelDiameterMeters * Math.PI;

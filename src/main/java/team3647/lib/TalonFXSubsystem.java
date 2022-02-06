@@ -19,7 +19,7 @@ public abstract class TalonFXSubsystem implements PeriodicSubsystem {
     private final double velocityConversion;
     private final double nominalVoltage;
     protected final double kDt;
-    private final int kLongTImeoutMS = 255;
+    public static final int kLongStatusTimeMS = 255;
 
     private PeriodicIO periodicIO = new PeriodicIO();
 
@@ -171,7 +171,7 @@ public abstract class TalonFXSubsystem implements PeriodicSubsystem {
     protected void addFollower(TalonFX follower, FollowerType followerType, InvertType invertType) {
         follower.follow(master, followerType);
         follower.setInverted(invertType);
-        setStatusFrames(follower, kLongTImeoutMS);
+        setStatusFrames(follower, kLongStatusTimeMS);
 
         followers.add(follower);
     }

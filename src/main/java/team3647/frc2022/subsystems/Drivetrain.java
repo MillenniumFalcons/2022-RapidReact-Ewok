@@ -3,6 +3,7 @@ package team3647.frc2022.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.StatusFrame;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.sensors.PigeonIMU;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -61,6 +62,10 @@ public final class Drivetrain implements PeriodicSubsystem {
         this.odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(periodicIO.heading));
         this.nominalVoltage = nominalVoltage;
         this.kDt = kDt;
+        setStatusFramesThatDontMatter(rightMaster, 255);
+        setStatusFramesThatDontMatter(leftMaster, 255);
+        setStatusFrames(leftSlave, 255);
+        setStatusFrames(rightSlave, 255);
     }
 
     public static class PeriodicIO {
@@ -243,5 +248,29 @@ public final class Drivetrain implements PeriodicSubsystem {
     @Override
     public String getName() {
         return "Drivetrain";
+    }
+
+    private void setStatusFrames(TalonFX device, int timeout) {
+        device.setStatusFramePeriod(StatusFrame.Status_1_General, timeout);
+        device.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, timeout);
+        device.setStatusFramePeriod(StatusFrame.Status_4_AinTempVbat, timeout);
+        device.setStatusFramePeriod(StatusFrame.Status_6_Misc, timeout);
+        device.setStatusFramePeriod(StatusFrame.Status_7_CommStatus, timeout);
+        device.setStatusFramePeriod(StatusFrame.Status_9_MotProfBuffer, timeout);
+        device.setStatusFramePeriod(StatusFrame.Status_13_Base_PIDF0, timeout);
+        device.setStatusFramePeriod(StatusFrame.Status_14_Turn_PIDF1, timeout);
+        device.setStatusFramePeriod(StatusFrame.Status_15_FirmwareApiStatus, timeout);
+        device.setStatusFramePeriod(StatusFrame.Status_17_Targets1, timeout);
+    }
+
+    private void setStatusFramesThatDontMatter(TalonFX device, int timeout) {
+        device.setStatusFramePeriod(StatusFrame.Status_4_AinTempVbat, timeout);
+        device.setStatusFramePeriod(StatusFrame.Status_6_Misc, timeout);
+        device.setStatusFramePeriod(StatusFrame.Status_7_CommStatus, timeout);
+        device.setStatusFramePeriod(StatusFrame.Status_9_MotProfBuffer, timeout);
+        device.setStatusFramePeriod(StatusFrame.Status_13_Base_PIDF0, timeout);
+        device.setStatusFramePeriod(StatusFrame.Status_14_Turn_PIDF1, timeout);
+        device.setStatusFramePeriod(StatusFrame.Status_15_FirmwareApiStatus, timeout);
+        device.setStatusFramePeriod(StatusFrame.Status_17_Targets1, timeout);
     }
 }

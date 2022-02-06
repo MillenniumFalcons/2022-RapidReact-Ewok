@@ -4,10 +4,13 @@ import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import edu.wpi.first.wpilibj.Solenoid;
+import team3647.lib.drivers.LazyTalonFX;
 
 public final class ClimberConstants {
-    public static final TalonFX kLeftMotor = new TalonFX(GlobalConstants.ClimberIds.kLeftMotorId);
-    public static final TalonFX kRightMotor = new TalonFX(GlobalConstants.ClimberIds.kRightMotorId);
+    public static final TalonFX kLeftMotor =
+            new LazyTalonFX(GlobalConstants.ClimberIds.kLeftMotorId);
+    public static final TalonFX kRightMotor =
+            new LazyTalonFX(GlobalConstants.ClimberIds.kRightMotorId);
     public static final TalonFXInvertType kLeftInvert = TalonFXInvertType.CounterClockwise;
     public static final TalonFXInvertType kRightInvert = TalonFXInvertType.Clockwise;
 

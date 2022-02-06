@@ -19,6 +19,7 @@ public class Hood extends TalonFXSubsystem {
         super(master, velocityConversion, positionConversion, nominalVoltage, kDt);
         this.minPos = minPos;
         this.maxPos = maxPos;
+        setStatusFramesThatDontMatter(master, kLongStatusTimeMS);
     }
 
     public void setAngleMotionMagic(double angle) {

@@ -12,6 +12,7 @@ public class ClimberArm extends TalonFXSubsystem {
             double nominalVoltage,
             double kDt) {
         super(master, velocityConversion, positionConversion, nominalVoltage, kDt);
+        setStatusFramesThatDontMatter(master, kLongStatusTimeMS);
     }
 
     public void moveMotionMagic(double length) {

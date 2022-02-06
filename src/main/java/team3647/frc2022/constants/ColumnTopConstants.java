@@ -6,6 +6,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DigitalInput;
+import team3647.lib.drivers.LazyTalonFX;
 
 public final class ColumnTopConstants {
     public static final TalonFXInvertType kMasterInverted = TalonFXInvertType.Clockwise;
@@ -28,7 +29,8 @@ public final class ColumnTopConstants {
     public static final double kNativeVelToSurfaceMpS =
             10 * kWheelDiameterMeters / GlobalConstants.kFalconTicksPerRotation;
 
-    public static final TalonFX kColumnMotor = new TalonFX(GlobalConstants.ColumnTopIds.kMotorId);
+    public static final TalonFX kColumnMotor =
+            new LazyTalonFX(GlobalConstants.ColumnTopIds.kMotorId);
     public static final DigitalInput kTopBanner =
             new DigitalInput(GlobalConstants.ColumnTopIds.kTopLimitSwitchPin);
 

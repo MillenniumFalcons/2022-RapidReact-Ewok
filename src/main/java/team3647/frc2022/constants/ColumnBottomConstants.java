@@ -5,6 +5,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.DigitalInput;
+import team3647.lib.drivers.LazyTalonFX;
 
 public final class ColumnBottomConstants {
     public static final TalonFXInvertType kMasterInverted = TalonFXInvertType.Clockwise;
@@ -28,7 +29,7 @@ public final class ColumnBottomConstants {
             10 * kWheelDiameterMeters / GlobalConstants.kFalconTicksPerRotation;
 
     public static final TalonFX kColumnMotor =
-            new TalonFX(GlobalConstants.ColumnBottomIds.kMotorId);
+            new LazyTalonFX(GlobalConstants.ColumnBottomIds.kMotorId);
     public static final DigitalInput kBottomBanner =
             new DigitalInput(GlobalConstants.ColumnBottomIds.kBottomSwitchPin);
 

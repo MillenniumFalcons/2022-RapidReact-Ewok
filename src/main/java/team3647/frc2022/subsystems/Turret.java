@@ -22,6 +22,7 @@ public class Turret extends TalonFXSubsystem {
             DigitalInput resetLimitSwitch,
             double staticFrictionVolts) {
         super(master, velocityConversion, positionConversion, nominalVoltage, kDt);
+        setStatusFramesThatDontMatter(master, kLongStatusTimeMS);
         this.maxAngle = maxAngle;
         this.minAngle = minAngle;
         this.resetLimitSwitch = resetLimitSwitch;

@@ -24,7 +24,7 @@ public class Intake extends TalonFXSubsystem {
             SimpleMotorFeedforward ff,
             Solenoid pistons) {
         super(master, velocityConversion, positionConversion, nominalVoltage, kDt);
-        setStatusFramesThatDontMatter(master, 255);
+        setStatusFramesThatDontMatter(master, kLongStatusTimeMS);
         this.ff = ff;
         this.pistons = pistons;
     }
