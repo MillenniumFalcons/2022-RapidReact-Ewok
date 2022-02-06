@@ -6,7 +6,7 @@ public final class GlobalConstants {
     public static final double kFalconTicksPerRotation = 2048;
     public static final PneumaticsModuleType kPCMType = PneumaticsModuleType.CTREPCM;
     public static final double kDt = 0.02; // 20ms loop
-    public static final int kTimeoutMS = 50;
+    public static final int kTimeoutMS = 255;
 
     public static final class DrivetrainIds {
         public static final int kLeftMasterId = 1;

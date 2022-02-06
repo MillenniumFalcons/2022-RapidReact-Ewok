@@ -26,7 +26,7 @@ public class Flywheel extends TalonFXSubsystem {
 
     /** @param vel velocity in m/s, positive is outside (to shoot) */
     public void setSurfaceSpeed(double vel) {
-        setVelocity(vel, 0);
+        setVelocity(vel, ff.calculate(vel));
     }
 
     @Override

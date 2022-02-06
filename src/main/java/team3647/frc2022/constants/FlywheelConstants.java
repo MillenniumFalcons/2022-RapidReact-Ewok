@@ -12,9 +12,9 @@ public final class FlywheelConstants {
     public static final TalonFXInvertType kMasterInverted = TalonFXInvertType.Clockwise;
     public static final TalonFXConfiguration kMasterConfig = new TalonFXConfiguration();
 
-    public static final double kS = 0;
-    public static final double kV = 0;
-    public static final double kA = 0;
+    public static final double kS = 0.78509;
+    public static final double kV = 0.184;
+    public static final double kA = 0.052202;
     public static final SimpleMotorFeedforward kFeedForward =
             new SimpleMotorFeedforward(kS, kV, kA);
     public static final double kNominalVoltage = 12;
@@ -29,7 +29,7 @@ public final class FlywheelConstants {
             10 * kWheelRotationMeters / GlobalConstants.kFalconTicksPerRotation * kGearboxReduction;
 
     static {
-        kMasterConfig.slot0.kP = 0;
+        kMasterConfig.slot0.kP = 0.37289;
         kMasterConfig.slot0.kI = 0;
         kMasterConfig.slot0.kD = 0;
         kMasterConfig.slot0.kF = 0;

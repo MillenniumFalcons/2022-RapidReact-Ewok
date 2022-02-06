@@ -4,6 +4,8 @@
 
 package team3647.frc2022.robot;
 
+import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -33,7 +35,8 @@ import team3647.lib.inputs.Joysticks;
 public class RobotContainer {
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
-        m_drivetrain.init();
+        pdp.clearStickyFaults();
+
         m_commandScheduler.registerSubsystem(
                 m_drivetrain, /*m_intake,*/
                 m_printer,
@@ -46,6 +49,7 @@ public class RobotContainer {
                 m_rightArm,
                 m_pivotClimber);
         // Configure the button bindings
+        m_drivetrain.init();
         m_drivetrain.setDefaultCommand(
                 new ArcadeDrive(
                         m_drivetrain,
@@ -63,6 +67,18 @@ public class RobotContainer {
                             m_columnBottom.setOpenloop(coController.getRightStickY());
                         },
                         m_columnBottom));
+        m_intake.setDefaultCommand(
+                new RunCommand(
+                        () -> {
+                            m_intake.setOpenloop(-coController.getRightStickY());
+                        },
+                        m_intake));
+        m_flywheel.setDefaultCommand(
+                new RunCommand(
+                        () -> {
+                            m_flywheel.setOpenloop(coController.getLeftStickY());
+                        },
+                        m_flywheel));
         coController.rightTrigger.whenHeld(
                 new ShootBall(m_flywheel, m_columnTop, m_columnBottom, 8.23));
         coController.leftTrigger.whenHeld(
@@ -79,6 +95,7 @@ public class RobotContainer {
                         mainController::getRightTriggerValue));
         configureButtonBindings();
         m_printer.addDouble("Shooter velocity", m_flywheel::getVelocity);
+        m_printer.addDouble("LeftStick", coController::getLeftStickY);
         m_printer.addDouble("Kicker Velocity", m_columnTop::getVelocity);
         m_printer.addDouble("Shooter current", m_flywheel::getMasterCurrent);
     }
@@ -99,6 +116,7 @@ public class RobotContainer {
     }
 
     private final CommandScheduler m_commandScheduler = CommandScheduler.getInstance();
+    private final PowerDistribution pdp = new PowerDistribution(1, ModuleType.kRev);
 
     private final Joysticks mainController = new Joysticks(0);
     private final Joysticks coController = new Joysticks(1);

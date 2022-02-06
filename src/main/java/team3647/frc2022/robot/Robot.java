@@ -5,6 +5,7 @@
 package team3647.frc2022.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -19,6 +20,11 @@ public class Robot extends TimedRobot {
     private Command m_autonomousCommand;
 
     private RobotContainer m_robotContainer;
+    private double ts = 0;
+
+    public Robot() {
+        super(.02);
+    }
 
     /**
      * This function is run when the robot is first started up and should be used for any
@@ -28,7 +34,9 @@ public class Robot extends TimedRobot {
     public void robotInit() {
         LiveWindow.disableAllTelemetry();
         LiveWindow.setEnabled(false);
+        // SmartDashboard.updateValues();
         m_robotContainer = new RobotContainer();
+        ts = Timer.getFPGATimestamp();
     }
 
     /**
@@ -45,6 +53,10 @@ public class Robot extends TimedRobot {
         // and running subsystem periodic() methods.  This must be called from the robot's periodic
         // block in order for anything in the Command-based framework to work.
         CommandScheduler.getInstance().run();
+        double now = Timer.getFPGATimestamp();
+        double dt = now - ts;
+        ts = now;
+        // System.out.println(dt);
     }
 
     /** This function is called once each time the robot enters Disabled mode. */

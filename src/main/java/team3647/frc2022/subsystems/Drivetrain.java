@@ -6,6 +6,7 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatusFrame;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.sensors.PigeonIMU;
+import com.ctre.phoenix.sensors.PigeonIMU_StatusFrame;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.estimator.DifferentialDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -66,6 +67,7 @@ public final class Drivetrain implements PeriodicSubsystem {
         setStatusFramesThatDontMatter(leftMaster, 255);
         setStatusFrames(leftSlave, 255);
         setStatusFrames(rightSlave, 255);
+        setPidgeonStatusFrames(255);
     }
 
     public static class PeriodicIO {
@@ -132,6 +134,24 @@ public final class Drivetrain implements PeriodicSubsystem {
 
     @Override
     public void writePeriodicOutputs() {
+        if (leftMaster.hasResetOccurred()) {
+            setStatusFramesThatDontMatter(leftMaster, 255);
+        }
+        if (rightMaster.hasResetOccurred()) {
+            setStatusFramesThatDontMatter(rightMaster, 255);
+        }
+
+        if (leftSlave.hasResetOccurred()) {
+            setStatusFrames(leftSlave, 255);
+        }
+        if (rightSlave.hasResetOccurred()) {
+            setStatusFrames(rightSlave, 255);
+        }
+
+        if (pigeonIMU.hasResetOccurred()) {
+            setPidgeonStatusFrames(255);
+        }
+
         leftMaster.set(
                 periodicIO.controlMode,
                 periodicIO.leftOutput,
@@ -195,6 +215,7 @@ public final class Drivetrain implements PeriodicSubsystem {
 
     public void curvatureDrive(double xSpeed, double zRotation, boolean isQuickTurn) {
         WheelSpeeds ws = DifferentialDrive.curvatureDriveIK(xSpeed, zRotation, isQuickTurn);
+        // isQuickTurn);
         setOpenloop(ws.left, ws.right);
     }
 
@@ -259,7 +280,7 @@ public final class Drivetrain implements PeriodicSubsystem {
         device.setStatusFramePeriod(StatusFrame.Status_9_MotProfBuffer, timeout);
         device.setStatusFramePeriod(StatusFrame.Status_13_Base_PIDF0, timeout);
         device.setStatusFramePeriod(StatusFrame.Status_14_Turn_PIDF1, timeout);
-        device.setStatusFramePeriod(StatusFrame.Status_15_FirmwareApiStatus, timeout);
+        device.setStatusFramePeriod(StatusFrame.Status_15_FirmwareApiStatus, timeout, timeout);
         device.setStatusFramePeriod(StatusFrame.Status_17_Targets1, timeout);
     }
 
@@ -270,7 +291,18 @@ public final class Drivetrain implements PeriodicSubsystem {
         device.setStatusFramePeriod(StatusFrame.Status_9_MotProfBuffer, timeout);
         device.setStatusFramePeriod(StatusFrame.Status_13_Base_PIDF0, timeout);
         device.setStatusFramePeriod(StatusFrame.Status_14_Turn_PIDF1, timeout);
-        device.setStatusFramePeriod(StatusFrame.Status_15_FirmwareApiStatus, timeout);
+        device.setStatusFramePeriod(StatusFrame.Status_15_FirmwareApiStatus, timeout, timeout);
         device.setStatusFramePeriod(StatusFrame.Status_17_Targets1, timeout);
+    }
+
+    private void setPidgeonStatusFrames(int frameMS) {
+        // pigeonIMU.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_1_General, frameMS);
+        pigeonIMU.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_2_GeneralCompass, frameMS);
+        pigeonIMU.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_3_GeneralAccel, frameMS);
+        pigeonIMU.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_6_SensorFusion, frameMS);
+        pigeonIMU.setStatusFramePeriod(PigeonIMU_StatusFrame.RawStatus_4_Mag, frameMS);
+        pigeonIMU.setStatusFramePeriod(PigeonIMU_StatusFrame.BiasedStatus_2_Gyro, frameMS);
+        pigeonIMU.setStatusFramePeriod(PigeonIMU_StatusFrame.BiasedStatus_4_Mag, frameMS);
+        pigeonIMU.setStatusFramePeriod(PigeonIMU_StatusFrame.BiasedStatus_6_Accel, frameMS);
     }
 }
