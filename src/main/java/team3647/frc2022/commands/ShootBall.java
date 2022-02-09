@@ -31,11 +31,12 @@ public class ShootBall extends CommandBase {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        flywheel.setSurfaceSpeed(15);
-        // columnTop.setOpenloop(0.6);
-        // if (flywheel.getVelocity() > 19) {
-        //     columnBottom.setOpenloop(0.5);
-        // }
+        flywheel.setSurfaceSpeed(22);
+        // flywheel.setOpenloop(0.5);
+        columnTop.setOpenloop(0.6);
+        if (flywheel.getVelocity() > 21.8) {
+            columnBottom.setOpenloop(0.5);
+        }
     }
 
     // Called once the command ends or is interrupted.

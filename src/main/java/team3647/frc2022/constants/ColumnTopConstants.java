@@ -18,7 +18,7 @@ public final class ColumnTopConstants {
             new SimpleMotorFeedforward(kS, kV, kA);
 
     public static final double kNominalVoltage = 12;
-    public static final double kGearboxReduction = 1 / 2.0;
+    public static final double kGearboxReduction = 2 / 1.0;
 
     public static final double kWheelDiameterMeters = Units.inchesToMeters(2);
     public static final double kWheelRotationMeters = kWheelDiameterMeters * Math.PI;

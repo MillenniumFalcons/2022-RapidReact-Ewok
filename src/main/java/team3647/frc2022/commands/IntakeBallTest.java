@@ -41,9 +41,9 @@ public class IntakeBallTest extends CommandBase {
     @Override
     public void execute() {
         double out = output.getAsDouble();
-        intake.setOpenloop(-out * 0.5);
-        verticalRollers.setOpenloop(out * 0.5);
-        columnBottom.setOpenloop(out * 0.5);
+        intake.setOpenloop(-out * 0.4);
+        verticalRollers.setOpenloop(out * 0.4);
+        columnBottom.setOpenloop(out * 0.4);
     }
 
     // Called once the command ends or is interrupted.
