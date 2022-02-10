@@ -4,6 +4,7 @@ import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import team3647.lib.drivers.LazyTalonFX;
 
 public final class VerticalRollersConstants {
     public static final TalonFXInvertType kMasterInverted = TalonFXInvertType.Clockwise;
@@ -28,7 +29,7 @@ public final class VerticalRollersConstants {
             10 * kWheelDiameterMeters / GlobalConstants.kFalconTicksPerRotation;
 
     public static final TalonFX kColumnMotor =
-            new TalonFX(GlobalConstants.VerticalRollersIds.kMotorId);
+            new LazyTalonFX(GlobalConstants.VerticalRollersIds.kMotorId);
 
     static {
         kMasterConfig.slot0.kP = 0;
@@ -38,6 +39,6 @@ public final class VerticalRollersConstants {
 
         kMasterConfig.voltageCompSaturation = kNominalVoltage;
 
-        kColumnMotor.configAllSettings(kMasterConfig);
+        kColumnMotor.configAllSettings(kMasterConfig, GlobalConstants.kTimeoutMS);
     }
 }

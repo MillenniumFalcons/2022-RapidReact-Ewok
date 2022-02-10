@@ -11,17 +11,18 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.estimator.DifferentialDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import team3647.lib.drivers.LazyTalonFX;
 
 public final class DrivetrainConstants {
 
     public static final TalonFX kLeftMaster =
-            new TalonFX(GlobalConstants.DrivetrainIds.kLeftMasterId);
+            new LazyTalonFX(GlobalConstants.DrivetrainIds.kLeftMasterId);
     public static final TalonFX kRightMaster =
-            new TalonFX(GlobalConstants.DrivetrainIds.kRightMasterId);
+            new LazyTalonFX(GlobalConstants.DrivetrainIds.kRightMasterId);
     public static final TalonFX kLeftSlave =
-            new TalonFX(GlobalConstants.DrivetrainIds.kLeftSlaveId);
+            new LazyTalonFX(GlobalConstants.DrivetrainIds.kLeftSlaveId);
     public static final TalonFX kRightSlave =
-            new TalonFX(GlobalConstants.DrivetrainIds.kRightSlaveId);
+            new LazyTalonFX(GlobalConstants.DrivetrainIds.kRightSlaveId);
     public static final PigeonIMU kPigeonIMU = new PigeonIMU(GlobalConstants.DrivetrainIds.kGyroId);
 
     // increasing the standard deviation makes estimator trusts the data less
@@ -79,8 +80,8 @@ public final class DrivetrainConstants {
         kRightMasterConfig.supplyCurrLimit.triggerThresholdCurrent = kMaxCurrent;
         kRightMasterConfig.voltageCompSaturation = 12.0;
 
-        kLeftMaster.configAllSettings(kLeftMasterConfig);
-        kRightMaster.configAllSettings(kRightMasterConfig);
+        kLeftMaster.configAllSettings(kLeftMasterConfig, GlobalConstants.kTimeoutMS);
+        kRightMaster.configAllSettings(kRightMasterConfig, GlobalConstants.kTimeoutMS);
         kLeftSlave.follow(kLeftMaster);
         kRightSlave.follow(kRightMaster);
         kRightMaster.setInverted(TalonFXInvertType.Clockwise);

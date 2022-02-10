@@ -5,6 +5,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.Solenoid;
+import team3647.lib.drivers.LazyTalonFX;
 
 public final class IntakeConstants {
 
@@ -18,7 +19,7 @@ public final class IntakeConstants {
             new SimpleMotorFeedforward(kS, kV, kA);
     public static final double kNominalVoltage = 12;
 
-    public static final TalonFX kIntakeMotor = new TalonFX(GlobalConstants.IntakeIds.kMotorId);
+    public static final TalonFX kIntakeMotor = new LazyTalonFX(GlobalConstants.IntakeIds.kMotorId);
     public static final Solenoid kPistons =
             new Solenoid(GlobalConstants.kPCMType, GlobalConstants.IntakeIds.kSolenoidPin);
 
@@ -34,7 +35,7 @@ public final class IntakeConstants {
 
         kMasterConfig.voltageCompSaturation = 12;
 
-        kIntakeMotor.configAllSettings(kMasterConfig);
+        kIntakeMotor.configAllSettings(kMasterConfig, GlobalConstants.kTimeoutMS);
     }
 
     private IntakeConstants() {}

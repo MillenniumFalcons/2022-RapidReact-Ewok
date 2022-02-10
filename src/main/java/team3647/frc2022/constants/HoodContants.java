@@ -2,10 +2,11 @@ package team3647.frc2022.constants;
 
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
+import team3647.lib.drivers.LazyTalonFX;
 
 public class HoodContants {
 
-    public static final TalonFX kHoodMotor = new TalonFX(GlobalConstants.HoodIds.kMotorId);
+    public static final TalonFX kHoodMotor = new LazyTalonFX(GlobalConstants.HoodIds.kMotorId);
 
     public static final TalonFXConfiguration kMasterConfig = new TalonFXConfiguration();
     public static final double encoderTicksToDegrees = 0;
@@ -20,6 +21,6 @@ public class HoodContants {
 
         kMasterConfig.voltageCompSaturation = 12;
 
-        kHoodMotor.configAllSettings(kMasterConfig);
+        kHoodMotor.configAllSettings(kMasterConfig, GlobalConstants.kTimeoutMS);
     }
 }

@@ -15,6 +15,8 @@ public class PivotClimber implements PeriodicSubsystem {
         }
     }
 
+    private boolean prevSolenoidVal = false;
+
     private final Solenoid pivotPistons;
 
     private final double maxLengthAngled;
@@ -91,7 +93,10 @@ public class PivotClimber implements PeriodicSubsystem {
 
     @Override
     public void writePeriodicOutputs() {
-        pivotPistons.set(climberAngle.solenoidVal);
+        if (climberAngle.solenoidVal != prevSolenoidVal) {
+            pivotPistons.set(climberAngle.solenoidVal);
+            prevSolenoidVal = climberAngle.solenoidVal;
+        }
     }
 
     @Override
