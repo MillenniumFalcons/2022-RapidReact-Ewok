@@ -17,6 +17,7 @@ public class ColumnTop extends TalonFXSubsystem {
         super(master, velocityConversion, positionConversion, nominalVoltage, kDt);
         setStatusFramesThatDontMatter(master, kLongStatusTimeMS);
         this.ff = ff;
+        setToCoast();
     }
 
     /** @param vel velocity in m/s positive is up (towards the shooter) */
