@@ -20,6 +20,7 @@ public class Hood extends TalonFXSubsystem {
         this.minPos = minPos;
         this.maxPos = maxPos;
         setStatusFramesThatDontMatter(master, kLongStatusTimeMS);
+        resetEncoder();
     }
 
     public void setAngleMotionMagic(double angle) {
@@ -28,6 +29,14 @@ public class Hood extends TalonFXSubsystem {
 
     public void setAngle(double angle) {
         super.setPosition(MathUtil.clamp(angle, minPos, maxPos), 0);
+    }
+
+    public double getAngle() {
+        return super.getPosition();
+    }
+
+    public double getNativePos() {
+        return super.getNativePos();
     }
 
     @Override

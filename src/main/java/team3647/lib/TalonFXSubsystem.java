@@ -45,6 +45,7 @@ public abstract class TalonFXSubsystem implements PeriodicSubsystem {
         public double current = 0;
         public double timestamp = 0;
         public double masterCurrent = 0;
+        public double nativePosition = 0;
 
         // Outputs
         public ControlMode controlMode = ControlMode.Disabled;
@@ -56,6 +57,7 @@ public abstract class TalonFXSubsystem implements PeriodicSubsystem {
     public void readPeriodicInputs() {
         periodicIO.position = master.getSelectedSensorPosition() * positionConversion;
         periodicIO.velocity = master.getSelectedSensorVelocity() * velocityConversion;
+        periodicIO.nativePosition = master.getSelectedSensorPosition();
         periodicIO.current = master.getStatorCurrent();
         periodicIO.timestamp = Timer.getFPGATimestamp();
         periodicIO.masterCurrent = master.getSupplyCurrent();
@@ -174,6 +176,10 @@ public abstract class TalonFXSubsystem implements PeriodicSubsystem {
 
     public double getMasterCurrent() {
         return periodicIO.masterCurrent;
+    }
+
+    public double getNativePos() {
+        return periodicIO.nativePosition;
     }
 
     protected void addFollower(TalonFX follower, FollowerType followerType, InvertType invertType) {

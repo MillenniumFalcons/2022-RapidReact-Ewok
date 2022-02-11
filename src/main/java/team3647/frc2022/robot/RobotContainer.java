@@ -14,15 +14,16 @@ import team3647.frc2022.commands.ArcadeDrive;
 import team3647.frc2022.commands.ClimberUpDown;
 import team3647.frc2022.commands.IntakeBallTest;
 import team3647.frc2022.commands.ShootBall;
+import team3647.frc2022.commands.TestHood;
 import team3647.frc2022.constants.*;
 import team3647.frc2022.subsystems.ClimberArm;
 import team3647.frc2022.subsystems.ColumnBottom;
 import team3647.frc2022.subsystems.ColumnTop;
 import team3647.frc2022.subsystems.Drivetrain;
 import team3647.frc2022.subsystems.Flywheel;
+import team3647.frc2022.subsystems.Hood;
 import team3647.frc2022.subsystems.Intake;
 import team3647.frc2022.subsystems.PivotClimber;
-import team3647.frc2022.subsystems.VerticalRollers;
 import team3647.lib.GroupPrinter;
 import team3647.lib.inputs.Joysticks;
 
@@ -42,12 +43,12 @@ public class RobotContainer {
                 m_printer,
                 m_columnTop,
                 m_columnBottom,
-                m_verticalRollers,
                 m_intake,
                 m_flywheel,
                 m_leftArm,
                 m_rightArm,
-                m_pivotClimber);
+                m_pivotClimber,
+                m_hood);
         // Configure the button bindings
         m_drivetrain.init();
         m_drivetrain.setDefaultCommand(
@@ -82,11 +83,7 @@ public class RobotContainer {
         coController.rightTrigger.whenHeld(
                 new ShootBall(m_flywheel, m_columnTop, m_columnBottom, 8.23));
         coController.leftTrigger.whenHeld(
-                new IntakeBallTest(
-                        m_intake,
-                        m_verticalRollers,
-                        m_columnBottom,
-                        coController::getLeftTriggerValue));
+                new IntakeBallTest(m_intake, m_columnBottom, coController::getLeftTriggerValue));
         // coController.leftTrigger.whenReleased(new InstantCommand(m_intake::retract, m_intake));
         m_pivotClimber.setDefaultCommand(
                 new ClimberUpDown(
@@ -98,11 +95,16 @@ public class RobotContainer {
         m_printer.addDouble("LeftStick", coController::getLeftStickY);
         m_printer.addDouble("Kicker Velocity", m_columnTop::getVelocity);
         m_printer.addDouble("Shooter current", m_flywheel::getMasterCurrent);
+        m_printer.addDouble("Hood Position", m_hood::getPosition);
+        m_printer.addDouble("Hood Native Pos", m_hood::getNativePos);
     }
 
     private void configureButtonBindings() {
         mainController.buttonX.whenActive(new InstantCommand(m_pivotClimber::setAngled));
         mainController.buttonB.whenActive(new InstantCommand(m_pivotClimber::setStraight));
+        coController.dPadUp.whenPressed(new TestHood(m_hood, 40));
+        coController.dPadLeft.whenPressed(new TestHood(m_hood, 30));
+        coController.dPadDown.whenPressed(new TestHood(m_hood, 15));
     }
 
     /**
@@ -156,14 +158,6 @@ public class RobotContainer {
                     GlobalConstants.kDt,
                     IntakeConstants.kFeedForward,
                     IntakeConstants.kPistons);
-    private final VerticalRollers m_verticalRollers =
-            new VerticalRollers(
-                    VerticalRollersConstants.kColumnMotor,
-                    VerticalRollersConstants.kNativeVelToSurfaceMpS,
-                    VerticalRollersConstants.kPosConverstion,
-                    VerticalRollersConstants.kNominalVoltage,
-                    GlobalConstants.kDt,
-                    VerticalRollersConstants.kFeedForward);
 
     private final ColumnBottom m_columnBottom =
             new ColumnBottom(
@@ -205,4 +199,14 @@ public class RobotContainer {
                     ClimberConstants.kMaxLengthAngled,
                     ClimberConstants.kMaxLengthStraight,
                     ClimberConstants.kVoltageToHoldRobot);
+
+    private final Hood m_hood =
+            new Hood(
+                    HoodContants.kHoodMotor,
+                    HoodContants.ticksPerUnitDistance,
+                    HoodContants.ticksPerUnitDistance,
+                    10,
+                    GlobalConstants.kDt,
+                    HoodContants.minAngleDegrees,
+                    HoodContants.maxAngleDegrees);
 }

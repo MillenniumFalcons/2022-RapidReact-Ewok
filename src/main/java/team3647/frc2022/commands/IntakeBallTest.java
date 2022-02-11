@@ -8,26 +8,19 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import java.util.function.DoubleSupplier;
 import team3647.frc2022.subsystems.ColumnBottom;
 import team3647.frc2022.subsystems.Intake;
-import team3647.frc2022.subsystems.VerticalRollers;
 
 public class IntakeBallTest extends CommandBase {
     private final Intake intake;
-    private final VerticalRollers verticalRollers;
     private final ColumnBottom columnBottom;
     private final DoubleSupplier output;
 
     /** Creates a new BallFeeding. */
-    public IntakeBallTest(
-            Intake intake,
-            VerticalRollers verticalRollers,
-            ColumnBottom columnBottom,
-            DoubleSupplier output) {
+    public IntakeBallTest(Intake intake, ColumnBottom columnBottom, DoubleSupplier output) {
         this.intake = intake;
-        this.verticalRollers = verticalRollers;
         this.columnBottom = columnBottom;
         this.output = output;
 
-        addRequirements(intake, verticalRollers, columnBottom);
+        addRequirements(intake, columnBottom);
         // Use addRequirements() here to declare subsystem dependencies.
     }
 
@@ -42,7 +35,6 @@ public class IntakeBallTest extends CommandBase {
     public void execute() {
         double out = output.getAsDouble();
         intake.setOpenloop(-out * 0.4);
-        verticalRollers.setOpenloop(out * 0.4);
         columnBottom.setOpenloop(out * 0.4);
     }
 
@@ -51,7 +43,6 @@ public class IntakeBallTest extends CommandBase {
     public void end(boolean interrupted) {
         System.out.println("Stopping flywheel");
         intake.retract();
-        verticalRollers.end();
         columnBottom.end();
         intake.end();
     }
