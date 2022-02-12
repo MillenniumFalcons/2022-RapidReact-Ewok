@@ -19,7 +19,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 public class Robot extends TimedRobot {
     private Command m_autonomousCommand;
 
-    private RobotContainer m_robotContainer;
+    private RobotContainer m_robotContainer = new RobotContainer();
     private double ts = 0;
 
     public Robot() {
@@ -35,7 +35,7 @@ public class Robot extends TimedRobot {
         LiveWindow.disableAllTelemetry();
         LiveWindow.setEnabled(false);
         // SmartDashboard.updateValues();
-        m_robotContainer = new RobotContainer();
+
         ts = Timer.getFPGATimestamp();
     }
 

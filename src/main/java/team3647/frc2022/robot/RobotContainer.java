@@ -4,6 +4,10 @@
 
 package team3647.frc2022.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -23,8 +27,11 @@ import team3647.frc2022.subsystems.Flywheel;
 import team3647.frc2022.subsystems.Intake;
 import team3647.frc2022.subsystems.PivotClimber;
 import team3647.frc2022.subsystems.VerticalRollers;
+import team3647.frc2022.subsystems.vision.VisionController;
 import team3647.lib.GroupPrinter;
 import team3647.lib.inputs.Joysticks;
+import team3647.lib.vision.Limelight;
+import team3647.lib.vision.MultiTargetTracker;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -45,8 +52,6 @@ public class RobotContainer {
                 m_verticalRollers,
                 m_intake,
                 m_flywheel,
-                m_leftArm,
-                m_rightArm,
                 m_pivotClimber);
         // Configure the button bindings
         m_drivetrain.init();
@@ -123,7 +128,7 @@ public class RobotContainer {
 
     private final GroupPrinter m_printer = GroupPrinter.getInstance();
 
-    private final Drivetrain m_drivetrain =
+    public final Drivetrain m_drivetrain =
             new Drivetrain(
                     DrivetrainConstants.kLeftMaster,
                     DrivetrainConstants.kRightMaster,
@@ -137,7 +142,7 @@ public class RobotContainer {
                     DrivetrainConstants.kNominalVoltage,
                     GlobalConstants.kDt);
 
-    private final Flywheel m_flywheel =
+    public final Flywheel m_flywheel =
             new Flywheel(
                     FlywheelConstants.kMaster,
                     FlywheelConstants.kNativeVelToSurfaceMpS,
@@ -147,7 +152,7 @@ public class RobotContainer {
                     FlywheelConstants.kFollower,
                     FlywheelConstants.kFeedForward);
 
-    private final Intake m_intake =
+    public final Intake m_intake =
             new Intake(
                     IntakeConstants.kIntakeMotor,
                     IntakeConstants.nativeVelToSurfaceMpS,
@@ -156,7 +161,7 @@ public class RobotContainer {
                     GlobalConstants.kDt,
                     IntakeConstants.kFeedForward,
                     IntakeConstants.kPistons);
-    private final VerticalRollers m_verticalRollers =
+    public final VerticalRollers m_verticalRollers =
             new VerticalRollers(
                     VerticalRollersConstants.kColumnMotor,
                     VerticalRollersConstants.kNativeVelToSurfaceMpS,
@@ -165,7 +170,7 @@ public class RobotContainer {
                     GlobalConstants.kDt,
                     VerticalRollersConstants.kFeedForward);
 
-    private final ColumnBottom m_columnBottom =
+    public final ColumnBottom m_columnBottom =
             new ColumnBottom(
                     ColumnBottomConstants.kColumnMotor,
                     ColumnBottomConstants.kNativeVelToSurfaceMpS,
@@ -174,7 +179,7 @@ public class RobotContainer {
                     GlobalConstants.kDt,
                     ColumnBottomConstants.kFeedForward);
 
-    private final ColumnTop m_columnTop =
+    public final ColumnTop m_columnTop =
             new ColumnTop(
                     ColumnTopConstants.kColumnMotor,
                     ColumnTopConstants.kNativeVelToSurfaceMpS,
@@ -197,7 +202,7 @@ public class RobotContainer {
                     ClimberConstants.kPosConverstion,
                     ClimberConstants.kNominalVoltage,
                     GlobalConstants.kDt);
-    private final PivotClimber m_pivotClimber =
+    public final PivotClimber m_pivotClimber =
             new PivotClimber(
                     m_leftArm,
                     m_rightArm,
@@ -205,4 +210,17 @@ public class RobotContainer {
                     ClimberConstants.kMaxLengthAngled,
                     ClimberConstants.kMaxLengthStraight,
                     ClimberConstants.kVoltageToHoldRobot);
+
+    public final RobotTracker m_robotTracker =
+            new RobotTracker(2.0, new Translation2d(Units.inchesToMeters(6), 0));
+    public final FlightDeck m_flightDeck =
+            new FlightDeck(
+                    m_robotTracker,
+                    new MultiTargetTracker(),
+                    new Pose2d(Units.inchesToMeters(6), 0, new Rotation2d()));
+    public final VisionController m_visionController =
+            new VisionController(
+                    new Limelight("10.36.47.16", 0.06, VisionConstants.limelightConstants),
+                    VisionConstants.kCenterGoalTargetConstants,
+                    m_flightDeck::addVisionObservation);
 }

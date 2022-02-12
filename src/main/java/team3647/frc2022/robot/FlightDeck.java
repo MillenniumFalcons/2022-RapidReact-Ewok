@@ -1,39 +1,60 @@
 package team3647.frc2022.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
-import team3647.frc2022.subsystems.vision.VisionController;
+import edu.wpi.first.wpilibj.Timer;
+import java.util.List;
+import team3647.lib.vision.AimingParameters;
 import team3647.lib.vision.MultiTargetTracker;
+import team3647.lib.vision.TrackedTarget;
+import team3647.lib.vision.TrackedTarget.TrackedTargetComparator;
 
 public class FlightDeck {
     private final RobotTracker robotTracker;
-    private final VisionController vision;
     private final MultiTargetTracker targetTracker;
-    private final Translation2d kRobotToTurretFixed;
-    private final Translation2d kTurretToCamFixed;
-    private final Rotation2d kCamPitchFixed;
+    private final Pose2d kTurretToCamFixed;
+    private static final Translation2d turretToCam = new Translation2d(Units.inchesToMeters(7), 0);
+    public static double maxAge;
 
     public FlightDeck(
-            RobotTracker robotTracker,
-            VisionController vision,
-            MultiTargetTracker targetTracker,
-            Translation2d kRobotToTurretFixed,
-            Translation2d kTurretToCamFixed,
-            Rotation2d kCamPitchFixed) {
+            RobotTracker robotTracker, MultiTargetTracker targetTracker, Pose2d kTurretToCamFixed) {
         this.robotTracker = robotTracker;
-        this.vision = vision;
         this.targetTracker = targetTracker;
-        this.kRobotToTurretFixed = kRobotToTurretFixed;
         this.kTurretToCamFixed = kTurretToCamFixed;
-        this.kCamPitchFixed = kCamPitchFixed;
     }
 
-    public void update() {
-        this.robotTracker.update();
+    public synchronized void addVisionObservation(double timestamp, Translation2d camToGoal) {
+        Pose2d fieldToTurret = robotTracker.getFieldToTurret(timestamp);
+        targetTracker.update(
+                timestamp,
+                List.of(
+                        new Pose2d(camToGoal, new Rotation2d())
+                                .relativeTo(kTurretToCamFixed)
+                                .relativeTo(fieldToTurret)));
     }
 
-    private final Rotation2d camPitch = Rotation2d.fromDegrees(45);
-    private final Translation2d robotToTurretFixed = new Translation2d(Units.inchesToMeters(7), 0);
-    private final Translation2d turretToCam = new Translation2d(Units.inchesToMeters(7), 0);
+    public synchronized AimingParameters getAimingParameters(int lastTargetId) {
+        List<TrackedTarget> targets = targetTracker.getTrackedTargets();
+        if (targets.isEmpty()) {
+            return null;
+        }
+        double timestamp = Timer.getFPGATimestamp();
+        TrackedTargetComparator comparator =
+                new TrackedTargetComparator(0.0, 10.0, timestamp, 100.0, lastTargetId);
+        targets.sort(comparator);
+        TrackedTarget bestTarget = targets.get(0);
+        for (TrackedTarget target : targets) {
+            if (target.getLatestTimestamp() > timestamp - maxAge) {
+                bestTarget = target;
+            }
+        }
+        return new AimingParameters(
+                bestTarget.id,
+                robotTracker.getFieldToTurret(timestamp),
+                bestTarget.getSmoothedPosition(),
+                bestTarget.getLatestTimestamp(),
+                bestTarget.getStability());
+    }
 }

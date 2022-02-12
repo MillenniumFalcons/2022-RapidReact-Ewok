@@ -13,7 +13,7 @@ public class TrackedTarget {
     private static final double kMaxTracedTargetSmoothingTime = 0.5;
     private static final double kMaxTrackerDistance = 9.0;
 
-    private final int id;
+    public final int id;
     private final TreeMap<Double, Pose2d> observedPositions = new TreeMap<>();
     private Pose2d smoothedPosition;
 

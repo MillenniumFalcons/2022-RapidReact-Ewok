@@ -6,24 +6,25 @@ import edu.wpi.first.math.geometry.Transform2d;
 
 /** 254 AimingParameters class */
 public class AimingParameters {
+    public final int id;
     private final double rangeMeters;
-    private final Pose2d fieldToRobot;
     private final Pose2d fieldToTarget;
-    private final Transform2d robotToTarget;
-    private final Rotation2d robotToTargetRotation;
+    private final Transform2d turretToTarget;
+    private final Rotation2d turretAngleToTarget;
     private final double lastSeenTimestamp;
     private final double stability;
 
     public AimingParameters(
-            Pose2d fieldToRobot, Pose2d fieldToTarget, double lastSeenTimestamp, double stability) {
-        this.fieldToRobot = fieldToRobot;
+            int id,
+            Pose2d fieldToTurret,
+            Pose2d fieldToTarget,
+            double lastSeenTimestamp,
+            double stability) {
+        this.id = id;
         this.fieldToTarget = fieldToTarget;
-        this.robotToTarget = fieldToTarget.minus(fieldToRobot);
-        this.rangeMeters = robotToTarget.getTranslation().getNorm();
-        this.robotToTargetRotation =
-                new Rotation2d(
-                        robotToTarget.getTranslation().getX(),
-                        robotToTarget.getTranslation().getY());
+        this.turretToTarget = fieldToTarget.minus(fieldToTurret);
+        this.rangeMeters = turretToTarget.getTranslation().getNorm();
+        this.turretAngleToTarget = turretToTarget.getRotation();
         this.lastSeenTimestamp = lastSeenTimestamp;
         this.stability = stability;
     }
@@ -36,16 +37,12 @@ public class AimingParameters {
         return lastSeenTimestamp;
     }
 
-    public Rotation2d getRobotToGoalRotation() {
-        return robotToTargetRotation;
-    }
-
     public Pose2d getFieldToGoal() {
         return fieldToTarget;
     }
 
-    public Pose2d getFieldToRobot() {
-        return fieldToRobot;
+    public Rotation2d getTurretAngleToTarget() {
+        return turretAngleToTarget;
     }
 
     public double getRangeMeters() {
