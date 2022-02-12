@@ -11,8 +11,7 @@ public class HoodContants {
     public static final TalonFXInvertType kHoodMotorInvert = TalonFXInvertType.Clockwise;
 
     public static final TalonFXConfiguration kMasterConfig = new TalonFXConfiguration();
-    public static final double ticksPerUnitDistance = /*((40 * 2048) / 360);*/
-            (360.0 / (40 * 2048));
+    public static final double degPerTick = /*((40 * 2048) / 360);*/ (360.0 / (40 * 2048));
     public static final double maxAngleDegrees = 45;
     public static final double minAngleDegrees = 15;
     public static final boolean kCurrentLimitingEnable = true;
@@ -20,9 +19,9 @@ public class HoodContants {
     public static final double maxVelocityDegPerSec = 36;
     public static final double maxAccelerationDegPerSecSqr = 36;
     public static final double maxVelocityTicksPerHundredMS =
-            (maxVelocityDegPerSec / ticksPerUnitDistance) * (1 / 10);
+            (maxVelocityDegPerSec / degPerTick) * (1 / 10);
     public static final double maxAccelerationTicksPerHundredMS =
-            (maxAccelerationDegPerSecSqr / ticksPerUnitDistance) * (1 / 100);
+            (maxAccelerationDegPerSecSqr / degPerTick) * (1 / 100);
 
     public static final double kStallCurrent = 10;
     public static final double kContinuousCurrentLimit = 35; // amps
@@ -43,9 +42,9 @@ public class HoodContants {
         kMasterConfig.supplyCurrLimit.triggerThresholdTime = kPeakCurrentDuration;
 
         // in native units/100ms^2
-        kMasterConfig.motionAcceleration = 20000;
+        kMasterConfig.motionAcceleration = (maxAccelerationDegPerSecSqr / 100) / (degPerTick);
         // in native units/100ms
-        kMasterConfig.motionCruiseVelocity = 20000;
+        kMasterConfig.motionCruiseVelocity = (maxVelocityDegPerSec / 10) / degPerTick;
 
         kHoodMotor.configAllSettings(kMasterConfig, GlobalConstants.kTimeoutMS);
         kHoodMotor.setInverted(kHoodMotorInvert);

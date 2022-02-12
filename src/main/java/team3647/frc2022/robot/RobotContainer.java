@@ -203,8 +203,8 @@ public class RobotContainer {
     private final Hood m_hood =
             new Hood(
                     HoodContants.kHoodMotor,
-                    HoodContants.ticksPerUnitDistance,
-                    HoodContants.ticksPerUnitDistance,
+                    HoodContants.degPerTick,
+                    HoodContants.degPerTick,
                     10,
                     GlobalConstants.kDt,
                     HoodContants.minAngleDegrees,
