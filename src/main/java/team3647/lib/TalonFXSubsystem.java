@@ -73,7 +73,7 @@ public abstract class TalonFXSubsystem implements PeriodicSubsystem {
 
         for (var follower : followers) {
             if (follower.hasResetOccurred()) {
-                setStatusFrames(follower, kLongStatusTimeMS);
+                setStatusFrames(follower, kLongStatusTimeMS, 0);
             }
         }
     }
@@ -185,32 +185,33 @@ public abstract class TalonFXSubsystem implements PeriodicSubsystem {
     protected void addFollower(TalonFX follower, FollowerType followerType, InvertType invertType) {
         follower.follow(master, followerType);
         follower.setInverted(invertType);
-        setStatusFrames(follower, kLongStatusTimeMS);
+        setStatusFrames(follower, kLongStatusTimeMS, kTimeoutMS);
 
         followers.add(follower);
     }
 
-    protected void setStatusFrames(TalonFX device, int timeout) {
-        device.setStatusFramePeriod(StatusFrame.Status_1_General, timeout, kTimeoutMS);
-        device.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, timeout, kTimeoutMS);
-        device.setStatusFramePeriod(StatusFrame.Status_4_AinTempVbat, timeout, kTimeoutMS);
-        device.setStatusFramePeriod(StatusFrame.Status_6_Misc, timeout, kTimeoutMS);
-        device.setStatusFramePeriod(StatusFrame.Status_7_CommStatus, timeout, kTimeoutMS);
-        device.setStatusFramePeriod(StatusFrame.Status_9_MotProfBuffer, timeout, kTimeoutMS);
-        device.setStatusFramePeriod(StatusFrame.Status_13_Base_PIDF0, timeout, kTimeoutMS);
-        device.setStatusFramePeriod(StatusFrame.Status_14_Turn_PIDF1, timeout, kTimeoutMS);
-        device.setStatusFramePeriod(StatusFrame.Status_15_FirmwareApiStatus, timeout, kTimeoutMS);
-        device.setStatusFramePeriod(StatusFrame.Status_17_Targets1, timeout, kTimeoutMS);
+    protected void setStatusFrames(TalonFX device, int statusLengthMS, int timeoutMS) {
+        device.setStatusFramePeriod(StatusFrame.Status_1_General, statusLengthMS, timeoutMS);
+        device.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, statusLengthMS, timeoutMS);
+        device.setStatusFramePeriod(StatusFrame.Status_4_AinTempVbat, statusLengthMS, timeoutMS);
+        device.setStatusFramePeriod(StatusFrame.Status_6_Misc, statusLengthMS, timeoutMS);
+        device.setStatusFramePeriod(StatusFrame.Status_7_CommStatus, statusLengthMS, timeoutMS);
+        device.setStatusFramePeriod(StatusFrame.Status_9_MotProfBuffer, statusLengthMS, timeoutMS);
+        device.setStatusFramePeriod(StatusFrame.Status_13_Base_PIDF0, statusLengthMS, timeoutMS);
+        device.setStatusFramePeriod(StatusFrame.Status_14_Turn_PIDF1, statusLengthMS, timeoutMS);
+        device.setStatusFramePeriod(
+                StatusFrame.Status_15_FirmwareApiStatus, statusLengthMS, timeoutMS);
+        device.setStatusFramePeriod(StatusFrame.Status_17_Targets1, statusLengthMS, timeoutMS);
     }
 
-    protected void setStatusFramesThatDontMatter(TalonFX device, int timeout) {
-        device.setStatusFramePeriod(StatusFrame.Status_4_AinTempVbat, timeout, kTimeoutMS);
-        device.setStatusFramePeriod(StatusFrame.Status_6_Misc, timeout, kTimeoutMS);
-        device.setStatusFramePeriod(StatusFrame.Status_7_CommStatus, timeout, kTimeoutMS);
-        device.setStatusFramePeriod(StatusFrame.Status_9_MotProfBuffer, timeout, kTimeoutMS);
-        device.setStatusFramePeriod(StatusFrame.Status_13_Base_PIDF0, timeout, kTimeoutMS);
-        device.setStatusFramePeriod(StatusFrame.Status_14_Turn_PIDF1, timeout, kTimeoutMS);
-        device.setStatusFramePeriod(StatusFrame.Status_15_FirmwareApiStatus, timeout, kTimeoutMS);
-        device.setStatusFramePeriod(StatusFrame.Status_17_Targets1, timeout, kTimeoutMS);
+    protected void setStatusFramesThatDontMatter(TalonFX device, int timeout, int timeoutMS) {
+        device.setStatusFramePeriod(StatusFrame.Status_4_AinTempVbat, timeout, timeoutMS);
+        device.setStatusFramePeriod(StatusFrame.Status_6_Misc, timeout, timeoutMS);
+        device.setStatusFramePeriod(StatusFrame.Status_7_CommStatus, timeout, timeoutMS);
+        device.setStatusFramePeriod(StatusFrame.Status_9_MotProfBuffer, timeout, timeoutMS);
+        device.setStatusFramePeriod(StatusFrame.Status_13_Base_PIDF0, timeout, timeoutMS);
+        device.setStatusFramePeriod(StatusFrame.Status_14_Turn_PIDF1, timeout, timeoutMS);
+        device.setStatusFramePeriod(StatusFrame.Status_15_FirmwareApiStatus, timeout, timeoutMS);
+        device.setStatusFramePeriod(StatusFrame.Status_17_Targets1, timeout, timeoutMS);
     }
 }
