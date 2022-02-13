@@ -7,7 +7,7 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import team3647.lib.drivers.LazyTalonFX;
 
 public final class VerticalRollersConstants {
-    public static final TalonFXInvertType kMasterInverted = TalonFXInvertType.Clockwise;
+    public static final TalonFXInvertType kMasterInverted = TalonFXInvertType.CounterClockwise;
     public static final TalonFXConfiguration kMasterConfig = new TalonFXConfiguration();
     public static final double kS = 0;
     public static final double kV = 0;
@@ -28,7 +28,7 @@ public final class VerticalRollersConstants {
     public static final double kNativeVelToSurfaceMpS =
             10 * kWheelDiameterMeters / GlobalConstants.kFalconTicksPerRotation;
 
-    public static final TalonFX kColumnMotor =
+    public static final TalonFX kVerticalRollersMotor =
             new LazyTalonFX(GlobalConstants.VerticalRollersIds.kMotorId);
 
     static {
@@ -37,8 +37,14 @@ public final class VerticalRollersConstants {
         kMasterConfig.slot0.kD = 0;
         kMasterConfig.slot0.kF = 0;
 
+        kMasterConfig.supplyCurrLimit.enable = true;
+        kMasterConfig.supplyCurrLimit.triggerThresholdCurrent = 40;
+        kMasterConfig.supplyCurrLimit.triggerThresholdTime = 0.5;
+        kMasterConfig.supplyCurrLimit.currentLimit = 15;
+
         kMasterConfig.voltageCompSaturation = kNominalVoltage;
 
-        kColumnMotor.configAllSettings(kMasterConfig, GlobalConstants.kTimeoutMS);
+        kVerticalRollersMotor.configAllSettings(kMasterConfig, GlobalConstants.kTimeoutMS);
+        kVerticalRollersMotor.setInverted(kMasterInverted);
     }
 }

@@ -20,7 +20,7 @@ public class TestHood extends CommandBase {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        hood.setAngleMotionMagic(positionDeg);
+        // hood.setAngleMotionMagic(positionDeg);
     }
 
     // Called once the command ends or is interrupted.

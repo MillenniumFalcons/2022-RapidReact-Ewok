@@ -1,6 +1,7 @@
 package team3647.frc2022.subsystems;
 
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.DigitalInput;
 import team3647.lib.TalonFXSubsystem;
 
@@ -9,7 +10,7 @@ public class Turret extends TalonFXSubsystem {
     private final double maxAngle;
     private final double minAngle;
     private final DigitalInput resetLimitSwitch;
-    private final double staticFrictionVolts;
+    private final SimpleMotorFeedforward ff;
 
     public Turret(
             TalonFX master,
@@ -20,18 +21,18 @@ public class Turret extends TalonFXSubsystem {
             double maxAngle,
             double minAngle,
             DigitalInput resetLimitSwitch,
-            double staticFrictionVolts) {
+            SimpleMotorFeedforward ff) {
         super(master, velocityConversion, positionConversion, nominalVoltage, kDt);
         setStatusFramesThatDontMatter(master, kLongStatusTimeMS);
         this.maxAngle = maxAngle;
         this.minAngle = minAngle;
         this.resetLimitSwitch = resetLimitSwitch;
-        this.staticFrictionVolts = staticFrictionVolts;
+        this.ff = ff;
         resetEncoder();
     }
 
     /** @param angle in degree, [-180,180] */
-    public void setAngle(double angle) {
+    public void setAngle(double angle, double velocity) {
 
         double currentPosition = getPosition(); // returns [-200,200]
         angle -= 360.0 * Math.round(angle / 360.0); // angles in [-180, 180]
@@ -58,10 +59,9 @@ public class Turret extends TalonFXSubsystem {
 
         // Multiply the static friction volts by -1 if our target position is less than current
         // position; if we need to move backwards, the volts needs to be negative
-        double directionAdjustedVolts =
-                staticFrictionVolts * Math.signum(targetPosition - currentPosition);
+        double ffVolts = ff.calculate(velocity);
 
-        setPosition(targetPosition, directionAdjustedVolts);
+        setPosition(targetPosition, ffVolts);
     }
 
     /** @return angle in [-180,180] */

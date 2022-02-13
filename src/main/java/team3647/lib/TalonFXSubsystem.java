@@ -55,9 +55,9 @@ public abstract class TalonFXSubsystem implements PeriodicSubsystem {
 
     @Override
     public void readPeriodicInputs() {
-        periodicIO.position = master.getSelectedSensorPosition() * positionConversion;
-        periodicIO.velocity = master.getSelectedSensorVelocity() * velocityConversion;
         periodicIO.nativePosition = master.getSelectedSensorPosition();
+        periodicIO.position = periodicIO.nativePosition * positionConversion;
+        periodicIO.velocity = master.getSelectedSensorVelocity() * velocityConversion;
         periodicIO.current = master.getStatorCurrent();
         periodicIO.timestamp = Timer.getFPGATimestamp();
         periodicIO.masterCurrent = master.getSupplyCurrent();
