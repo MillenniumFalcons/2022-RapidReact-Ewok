@@ -61,14 +61,10 @@ public class RobotContainer {
                 m_verticalRollers,
                 m_intake,
                 m_flywheel,
-<<<<<<< HEAD
-                m_pivotClimber);
-=======
                 m_leftArm,
                 m_rightArm,
                 m_pivotClimber,
                 m_hood);
->>>>>>> main
         // Configure the button bindings
         m_drivetrain.init();
         m_drivetrain.setDefaultCommand(
@@ -195,17 +191,6 @@ public class RobotContainer {
                     GlobalConstants.kDt,
                     IntakeConstants.kFeedForward,
                     IntakeConstants.kPistons);
-<<<<<<< HEAD
-    public final VerticalRollers m_verticalRollers =
-            new VerticalRollers(
-                    VerticalRollersConstants.kColumnMotor,
-                    VerticalRollersConstants.kNativeVelToSurfaceMpS,
-                    VerticalRollersConstants.kPosConverstion,
-                    VerticalRollersConstants.kNominalVoltage,
-                    GlobalConstants.kDt,
-                    VerticalRollersConstants.kFeedForward);
-=======
->>>>>>> main
 
     public final ColumnBottom m_columnBottom =
             new ColumnBottom(
@@ -256,7 +241,6 @@ public class RobotContainer {
                     ClimberConstants.kMaxLengthStraight,
                     ClimberConstants.kVoltageToHoldRobot);
 
-<<<<<<< HEAD
     public final RobotTracker m_robotTracker =
             new RobotTracker(2.0, new Translation2d(Units.inchesToMeters(6), 0));
     public final FlightDeck m_flightDeck =
@@ -269,7 +253,6 @@ public class RobotContainer {
                     new Limelight("10.36.47.16", 0.06, VisionConstants.limelightConstants),
                     VisionConstants.kCenterGoalTargetConstants,
                     m_flightDeck::addVisionObservation);
-=======
     private final Hood m_hood =
             new Hood(
                     HoodContants.kHoodMotor,
@@ -295,5 +278,4 @@ public class RobotContainer {
     private final Superstructure m_superstructure =
             new Superstructure(
                     m_pivotClimber, m_columnBottom, null, m_columnTop, m_intake, null, m_flywheel);
->>>>>>> main
 }
