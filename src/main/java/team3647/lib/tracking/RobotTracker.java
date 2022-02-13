@@ -1,4 +1,4 @@
-package team3647.frc2022.robot;
+package team3647.lib.tracking;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -6,6 +6,9 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.interpolation.TimeInterpolatableBuffer;
+import edu.wpi.first.wpilibj.Notifier;
+import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
 
 /** Inspired by (basically copied lol) 254 RobotState class */
 public class RobotTracker {
@@ -14,16 +17,60 @@ public class RobotTracker {
     private final TimeInterpolatableBuffer<Pose2d> fieldToRobot;
     private final TimeInterpolatableBuffer<Pose2d> robotToTurret;
     private final Translation2d kRobotToTurretFixed;
+    private final Supplier<Pose2d> drivetrainGetPose;
+    private Pose2d previousPose;
+    private final DoubleSupplier drivetrainGetPoseTS;
+    private final Supplier<Rotation2d> turretGetRotation;
+    private final DoubleSupplier turretGetRotationTS;
+
+    private final Notifier drivetrainUpdate;
+    private final Notifier turretUpdate;
+
     private Twist2d measuredVelocity = new Twist2d();
 
-    public RobotTracker(double bufferLengthSeconds, Translation2d robotToTurretFixed) {
+    public RobotTracker(
+            double bufferLengthSeconds,
+            Translation2d robotToTurretFixed,
+            Supplier<Pose2d> drivetrainGetPose,
+            DoubleSupplier drivetrainGetPoseTS,
+            Supplier<Rotation2d> turretGetRotation,
+            DoubleSupplier turretGetRotationTS) {
         this.kBufferLengthSeconds = bufferLengthSeconds;
         this.kRobotToTurretFixed = robotToTurretFixed;
         fieldToRobot = TimeInterpolatableBuffer.createBuffer(kBufferLengthSeconds);
         robotToTurret = TimeInterpolatableBuffer.createBuffer(kBufferLengthSeconds);
+        this.drivetrainGetPose = drivetrainGetPose;
+        this.drivetrainGetPoseTS = drivetrainGetPoseTS;
+        this.turretGetRotation = turretGetRotation;
+        this.turretGetRotationTS = turretGetRotationTS;
+        this.drivetrainUpdate = new Notifier(this::addDrivetrainObservation);
+        this.turretUpdate = new Notifier(this::addTurretObservation);
+        previousPose = drivetrainGetPose.get();
+    }
+
+    public void startTracking() {
+        drivetrainUpdate.startPeriodic(.01);
+        turretUpdate.startPeriodic(.01);
+    }
+
+    public void stopTracking() {
+        drivetrainUpdate.stop();
+        turretUpdate.stop();
+        this.fieldToRobot.clear();
+        this.robotToTurret.clear();
+    }
+
+    private synchronized void addTurretObservation() {
+        addTurretRotationObservation(turretGetRotationTS.getAsDouble(), turretGetRotation.get());
+    }
+
+    private synchronized void addDrivetrainObservation() {
+        addFieldToRobotObservation(drivetrainGetPoseTS.getAsDouble(), drivetrainGetPose.get());
     }
 
     public synchronized void addFieldToRobotObservation(double timestamp, Pose2d observation) {
+        setRobotVelocityObservation(this.previousPose.log(observation));
+        this.previousPose = observation;
         fieldToRobot.addSample(timestamp, observation);
     }
 
@@ -44,7 +91,7 @@ public class RobotTracker {
         return robotToTurret.getSample(timestamp);
     }
 
-    public synchronized Pose2d getFieldToTurret(double timestamp) {
+    public Pose2d getFieldToTurret(double timestamp) {
         var ftr = getFieldToRobot(timestamp);
         var rtt = getRobotToTurret(timestamp);
         if (ftr == null || rtt == null) {
@@ -53,7 +100,7 @@ public class RobotTracker {
         return rtt.relativeTo(ftr);
     }
 
-    public synchronized Transform2d getTurretToTarget(double timestamp, Pose2d fieldToTarget) {
+    public Transform2d getTurretToTarget(double timestamp, Pose2d fieldToTarget) {
         var ftTurret = getFieldToTurret(timestamp);
         if (ftTurret == null || fieldToTarget == null) {
             return null;

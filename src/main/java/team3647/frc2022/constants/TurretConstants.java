@@ -4,6 +4,8 @@ import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DigitalInput;
 import team3647.lib.drivers.LazyTalonFX;
 
@@ -36,6 +38,9 @@ public class TurretConstants {
     public static final double kPeakCurrentLimit = 40; // amps
     public static final double kPeakCurrentDuration = 10; // milliseconds
     public static final double kNominalVoltage = 11;
+
+    public static final Translation2d kTurretToCamTranslationMeters =
+            new Translation2d(Units.inchesToMeters(6), 0);
 
     public static final SimpleMotorFeedforward kFeedForwards =
             new SimpleMotorFeedforward(kS, kV, kA);

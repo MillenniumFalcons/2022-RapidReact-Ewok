@@ -106,8 +106,7 @@ public final class Drivetrain implements PeriodicSubsystem {
     }
 
     @Override
-    public void readPeriodicInputs() {
-        periodicIO.timestamp = Timer.getFPGATimestamp();
+    public synchronized void readPeriodicInputs() {
         periodicIO.leftPosition = leftMaster.getSelectedSensorPosition() * displacementConversion;
         periodicIO.rightPosition = rightMaster.getSelectedSensorPosition() * displacementConversion;
 
@@ -119,10 +118,14 @@ public final class Drivetrain implements PeriodicSubsystem {
         pigeonIMU.getYawPitchRoll(periodicIO.ypr);
         periodicIO.heading = -Math.IEEEremainder(periodicIO.ypr[0], 360);
 
-        odometry.update(
-                Rotation2d.fromDegrees(periodicIO.heading),
-                periodicIO.leftPosition,
-                periodicIO.rightPosition);
+        synchronized (periodicIO.pose) {
+            periodicIO.timestamp = Timer.getFPGATimestamp();
+            periodicIO.pose =
+                    odometry.update(
+                            Rotation2d.fromDegrees(periodicIO.heading),
+                            periodicIO.leftPosition,
+                            periodicIO.rightPosition);
+        }
         /*periodicIO.pose =
         poseEstimator.update(
                 Rotation2d.fromDegrees(periodicIO.heading),

@@ -98,13 +98,16 @@ public class VisionController implements PeriodicSubsystem {
                 < targetConstants.kMinTargetCount * targetConstants.kPointsPerTarget) {
             return;
         }
+
+        var fitCircle =
+                CircleFitter.fit(
+                        targetConstants.kTargetDiameterMeters / 2.0,
+                        camToTargetTranslations,
+                        kCircleFitPrecision);
+
         synchronized (translationConsumer) {
             translationConsumer.accept(
-                    periodicIO.inputs.captureTimestamp - kNetworklatency,
-                    CircleFitter.fit(
-                            targetConstants.kTargetDiameterMeters / 2.0,
-                            camToTargetTranslations,
-                            kCircleFitPrecision));
+                    periodicIO.inputs.captureTimestamp - kNetworklatency, fitCircle);
         }
     }
 

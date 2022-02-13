@@ -1,9 +1,8 @@
-package team3647.frc2022.robot;
+package team3647.lib.tracking;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
 import java.util.List;
 import team3647.lib.vision.AimingParameters;
@@ -15,7 +14,6 @@ public class FlightDeck {
     private final RobotTracker robotTracker;
     private final MultiTargetTracker targetTracker;
     private final Pose2d kTurretToCamFixed;
-    private static final Translation2d turretToCam = new Translation2d(Units.inchesToMeters(7), 0);
     public static double maxAge;
 
     public FlightDeck(
@@ -53,8 +51,13 @@ public class FlightDeck {
         return new AimingParameters(
                 bestTarget.id,
                 robotTracker.getFieldToTurret(timestamp),
+                robotTracker.getFieldToRobot(timestamp),
                 bestTarget.getSmoothedPosition(),
                 bestTarget.getLatestTimestamp(),
                 bestTarget.getStability());
+    }
+
+    public RobotTracker getTracker() {
+        return robotTracker;
     }
 }

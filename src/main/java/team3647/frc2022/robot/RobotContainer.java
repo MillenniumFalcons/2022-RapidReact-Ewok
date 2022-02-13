@@ -6,8 +6,6 @@ package team3647.frc2022.robot;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -39,8 +37,10 @@ import team3647.frc2022.subsystems.VerticalRollers;
 import team3647.frc2022.subsystems.vision.VisionController;
 import team3647.lib.GroupPrinter;
 import team3647.lib.inputs.Joysticks;
-import team3647.lib.vision.Limelight;
+import team3647.lib.tracking.FlightDeck;
+import team3647.lib.tracking.RobotTracker;
 import team3647.lib.vision.MultiTargetTracker;
+import team3647.lib.vision.PhotonVisionCamera;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -200,6 +200,7 @@ public class RobotContainer {
                     ColumnBottomConstants.kNominalVoltage,
                     GlobalConstants.kDt,
                     ColumnBottomConstants.kFeedForward);
+
     private final VerticalRollers m_verticalRollers =
             new VerticalRollers(
                     VerticalRollersConstants.kVerticalRollersMotor,
@@ -225,6 +226,7 @@ public class RobotContainer {
                     ClimberConstants.kPosConverstion,
                     ClimberConstants.kNominalVoltage,
                     GlobalConstants.kDt);
+
     private final ClimberArm m_rightArm =
             new ClimberArm(
                     ClimberConstants.kRightMotor,
@@ -232,6 +234,7 @@ public class RobotContainer {
                     ClimberConstants.kPosConverstion,
                     ClimberConstants.kNominalVoltage,
                     GlobalConstants.kDt);
+
     public final PivotClimber m_pivotClimber =
             new PivotClimber(
                     m_leftArm,
@@ -241,18 +244,6 @@ public class RobotContainer {
                     ClimberConstants.kMaxLengthStraight,
                     ClimberConstants.kVoltageToHoldRobot);
 
-    public final RobotTracker m_robotTracker =
-            new RobotTracker(2.0, new Translation2d(Units.inchesToMeters(6), 0));
-    public final FlightDeck m_flightDeck =
-            new FlightDeck(
-                    m_robotTracker,
-                    new MultiTargetTracker(),
-                    new Pose2d(Units.inchesToMeters(6), 0, new Rotation2d()));
-    public final VisionController m_visionController =
-            new VisionController(
-                    new Limelight("10.36.47.16", 0.06, VisionConstants.limelightConstants),
-                    VisionConstants.kCenterGoalTargetConstants,
-                    m_flightDeck::addVisionObservation);
     private final Hood m_hood =
             new Hood(
                     HoodContants.kHoodMotor,
@@ -263,6 +254,7 @@ public class RobotContainer {
                     HoodContants.kMinDegree,
                     HoodContants.kMaxDegree,
                     HoodContants.kPosThersholdDeg);
+
     private final Turret m_turret =
             new Turret(
                     TurretConstants.kTurretMotor,
@@ -278,4 +270,22 @@ public class RobotContainer {
     private final Superstructure m_superstructure =
             new Superstructure(
                     m_pivotClimber, m_columnBottom, null, m_columnTop, m_intake, null, m_flywheel);
+
+    public final FlightDeck m_flightDeck =
+            new FlightDeck(
+                    new RobotTracker(
+                            2.0,
+                            TurretConstants.kTurretToCamTranslationMeters,
+                            m_drivetrain::getPose,
+                            m_drivetrain::getTimestamp,
+                            m_turret::getRotation,
+                            m_turret::getTimestamp),
+                    new MultiTargetTracker(),
+                    new Pose2d(TurretConstants.kTurretToCamTranslationMeters, new Rotation2d()));
+
+    public final VisionController m_visionController =
+            new VisionController(
+                    new PhotonVisionCamera("gloworm", 0.06, VisionConstants.limelightConstants),
+                    VisionConstants.kCenterGoalTargetConstants,
+                    m_flightDeck::addVisionObservation);
 }
