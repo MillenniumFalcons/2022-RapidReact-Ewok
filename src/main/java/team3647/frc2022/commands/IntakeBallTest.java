@@ -12,22 +12,22 @@ import team3647.frc2022.subsystems.VerticalRollers;
 
 public class IntakeBallTest extends CommandBase {
     private final Intake intake;
-    private final VerticalRollers verticalRollers;
     private final ColumnBottom columnBottom;
+    private final VerticalRollers verticalRollers;
     private final DoubleSupplier output;
 
     /** Creates a new BallFeeding. */
     public IntakeBallTest(
             Intake intake,
-            VerticalRollers verticalRollers,
             ColumnBottom columnBottom,
+            VerticalRollers verticalRollers,
             DoubleSupplier output) {
-        this.intake = intake;
         this.verticalRollers = verticalRollers;
+        this.intake = intake;
         this.columnBottom = columnBottom;
         this.output = output;
 
-        addRequirements(intake, verticalRollers, columnBottom);
+        addRequirements(intake, columnBottom, verticalRollers);
         // Use addRequirements() here to declare subsystem dependencies.
     }
 
@@ -42,18 +42,17 @@ public class IntakeBallTest extends CommandBase {
     public void execute() {
         double out = output.getAsDouble();
         intake.setOpenloop(-out * 0.4);
-        verticalRollers.setOpenloop(out * 0.4);
         columnBottom.setOpenloop(out * 0.4);
+        verticalRollers.setOpenloop(0.4 * out);
     }
 
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        System.out.println("Stopping flywheel");
         intake.retract();
-        verticalRollers.end();
         columnBottom.end();
         intake.end();
+        verticalRollers.end();
     }
 
     // Returns true when the command should end.

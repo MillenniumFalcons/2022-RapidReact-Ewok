@@ -5,8 +5,9 @@ import edu.wpi.first.math.MathUtil;
 import team3647.lib.TalonFXSubsystem;
 
 public class Hood extends TalonFXSubsystem {
-    private final double minPos;
-    private final double maxPos;
+    private final double minPosDeg;
+    private final double maxPosDeg;
+    private final double posThresholdDeg;
 
     public Hood(
             TalonFX master,
@@ -14,25 +15,34 @@ public class Hood extends TalonFXSubsystem {
             double positionConversion,
             double nominalVoltage,
             double kDt,
-            double minPos,
-            double maxPos) {
+            double minPosDeg,
+            double maxPosDeg,
+            double posThresholdDeg) {
         super(master, velocityConversion, positionConversion, nominalVoltage, kDt);
-        this.minPos = minPos;
-        this.maxPos = maxPos;
+        this.minPosDeg = minPosDeg;
+        this.maxPosDeg = maxPosDeg;
+        this.posThresholdDeg = posThresholdDeg;
         setStatusFramesThatDontMatter(master, kLongStatusTimeMS);
+        resetEncoder();
     }
 
     public void setAngleMotionMagic(double angle) {
-        super.setPositionMotionMagic(MathUtil.clamp(angle, minPos, maxPos), 0);
+        super.setPositionMotionMagic(
+                MathUtil.clamp(angle, minPosDeg + posThresholdDeg, maxPosDeg - posThresholdDeg), 0);
     }
 
     public void setAngle(double angle) {
-        super.setPosition(MathUtil.clamp(angle, minPos, maxPos), 0);
+        super.setPosition(
+                MathUtil.clamp(angle, minPosDeg + posThresholdDeg, maxPosDeg - posThresholdDeg), 0);
+    }
+
+    public double getAngle() {
+        return super.getPosition();
     }
 
     @Override
     public void resetEncoder() {
-        super.setEncoder(minPos);
+        super.setEncoder(minPosDeg);
     }
 
     @Override

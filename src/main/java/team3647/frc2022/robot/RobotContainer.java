@@ -12,20 +12,29 @@ import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import team3647.frc2022.commands.ArcadeDrive;
 import team3647.frc2022.commands.ClimberUpDown;
 import team3647.frc2022.commands.IntakeBallTest;
 import team3647.frc2022.commands.ShootBall;
+import team3647.frc2022.commands.TestHood;
+import team3647.frc2022.commands.climber.ClimberDeploy;
+import team3647.frc2022.commands.climber.ClimberLength;
 import team3647.frc2022.constants.*;
+import team3647.frc2022.states.RobotState;
 import team3647.frc2022.subsystems.ClimberArm;
 import team3647.frc2022.subsystems.ColumnBottom;
 import team3647.frc2022.subsystems.ColumnTop;
 import team3647.frc2022.subsystems.Drivetrain;
 import team3647.frc2022.subsystems.Flywheel;
+import team3647.frc2022.subsystems.Hood;
 import team3647.frc2022.subsystems.Intake;
 import team3647.frc2022.subsystems.PivotClimber;
+import team3647.frc2022.subsystems.Superstructure;
+import team3647.frc2022.subsystems.Turret;
 import team3647.frc2022.subsystems.VerticalRollers;
 import team3647.frc2022.subsystems.vision.VisionController;
 import team3647.lib.GroupPrinter;
@@ -52,7 +61,14 @@ public class RobotContainer {
                 m_verticalRollers,
                 m_intake,
                 m_flywheel,
+<<<<<<< HEAD
                 m_pivotClimber);
+=======
+                m_leftArm,
+                m_rightArm,
+                m_pivotClimber,
+                m_hood);
+>>>>>>> main
         // Configure the button bindings
         m_drivetrain.init();
         m_drivetrain.setDefaultCommand(
@@ -89,8 +105,8 @@ public class RobotContainer {
         coController.leftTrigger.whenHeld(
                 new IntakeBallTest(
                         m_intake,
-                        m_verticalRollers,
                         m_columnBottom,
+                        m_verticalRollers,
                         coController::getLeftTriggerValue));
         // coController.leftTrigger.whenReleased(new InstantCommand(m_intake::retract, m_intake));
         m_pivotClimber.setDefaultCommand(
@@ -103,11 +119,29 @@ public class RobotContainer {
         m_printer.addDouble("LeftStick", coController::getLeftStickY);
         m_printer.addDouble("Kicker Velocity", m_columnTop::getVelocity);
         m_printer.addDouble("Shooter current", m_flywheel::getMasterCurrent);
+        m_printer.addDouble("Hood Position", m_hood::getPosition);
+        m_printer.addDouble("Hood Native Pos", m_hood::getNativePos);
+        m_printer.addDouble("LEFT Climber Distance", m_leftArm::getPosition);
+        m_printer.addDouble("RIGHT Climber Distance", m_rightArm::getPosition);
+        m_printer.addDouble("LEFT Climber Distance Native", m_leftArm::getNativePos);
+        m_printer.addDouble("RIGHT Climber Distance Native", m_rightArm::getNativePos);
     }
 
     private void configureButtonBindings() {
-        mainController.buttonX.whenActive(new InstantCommand(m_pivotClimber::setAngled));
+        mainController.buttonX.whenActive(
+                new ConditionalCommand(
+                        new InstantCommand(m_pivotClimber::setAngled)
+                                .andThen(new WaitCommand(0.1))
+                                .andThen(
+                                        new ClimberLength(
+                                                m_pivotClimber, ClimberConstants.kMaxLengthAngled)),
+                        new ClimberDeploy(m_pivotClimber, null)
+                                .andThen(() -> m_superstructure.setState(RobotState.CLIMB)),
+                        m_superstructure::isClimbing));
         mainController.buttonB.whenActive(new InstantCommand(m_pivotClimber::setStraight));
+        coController.dPadUp.whenPressed(new TestHood(m_hood, 40));
+        coController.dPadLeft.whenPressed(new TestHood(m_hood, 30));
+        coController.dPadDown.whenPressed(new TestHood(m_hood, 15));
     }
 
     /**
@@ -161,6 +195,7 @@ public class RobotContainer {
                     GlobalConstants.kDt,
                     IntakeConstants.kFeedForward,
                     IntakeConstants.kPistons);
+<<<<<<< HEAD
     public final VerticalRollers m_verticalRollers =
             new VerticalRollers(
                     VerticalRollersConstants.kColumnMotor,
@@ -169,6 +204,8 @@ public class RobotContainer {
                     VerticalRollersConstants.kNominalVoltage,
                     GlobalConstants.kDt,
                     VerticalRollersConstants.kFeedForward);
+=======
+>>>>>>> main
 
     public final ColumnBottom m_columnBottom =
             new ColumnBottom(
@@ -178,6 +215,14 @@ public class RobotContainer {
                     ColumnBottomConstants.kNominalVoltage,
                     GlobalConstants.kDt,
                     ColumnBottomConstants.kFeedForward);
+    private final VerticalRollers m_verticalRollers =
+            new VerticalRollers(
+                    VerticalRollersConstants.kVerticalRollersMotor,
+                    VerticalRollersConstants.kNativeVelToSurfaceMpS,
+                    VerticalRollersConstants.kPosConverstion,
+                    VerticalRollersConstants.kNominalVoltage,
+                    GlobalConstants.kDt,
+                    VerticalRollersConstants.kFeedForward);
 
     public final ColumnTop m_columnTop =
             new ColumnTop(
@@ -211,6 +256,7 @@ public class RobotContainer {
                     ClimberConstants.kMaxLengthStraight,
                     ClimberConstants.kVoltageToHoldRobot);
 
+<<<<<<< HEAD
     public final RobotTracker m_robotTracker =
             new RobotTracker(2.0, new Translation2d(Units.inchesToMeters(6), 0));
     public final FlightDeck m_flightDeck =
@@ -223,4 +269,31 @@ public class RobotContainer {
                     new Limelight("10.36.47.16", 0.06, VisionConstants.limelightConstants),
                     VisionConstants.kCenterGoalTargetConstants,
                     m_flightDeck::addVisionObservation);
+=======
+    private final Hood m_hood =
+            new Hood(
+                    HoodContants.kHoodMotor,
+                    HoodContants.kFalconVelocityToDegpS,
+                    HoodContants.kFalconPositionToDegrees,
+                    HoodContants.kNominalVoltage,
+                    GlobalConstants.kDt,
+                    HoodContants.kMinDegree,
+                    HoodContants.kMaxDegree,
+                    HoodContants.kPosThersholdDeg);
+    private final Turret m_turret =
+            new Turret(
+                    TurretConstants.kTurretMotor,
+                    TurretConstants.kFalconVelocityToDegpS,
+                    TurretConstants.kFalconPositionToDegrees,
+                    TurretConstants.kNominalVoltage,
+                    GlobalConstants.kDt,
+                    TurretConstants.kMaxDegree,
+                    TurretConstants.kMinDegree,
+                    TurretConstants.kLimitSwitch,
+                    TurretConstants.kFeedForwards);
+
+    private final Superstructure m_superstructure =
+            new Superstructure(
+                    m_pivotClimber, m_columnBottom, null, m_columnTop, m_intake, null, m_flywheel);
+>>>>>>> main
 }

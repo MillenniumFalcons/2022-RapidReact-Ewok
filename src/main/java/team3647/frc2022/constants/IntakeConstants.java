@@ -12,12 +12,12 @@ public final class IntakeConstants {
     public static final InvertType kMasterInverted = InvertType.None;
     public static final TalonFXConfiguration kMasterConfig = new TalonFXConfiguration();
 
-    public static final double kS = 0;
-    public static final double kV = 0;
-    public static final double kA = 0;
+    public static final double kS = 0.75412;
+    public static final double kV = 0.72691;
+    public static final double kA = 0.020019;
     public static final SimpleMotorFeedforward kFeedForward =
             new SimpleMotorFeedforward(kS, kV, kA);
-    public static final double kNominalVoltage = 12;
+    public static final double kNominalVoltage = 10;
 
     public static final TalonFX kIntakeMotor = new LazyTalonFX(GlobalConstants.IntakeIds.kMotorId);
     public static final Solenoid kPistons =
@@ -33,7 +33,7 @@ public final class IntakeConstants {
         kMasterConfig.slot0.kD = 0;
         kMasterConfig.slot0.kF = 0;
 
-        kMasterConfig.voltageCompSaturation = 12;
+        kMasterConfig.voltageCompSaturation = kNominalVoltage;
 
         kIntakeMotor.configAllSettings(kMasterConfig, GlobalConstants.kTimeoutMS);
     }

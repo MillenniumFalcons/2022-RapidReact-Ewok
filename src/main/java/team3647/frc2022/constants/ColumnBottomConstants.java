@@ -39,6 +39,11 @@ public final class ColumnBottomConstants {
         kMasterConfig.slot0.kD = 0;
         kMasterConfig.slot0.kF = 0;
 
+        kMasterConfig.supplyCurrLimit.enable = true;
+        kMasterConfig.supplyCurrLimit.triggerThresholdCurrent = 40;
+        kMasterConfig.supplyCurrLimit.triggerThresholdTime = 0.5;
+        kMasterConfig.supplyCurrLimit.currentLimit = 15;
+
         kMasterConfig.voltageCompSaturation = kNominalVoltage;
 
         kColumnMotor.configAllSettings(kMasterConfig, GlobalConstants.kTimeoutMS);

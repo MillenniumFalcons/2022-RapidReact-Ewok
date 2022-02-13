@@ -12,6 +12,7 @@ public class ClimberArm extends TalonFXSubsystem {
             double nominalVoltage,
             double kDt) {
         super(master, velocityConversion, positionConversion, nominalVoltage, kDt);
+        resetEncoder();
         setStatusFramesThatDontMatter(master, kLongStatusTimeMS);
     }
 
