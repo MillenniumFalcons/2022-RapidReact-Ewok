@@ -83,14 +83,6 @@ public class RobotContainer {
                             m_intake.setOpenloop(-coController.getRightStickY());
                         },
                         m_intake));
-        m_flywheel.setDefaultCommand(
-                new RunCommand(
-                        () -> {
-                            m_flywheel.setOpenloop(coController.getLeftStickY());
-                        },
-                        m_flywheel));
-        coController.rightTrigger.whenHeld(
-                new ShootBall(m_flywheel, m_columnTop, m_columnBottom, 8.23));
         coController.leftTrigger.whenHeld(
                 new IntakeBallTest(
                         m_intake,
@@ -127,10 +119,15 @@ public class RobotContainer {
                         new ClimberDeploy(m_pivotClimber, null)
                                 .andThen(() -> m_superstructure.setState(RobotState.CLIMB)),
                         m_superstructure::isClimbing));
+
         mainController.buttonB.whenActive(new InstantCommand(m_pivotClimber::setStraight));
-        coController.dPadUp.whenPressed(new TestHood(m_hood, 40));
-        coController.dPadLeft.whenPressed(new TestHood(m_hood, 30));
+
+        coController.dPadUp.whenPressed(new TestHood(m_hood, 23));
+        coController.dPadLeft.whenPressed(new TestHood(m_hood, 18));
         coController.dPadDown.whenPressed(new TestHood(m_hood, 15));
+
+        coController.rightTrigger.whenHeld(
+                new ShootBall(m_flywheel, m_columnTop, m_columnBottom, 8.23));
     }
 
     /**
