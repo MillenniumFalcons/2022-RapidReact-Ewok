@@ -27,8 +27,10 @@ public class Hood extends TalonFXSubsystem {
     }
 
     public void setAngleMotionMagic(double angle) {
+        double multiplier = Math.signum(angle - getAngle());
         super.setPositionMotionMagic(
-                MathUtil.clamp(angle, minPosDeg + posThresholdDeg, maxPosDeg - posThresholdDeg), 0);
+                MathUtil.clamp(angle, minPosDeg + posThresholdDeg, maxPosDeg - posThresholdDeg),
+                0.0 * multiplier);
     }
 
     public void setAngle(double angle) {
@@ -42,6 +44,7 @@ public class Hood extends TalonFXSubsystem {
 
     @Override
     public void resetEncoder() {
+        System.out.println("Min position Degree: " + minPosDeg);
         super.setEncoder(minPosDeg);
     }
 

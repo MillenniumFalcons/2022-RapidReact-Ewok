@@ -22,7 +22,7 @@ public class ColumnTop extends TalonFXSubsystem {
 
     /** @param vel velocity in m/s positive is up (towards the shooter) */
     public void setSurfaceVelocity(double vel) {
-        setVelocity(vel, ff.calculate(getVelocity(), vel, kDt));
+        setVelocity(vel, ff.calculate(vel));
     }
 
     @Override

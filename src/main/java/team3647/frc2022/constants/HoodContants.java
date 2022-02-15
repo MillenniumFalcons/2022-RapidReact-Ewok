@@ -14,7 +14,7 @@ public class HoodContants {
     public static final double kGearboxReduction = 16 / 48.0 * 24 / 460.0;
     public static final double kFalconPositionToDegrees = kGearboxReduction / 2048.0 * 360;
     public static final double kFalconVelocityToDegpS = kFalconPositionToDegrees * 10;
-    public static final double kMaxDegree = 24;
+    public static final double kMaxDegree = 33;
     public static final double kMinDegree = 15;
     public static final double kPosThersholdDeg = 1.0;
     public static final boolean kCurrentLimitingEnable = true;
@@ -32,9 +32,9 @@ public class HoodContants {
     public static final double kNominalVoltage = 11;
 
     static {
-        kMasterConfig.slot0.kP = 0.5;
+        kMasterConfig.slot0.kP = 1;
         kMasterConfig.slot0.kI = 0;
-        kMasterConfig.slot0.kD = 20;
+        kMasterConfig.slot0.kD = 10;
         kMasterConfig.slot0.kF = 0;
 
         kMasterConfig.voltageCompSaturation = kNominalVoltage;

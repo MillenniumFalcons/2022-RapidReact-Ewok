@@ -30,6 +30,6 @@ public class ClimberArm extends TalonFXSubsystem {
 
     @Override
     public String getName() {
-        return null;
+        return "ClimberArm";
     }
 }
