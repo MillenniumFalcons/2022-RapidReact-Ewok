@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
@@ -90,14 +91,6 @@ public class RobotContainer {
                             m_intake.setOpenloop(-coController.getRightStickY());
                         },
                         m_intake));
-        m_flywheel.setDefaultCommand(
-                new RunCommand(
-                        () -> {
-                            m_flywheel.setOpenloop(coController.getLeftStickY());
-                        },
-                        m_flywheel));
-        coController.rightTrigger.whenHeld(
-                new ShootBall(m_flywheel, m_columnTop, m_columnBottom, 8.23));
         coController.leftTrigger.whenHeld(
                 new IntakeBallTest(
                         m_intake,
@@ -115,12 +108,14 @@ public class RobotContainer {
         m_printer.addDouble("LeftStick", coController::getLeftStickY);
         m_printer.addDouble("Kicker Velocity", m_columnTop::getVelocity);
         m_printer.addDouble("Shooter current", m_flywheel::getMasterCurrent);
+        m_printer.addDouble("Kicker current", m_columnTop::getMasterCurrent);
         m_printer.addDouble("Hood Position", m_hood::getPosition);
-        m_printer.addDouble("Hood Native Pos", m_hood::getNativePos);
-        m_printer.addDouble("LEFT Climber Distance", m_leftArm::getPosition);
-        m_printer.addDouble("RIGHT Climber Distance", m_rightArm::getPosition);
-        m_printer.addDouble("LEFT Climber Distance Native", m_leftArm::getNativePos);
-        m_printer.addDouble("RIGHT Climber Distance Native", m_rightArm::getNativePos);
+        m_printer.addDouble("Hood native", m_hood::getNativePos);
+
+        SmartDashboard.putNumber("Shooter Speed", 0.0);
+        SmartDashboard.putNumber("Hood angle", 16.0);
+        m_hood.resetEncoder();
+        HoodContants.kHoodMotor.configAllSettings(HoodContants.kMasterConfig);
     }
 
     private void configureButtonBindings() {
@@ -134,10 +129,13 @@ public class RobotContainer {
                         new ClimberDeploy(m_pivotClimber, null)
                                 .andThen(() -> m_superstructure.setState(RobotState.CLIMB)),
                         m_superstructure::isClimbing));
+
         mainController.buttonB.whenActive(new InstantCommand(m_pivotClimber::setStraight));
-        coController.dPadUp.whenPressed(new TestHood(m_hood, 40));
-        coController.dPadLeft.whenPressed(new TestHood(m_hood, 30));
-        coController.dPadDown.whenPressed(new TestHood(m_hood, 15));
+
+        coController.dPadUp.whenPressed(new TestHood(m_hood, this::getHoodDegree));
+
+        coController.rightTrigger.whenHeld(
+                new ShootBall(m_flywheel, m_columnTop, m_columnBottom, this::getShooterSpeed));
     }
 
     /**
@@ -148,6 +146,14 @@ public class RobotContainer {
     public Command getAutonomousCommand() {
         // An ExampleCommand will run in autonomous
         return null;
+    }
+
+    public double getShooterSpeed() {
+        return SmartDashboard.getNumber("Shooter Speed", 0.0);
+    }
+
+    public double getHoodDegree() {
+        return SmartDashboard.getNumber("Hood angle", 16.0);
     }
 
     private final CommandScheduler m_commandScheduler = CommandScheduler.getInstance();
@@ -250,6 +256,7 @@ public class RobotContainer {
                     HoodContants.kFalconVelocityToDegpS,
                     HoodContants.kFalconPositionToDegrees,
                     HoodContants.kNominalVoltage,
+                    HoodContants.kS,
                     GlobalConstants.kDt,
                     HoodContants.kMinDegree,
                     HoodContants.kMaxDegree,

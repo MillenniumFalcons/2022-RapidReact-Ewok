@@ -42,7 +42,6 @@ public final class GlobalConstants {
 
     public static final class HoodIds {
         public static final int kMotorId = 10;
-        public static final int kEncoderId = 12;
         public static final int kBannerSensorPin = 3;
     }
 

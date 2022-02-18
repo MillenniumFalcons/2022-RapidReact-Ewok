@@ -1,13 +1,14 @@
 package team3647.frc2022.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import java.util.function.DoubleSupplier;
 import team3647.frc2022.subsystems.Hood;
 
 public class TestHood extends CommandBase {
     private final Hood hood;
-    private final double positionDeg;
+    private final DoubleSupplier positionDeg;
 
-    public TestHood(Hood hood, double positiondeg) {
+    public TestHood(Hood hood, DoubleSupplier positiondeg) {
         this.hood = hood;
         this.positionDeg = positiondeg;
         addRequirements(hood);
@@ -20,7 +21,7 @@ public class TestHood extends CommandBase {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        // hood.setAngleMotionMagic(positionDeg);
+        hood.setAngleMotionMagic(positionDeg.getAsDouble());
     }
 
     // Called once the command ends or is interrupted.
