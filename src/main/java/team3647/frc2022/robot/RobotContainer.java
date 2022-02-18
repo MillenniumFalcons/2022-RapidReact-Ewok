@@ -246,6 +246,7 @@ public class RobotContainer {
                     HoodContants.kFalconVelocityToDegpS,
                     HoodContants.kFalconPositionToDegrees,
                     HoodContants.kNominalVoltage,
+                    HoodContants.kS,
                     GlobalConstants.kDt,
                     HoodContants.kMinDegree,
                     HoodContants.kMaxDegree,

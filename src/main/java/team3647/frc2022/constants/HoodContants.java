@@ -16,8 +16,11 @@ public class HoodContants {
     public static final double kFalconVelocityToDegpS = kFalconPositionToDegrees * 10;
     public static final double kMaxDegree = 33;
     public static final double kMinDegree = 15;
-    public static final double kPosThersholdDeg = 1.0;
+    public static final double kPosThersholdDeg = 0.5;
     public static final boolean kCurrentLimitingEnable = true;
+    public static final double kS = 0.73693;
+    public static final double kV = 0.014462;
+    public static final double kA = 0.00069253;
 
     public static final double kMaxVelocityDegPs = 36;
     public static final double kMaxAccelerationDegPss = 36;
@@ -32,10 +35,11 @@ public class HoodContants {
     public static final double kNominalVoltage = 11;
 
     static {
-        kMasterConfig.slot0.kP = 1;
+        kMasterConfig.slot0.kP = 0.21;
         kMasterConfig.slot0.kI = 0;
-        kMasterConfig.slot0.kD = 10;
-        kMasterConfig.slot0.kF = 0;
+        kMasterConfig.slot0.kD = 0.2025;
+        // kMasterConfig.slot0.integralZone = 1000;
+        kMasterConfig.slot0.kF = kV / kNominalVoltage * kFalconVelocityToDegpS * 1023;
 
         kMasterConfig.voltageCompSaturation = kNominalVoltage;
         kMasterConfig.supplyCurrLimit.enable = kCurrentLimitingEnable;

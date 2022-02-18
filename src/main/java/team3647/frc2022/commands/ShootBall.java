@@ -42,7 +42,7 @@ public class ShootBall extends CommandBase {
             flywheel.setOpenloop(0);
         } else {
             flywheel.setSurfaceSpeed(speed);
-            columnTop.setOpenloop(.6);
+            columnTop.setSurfaceVelocity(speed * 0.5);
             if (flywheel.getVelocity() > speed - 0.1) {
                 columnBottom.setOpenloop(0.4);
             }

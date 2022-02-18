@@ -2,8 +2,8 @@
   "counts per rotation": 2048.0,
   "encoder type": "Built-in",
   "encoding": false,
-  "gearing denominator": 31.0,
-  "gearing numerator": 24.0,
+  "gearing denominator": 115.0,
+  "gearing numerator": 2.0,
   "gyro": "Analog Gyro",
   "gyro ctor": "0",
   "is drivetrain": false,
@@ -17,7 +17,7 @@
     1
   ],
   "primary motor ports": [
-    7
+    10
   ],
   "primary motors inverted": [
     true
