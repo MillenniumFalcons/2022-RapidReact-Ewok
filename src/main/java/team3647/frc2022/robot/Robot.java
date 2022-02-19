@@ -39,7 +39,6 @@ public class Robot extends TimedRobot {
         // SmartDashboard.updateValues();
 
         ts = Timer.getFPGATimestamp();
-        m_robotContainer.m_flightDeck.getTracker().startTracking();
     }
 
     /**
@@ -64,7 +63,9 @@ public class Robot extends TimedRobot {
 
     /** This function is called once each time the robot enters Disabled mode. */
     @Override
-    public void disabledInit() {}
+    public void disabledInit() {
+        m_robotContainer.m_flightDeck.getTracker().stopTracking();
+    }
 
     @Override
     public void disabledPeriodic() {}
@@ -95,6 +96,7 @@ public class Robot extends TimedRobot {
         if (m_autonomousCommand != null) {
             m_autonomousCommand.cancel();
         }
+        m_robotContainer.m_flightDeck.getTracker().startTracking();
     }
 
     /** This function is called periodically during operator control. */
@@ -108,14 +110,14 @@ public class Robot extends TimedRobot {
             // System.out.println("TARGET NULL");
         }
         m_robotContainer.field.setRobotPose(m_robotContainer.m_drivetrain.getPose());
-        m_robotContainer
-                .field
-                .getObject("turret")
-                .setPose(
-                        m_robotContainer
-                                .m_flightDeck
-                                .getTracker()
-                                .getFieldToTurret(Timer.getFPGATimestamp()));
+        var ftt =
+                m_robotContainer
+                        .m_flightDeck
+                        .getTracker()
+                        .getFieldToTurret(Timer.getFPGATimestamp());
+        if (ftt != null) {
+            m_robotContainer.field.getObject("turret").setPose(ftt);
+        }
     }
 
     @Override
