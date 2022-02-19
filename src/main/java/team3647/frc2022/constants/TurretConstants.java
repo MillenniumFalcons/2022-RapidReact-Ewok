@@ -21,9 +21,9 @@ public class TurretConstants {
     public static final double kPosThersholdDeg = 1.0;
     public static final boolean kCurrentLimitingEnable = true;
 
-    public static final double kS = 0;
-    public static final double kV = 0;
-    public static final double kA = 0;
+    public static final double kS = 0.67599;
+    public static final double kV = 0.010994;
+    public static final double kA = 0.000324;
 
     public static final double kMaxVelocityDegPs = 36;
     public static final double kMaxAccelerationDegPss = 36;
@@ -44,9 +44,9 @@ public class TurretConstants {
             new DigitalInput(GlobalConstants.TurretIds.kLimitSwitchpin);
 
     static {
-        kMasterConfig.slot0.kP = 0.5;
+        kMasterConfig.slot0.kP = 0;
         kMasterConfig.slot0.kI = 0;
-        kMasterConfig.slot0.kD = 20;
+        kMasterConfig.slot0.kD = 0;
         kMasterConfig.slot0.kF = 0;
 
         kMasterConfig.voltageCompSaturation = kNominalVoltage;

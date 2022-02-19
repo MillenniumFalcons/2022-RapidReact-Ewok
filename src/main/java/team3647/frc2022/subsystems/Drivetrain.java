@@ -190,17 +190,9 @@ public final class Drivetrain implements PeriodicSubsystem {
             end();
             return;
         }
-        periodicIO.leftFeedForward =
-                feedforward.calculate(
-                        periodicIO.wheelSpeeds.leftMetersPerSecond,
-                        wheelSpeeds.leftMetersPerSecond,
-                        kDt);
-        periodicIO.rightFeedForward =
-                feedforward.calculate(
-                        periodicIO.wheelSpeeds.rightMetersPerSecond,
-                        wheelSpeeds.rightMetersPerSecond,
-                        kDt);
-
+        periodicIO.controlMode = ControlMode.Velocity;
+        periodicIO.leftFeedForward = feedforward.calculate(wheelSpeeds.leftMetersPerSecond);
+        periodicIO.rightFeedForward = feedforward.calculate(wheelSpeeds.rightMetersPerSecond);
         periodicIO.leftOutput = wheelSpeeds.leftMetersPerSecond / velocityConversion;
         periodicIO.rightOutput = wheelSpeeds.rightMetersPerSecond / velocityConversion;
     }
@@ -248,6 +240,14 @@ public final class Drivetrain implements PeriodicSubsystem {
 
     public double getDrivetrainYMeters() {
         return periodicIO.pose.getY();
+    }
+
+    public double getLeftVelocity() {
+        return periodicIO.wheelSpeeds.leftMetersPerSecond;
+    }
+
+    public double getRightVelocity() {
+        return periodicIO.wheelSpeeds.rightMetersPerSecond;
     }
 
     public void resetOdometry() {
