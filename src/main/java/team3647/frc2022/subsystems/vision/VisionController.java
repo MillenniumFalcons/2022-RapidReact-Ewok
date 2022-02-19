@@ -55,7 +55,9 @@ public class VisionController implements PeriodicSubsystem {
             List<VisionPoint> corners = new LinkedList<>();
             double totalX = 0.0;
             double totalY = 0.0;
-            for (int cornerIndex = 0; cornerIndex < corners.size(); cornerIndex++) {
+            for (int cornerIndex = 0;
+                    cornerIndex < targetConstants.kPointsPerTarget;
+                    cornerIndex++) {
                 int idx = targetIndex * targetCount + cornerIndex;
                 if (idx >= periodicIO.inputs.xCorners.length
                         || idx >= periodicIO.inputs.yCorners.length) {

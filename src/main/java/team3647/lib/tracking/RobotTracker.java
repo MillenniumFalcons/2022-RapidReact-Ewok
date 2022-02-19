@@ -25,6 +25,7 @@ public class RobotTracker {
 
     private final Notifier drivetrainUpdate;
     private final Notifier turretUpdate;
+    private static final Pose2d kRelativeOrigin = new Pose2d();
 
     private Twist2d measuredVelocity = new Twist2d();
 
@@ -88,24 +89,11 @@ public class RobotTracker {
 
     public Pose2d getFieldToTurret(double timestamp) {
         var ftr = getFieldToRobot(timestamp);
-        // System.out.println("FTR: " + ftr);
-        if (ftr == null) {
-            System.out.println("FTR NULL");
-        }
         var rtt = getRobotToTurret(timestamp);
-        // System.out.println("FTR: " + rtt);
-        if (rtt == null) {
-            System.out.println("RTT NULL");
-        }
         if (ftr == null || rtt == null) {
             return null;
         }
-        var ftt =
-                new Transform2d(new Pose2d(), ftr)
-                        .plus(
-                                new Transform2d(
-                                        new Pose2d(new Translation2d(), ftr.getRotation()), rtt));
-        return new Pose2d(ftt.getTranslation(), ftt.getRotation());
+        return ftr.transformBy(new Transform2d(kRelativeOrigin, rtt));
     }
 
     public Transform2d getTurretToTarget(double timestamp, Pose2d fieldToTarget) {

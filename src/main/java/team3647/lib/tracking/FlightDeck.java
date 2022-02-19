@@ -2,6 +2,7 @@ package team3647.lib.tracking;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.Timer;
 import java.util.List;
@@ -15,6 +16,7 @@ public class FlightDeck {
     private final MultiTargetTracker targetTracker;
     private final Pose2d kTurretToCamFixed;
     public static double maxAge;
+    private static final Pose2d kRelativeOrigin = new Pose2d();
 
     public FlightDeck(
             RobotTracker robotTracker, MultiTargetTracker targetTracker, Pose2d kTurretToCamFixed) {
@@ -26,15 +28,17 @@ public class FlightDeck {
     public synchronized void addVisionObservation(double timestamp, Translation2d camToGoal) {
         Pose2d fieldToTurret = robotTracker.getFieldToTurret(timestamp);
         if (fieldToTurret == null || camToGoal == null) {
-            // System.out.println("One fo the transforms was nul");
             return;
         }
         targetTracker.update(
                 timestamp,
                 List.of(
-                        new Pose2d(camToGoal, new Rotation2d())
-                                .relativeTo(kTurretToCamFixed)
-                                .relativeTo(fieldToTurret)));
+                        fieldToTurret
+                                .transformBy(new Transform2d(kRelativeOrigin, kTurretToCamFixed))
+                                .transformBy(
+                                        new Transform2d(
+                                                kRelativeOrigin,
+                                                new Pose2d(camToGoal, new Rotation2d())))));
     }
 
     public synchronized AimingParameters getAimingParameters(int lastTargetId) {
