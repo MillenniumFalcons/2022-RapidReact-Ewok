@@ -15,7 +15,7 @@ public class ColumnBottom extends TalonFXSubsystem {
             double kDt,
             SimpleMotorFeedforward ff) {
         super(master, velocityConversion, positionConversion, nominalVoltage, kDt);
-        setStatusFramesThatDontMatter(master, kLongStatusTimeMS);
+        setStatusFramesThatDontMatter(master, kLongStatusTimeMS, kTimeoutMS);
         this.ff = ff;
     }
 

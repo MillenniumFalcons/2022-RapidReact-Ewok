@@ -25,7 +25,7 @@ public class Hood extends TalonFXSubsystem {
         this.maxPosDeg = maxPosDeg;
         this.posThresholdDeg = posThresholdDeg;
         this.kS = kS;
-        setStatusFramesThatDontMatter(master, kLongStatusTimeMS);
+        setStatusFramesThatDontMatter(master, kLongStatusTimeMS, kTimeoutMS);
         resetEncoder();
     }
 

@@ -19,7 +19,7 @@ public class Flywheel extends TalonFXSubsystem {
             SimpleMotorFeedforward ff) {
         super(master, velocityConversion, positionConversion, nominalVoltage, kDt);
         this.addFollower(follower, FollowerType.PercentOutput, InvertType.OpposeMaster);
-        setStatusFramesThatDontMatter(master, kLongStatusTimeMS);
+        setStatusFramesThatDontMatter(master, kLongStatusTimeMS, kTimeoutMS);
         setToCoast();
         this.ff = ff;
     }
