@@ -175,7 +175,7 @@ public final class Drivetrain implements PeriodicSubsystem {
 
     @Override
     public void periodic() {
-        readPeriodicInputs();
+        // readPeriodicInputs(); Write in robot addPeriodic
         writePeriodicOutputs();
     }
 

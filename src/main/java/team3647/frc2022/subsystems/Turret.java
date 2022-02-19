@@ -72,6 +72,12 @@ public class Turret extends TalonFXSubsystem {
         return angle;
     }
 
+    @Override
+    public void periodic() {
+        // readPeriodicInputs(); Call in Robot.addPeriodic
+        writePeriodicOutputs();
+    }
+
     public Rotation2d getRotation() {
         return Rotation2d.fromDegrees(getAngle());
     }

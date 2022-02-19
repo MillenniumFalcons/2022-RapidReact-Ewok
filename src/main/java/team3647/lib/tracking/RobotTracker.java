@@ -6,7 +6,6 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.interpolation.TimeInterpolatableBuffer;
-import edu.wpi.first.wpilibj.Notifier;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
@@ -23,8 +22,6 @@ public class RobotTracker {
     private final Supplier<Rotation2d> turretGetRotation;
     private final DoubleSupplier turretGetRotationTS;
 
-    private final Notifier drivetrainUpdate;
-    private final Notifier turretUpdate;
     private static final Pose2d kRelativeOrigin = new Pose2d();
 
     private Twist2d measuredVelocity = new Twist2d();
@@ -44,24 +41,17 @@ public class RobotTracker {
         this.drivetrainGetPoseTS = drivetrainGetPoseTS;
         this.turretGetRotation = turretGetRotation;
         this.turretGetRotationTS = turretGetRotationTS;
-        this.drivetrainUpdate = new Notifier(this::addDrivetrainObservation);
-        this.turretUpdate = new Notifier(this::addTurretObservation);
         previousPose = drivetrainGetPose.get();
     }
 
-    public void stopTracking() {
-        drivetrainUpdate.stop();
-        turretUpdate.stop();
+    public void clear() {
         this.fieldToRobot.clear();
         this.robotToTurret.clear();
     }
 
-    public synchronized void addTurretObservation() {
-        addTurretRotationObservation(turretGetRotationTS.getAsDouble(), turretGetRotation.get());
-    }
-
-    public synchronized void addDrivetrainObservation() {
+    public void update() {
         addFieldToRobotObservation(drivetrainGetPoseTS.getAsDouble(), drivetrainGetPose.get());
+        addTurretRotationObservation(turretGetRotationTS.getAsDouble(), turretGetRotation.get());
     }
 
     public synchronized void addFieldToRobotObservation(double timestamp, Pose2d observation) {

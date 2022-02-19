@@ -5,11 +5,9 @@
 package team3647.frc2022.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import team3647.lib.vision.AimingParameters;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -19,13 +17,25 @@ import team3647.lib.vision.AimingParameters;
  */
 public class Robot extends TimedRobot {
     private Command m_autonomousCommand;
+    public static final double kTenMSLoopTime = 0.01;
 
     private RobotContainer m_robotContainer = new RobotContainer();
-    private double ts = 0;
     int lastId = 0;
 
     public Robot() {
         super(.02);
+        addPeriodic(
+                m_robotContainer.m_drivetrain::readPeriodicInputs,
+                kTenMSLoopTime,
+                .0025); // 2.5MS offset
+        addPeriodic(
+                m_robotContainer.m_turret::readPeriodicInputs,
+                kTenMSLoopTime,
+                .005); // 5.0 MS offset
+        addPeriodic(
+                m_robotContainer.m_flightDeck.getTracker()::update,
+                kTenMSLoopTime,
+                .0075); // 7.5 MS offset
     }
 
     /**
@@ -37,8 +47,6 @@ public class Robot extends TimedRobot {
         LiveWindow.disableAllTelemetry();
         LiveWindow.setEnabled(false);
         // SmartDashboard.updateValues();
-
-        ts = Timer.getFPGATimestamp();
     }
 
     /**
@@ -55,19 +63,11 @@ public class Robot extends TimedRobot {
         // and running subsystem periodic() methods.  This must be called from the robot's periodic
         // block in order for anything in the Command-based framework to work.
         CommandScheduler.getInstance().run();
-        double now = Timer.getFPGATimestamp();
-        double dt = now - ts;
-        ts = now;
-        m_robotContainer.m_flightDeck.getTracker().addTurretObservation();
-        m_robotContainer.m_flightDeck.getTracker().addDrivetrainObservation();
-        // System.out.println(dt);
     }
 
     /** This function is called once each time the robot enters Disabled mode. */
     @Override
-    public void disabledInit() {
-        m_robotContainer.m_flightDeck.getTracker().stopTracking();
-    }
+    public void disabledInit() {}
 
     @Override
     public void disabledPeriodic() {}
@@ -102,24 +102,7 @@ public class Robot extends TimedRobot {
 
     /** This function is called periodically during operator control. */
     @Override
-    public void teleopPeriodic() {
-        AimingParameters params = m_robotContainer.m_flightDeck.getAimingParameters(lastId);
-        if (params != null) {
-            m_robotContainer.field.getObject("vision Pose").setPose(params.getFieldToGoal());
-            lastId = params.id;
-        } else {
-            // System.out.println("TARGET NULL");
-        }
-        m_robotContainer.field.setRobotPose(m_robotContainer.m_drivetrain.getPose());
-        var ftt =
-                m_robotContainer
-                        .m_flightDeck
-                        .getTracker()
-                        .getFieldToTurret(Timer.getFPGATimestamp());
-        if (ftt != null) {
-            m_robotContainer.field.getObject("turret").setPose(ftt);
-        }
-    }
+    public void teleopPeriodic() {}
 
     @Override
     public void testInit() {
