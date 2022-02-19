@@ -73,6 +73,14 @@ public class RobotContainer {
                         m_drivetrain,
                         mainController::getLeftStickY,
                         mainController::getRightStickX));
+        // m_drivetrain.setDefaultCommand(
+        //         new RunCommand(
+        //                 () ->
+        //                         m_drivetrain.setVelocity(
+        //                                 new DifferentialDriveWheelSpeeds(
+        //                                         mainController.getLeftStickY(),
+        //                                         mainController.getLeftStickY())),
+        //                 m_drivetrain));
 
         // m_columnBottom.setDefaultCommand(new OpenLoop(m_columnBottom,
         // coController::getLeftStickY));
@@ -111,6 +119,8 @@ public class RobotContainer {
         m_printer.addDouble("Kicker current", m_columnTop::getMasterCurrent);
         m_printer.addDouble("Hood Position", m_hood::getPosition);
         m_printer.addDouble("Hood native", m_hood::getNativePos);
+        m_printer.addDouble("Drive Left Velocity", m_drivetrain::getLeftVelocity);
+        m_printer.addDouble("Drive Right Velocity", m_drivetrain::getRightVelocity);
 
         SmartDashboard.putNumber("Shooter Speed", 0.0);
         SmartDashboard.putNumber("Hood angle", 16.0);

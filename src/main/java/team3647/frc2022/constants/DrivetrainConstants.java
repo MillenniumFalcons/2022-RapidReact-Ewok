@@ -42,9 +42,9 @@ public final class DrivetrainConstants {
     public static final TalonFXConfiguration kLeftMasterConfig = new TalonFXConfiguration();
     public static final TalonFXConfiguration kRightMasterConfig = new TalonFXConfiguration();
 
-    public static final double kS = 0; // Volts
-    public static final double kV = 0; // Volts
-    public static final double kA = 0; // Volts
+    public static final double kS = 0.77918; // Volts
+    public static final double kV = 2.4288; // Volts
+    public static final double kA = 0.57834; // Volts
 
     public static final SimpleMotorFeedforward kFeedforward =
             new SimpleMotorFeedforward(kS, kV, kA);
@@ -67,7 +67,7 @@ public final class DrivetrainConstants {
             kWheelRotationToMeters / GlobalConstants.kFalconTicksPerRotation;
 
     static {
-        kLeftMasterConfig.slot0.kP = 0.35;
+        kLeftMasterConfig.slot0.kP = 2.5812;
 
         kLeftMasterConfig.supplyCurrLimit.enable = true;
         kLeftMasterConfig.supplyCurrLimit.currentLimit = kStallCurrent;
