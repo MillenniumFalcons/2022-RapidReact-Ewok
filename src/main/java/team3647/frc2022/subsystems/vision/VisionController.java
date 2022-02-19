@@ -63,7 +63,7 @@ public class VisionController implements PeriodicSubsystem {
                 }
                 double xPixel = periodicIO.inputs.xCorners[idx];
                 double yPixels = periodicIO.inputs.yCorners[idx];
-                corners.set(cornerIndex, new VisionPoint(xPixel, yPixels));
+                corners.add(new VisionPoint(xPixel, yPixels));
                 totalX += xPixel;
                 totalY += yPixels;
             }
@@ -71,7 +71,7 @@ public class VisionController implements PeriodicSubsystem {
                     new VisionPoint(
                             totalX / targetConstants.kPointsPerTarget,
                             totalY / targetConstants.kPointsPerTarget);
-
+            System.out.println("Corners length: " + corners.size());
             // Makes the top corners first in the array
             corners = sortCorners(corners, targetAvg);
             int i;
@@ -190,7 +190,7 @@ public class VisionController implements PeriodicSubsystem {
         double scale = heightDiff / z;
         double range = Math.hypot(x, y) * scale;
         Rotation2d angleToTarget = new Rotation2d(x, y);
-
+        System.out.println("Range: " + range);
         return new Translation2d(range * angleToTarget.getCos(), range * angleToTarget.getSin());
     }
 
