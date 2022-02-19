@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import team3647.lib.vision.AimingParameters;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -21,6 +22,7 @@ public class Robot extends TimedRobot {
 
     private RobotContainer m_robotContainer = new RobotContainer();
     private double ts = 0;
+    int lastId = 0;
 
     public Robot() {
         super(.02);
@@ -37,6 +39,7 @@ public class Robot extends TimedRobot {
         // SmartDashboard.updateValues();
 
         ts = Timer.getFPGATimestamp();
+        m_robotContainer.m_flightDeck.getTracker().startTracking();
     }
 
     /**
@@ -96,7 +99,24 @@ public class Robot extends TimedRobot {
 
     /** This function is called periodically during operator control. */
     @Override
-    public void teleopPeriodic() {}
+    public void teleopPeriodic() {
+        AimingParameters params = m_robotContainer.m_flightDeck.getAimingParameters(lastId);
+        if (params != null) {
+            m_robotContainer.field.getObject("vision Pose").setPose(params.getFieldToGoal());
+            lastId = params.id;
+        } else {
+            // System.out.println("TARGET NULL");
+        }
+        m_robotContainer.field.setRobotPose(m_robotContainer.m_drivetrain.getPose());
+        m_robotContainer
+                .field
+                .getObject("turret")
+                .setPose(
+                        m_robotContainer
+                                .m_flightDeck
+                                .getTracker()
+                                .getFieldToTurret(Timer.getFPGATimestamp()));
+    }
 
     @Override
     public void testInit() {

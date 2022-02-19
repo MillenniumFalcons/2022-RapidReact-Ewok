@@ -6,8 +6,10 @@ package team3647.frc2022.robot;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -50,6 +52,7 @@ import team3647.lib.vision.PhotonVisionCamera;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
+    public final Field2d field = new Field2d();
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
         pdp.clearStickyFaults();
@@ -65,6 +68,8 @@ public class RobotContainer {
                 m_leftArm,
                 m_rightArm,
                 m_pivotClimber,
+                m_visionController,
+                m_turret,
                 m_hood);
         // Configure the button bindings
         m_drivetrain.init();
@@ -118,14 +123,15 @@ public class RobotContainer {
         m_printer.addDouble("Shooter current", m_flywheel::getMasterCurrent);
         m_printer.addDouble("Kicker current", m_columnTop::getMasterCurrent);
         m_printer.addDouble("Hood Position", m_hood::getPosition);
-        m_printer.addDouble("Hood native", m_hood::getNativePos);
-        m_printer.addDouble("Drive Left Velocity", m_drivetrain::getLeftVelocity);
-        m_printer.addDouble("Drive Right Velocity", m_drivetrain::getRightVelocity);
-
+        m_printer.addDouble("turret rotation", m_turret::getAngle);
+        SmartDashboard.putData(field);
+        field.getObject("vision Pose").setPose(new Pose2d());
         SmartDashboard.putNumber("Shooter Speed", 0.0);
         SmartDashboard.putNumber("Hood angle", 16.0);
         m_hood.resetEncoder();
         HoodContants.kHoodMotor.configAllSettings(HoodContants.kMasterConfig);
+        m_drivetrain.setOdometry(
+                new Pose2d(new Translation2d(5.5, 5.5), new Rotation2d()), new Rotation2d());
     }
 
     private void configureButtonBindings() {
@@ -291,8 +297,8 @@ public class RobotContainer {
     public final FlightDeck m_flightDeck =
             new FlightDeck(
                     new RobotTracker(
-                            2.0,
-                            TurretConstants.kTurretToCamTranslationMeters,
+                            1.0,
+                            TurretConstants.kRobotToTurretFixed,
                             m_drivetrain::getPose,
                             m_drivetrain::getTimestamp,
                             m_turret::getRotation,

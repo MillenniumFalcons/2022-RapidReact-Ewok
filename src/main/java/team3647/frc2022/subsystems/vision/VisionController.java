@@ -5,7 +5,6 @@ import edu.wpi.first.math.geometry.Translation2d;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.BiConsumer;
-import org.ejml.simple.UnsupportedOperation;
 import team3647.lib.PeriodicSubsystem;
 import team3647.lib.vision.CircleFitter;
 import team3647.lib.vision.IVisionCamera;
@@ -53,18 +52,20 @@ public class VisionController implements PeriodicSubsystem {
         List<Translation2d> camToTargetTranslations = new LinkedList<>();
         // accessing the arrays as if they are 2d linear (c 2d arrays)
         for (int targetIndex = 0; targetIndex < targetCount; targetIndex++) {
-            VisionPoint[] corners = new VisionPoint[targetConstants.kPointsPerTarget];
+            List<VisionPoint> corners = new LinkedList<>();
             double totalX = 0.0;
             double totalY = 0.0;
-            for (int cornerIndex = 0;
-                    cornerIndex < targetConstants.kPointsPerTarget;
-                    cornerIndex++) {
+            for (int cornerIndex = 0; cornerIndex < corners.size(); cornerIndex++) {
                 int idx = targetIndex * targetCount + cornerIndex;
-                corners[cornerIndex] =
-                        new VisionPoint(
-                                periodicIO.inputs.xCorners[idx], periodicIO.inputs.yCorners[idx]);
-                totalX += periodicIO.inputs.xCorners[idx];
-                totalY += periodicIO.inputs.yCorners[idx];
+                if (idx >= periodicIO.inputs.xCorners.length
+                        || idx >= periodicIO.inputs.yCorners.length) {
+                    continue;
+                }
+                double xPixel = periodicIO.inputs.xCorners[idx];
+                double yPixels = periodicIO.inputs.yCorners[idx];
+                corners.set(cornerIndex, new VisionPoint(xPixel, yPixels));
+                totalX += xPixel;
+                totalY += yPixels;
             }
             VisionPoint targetAvg =
                     new VisionPoint(
@@ -72,10 +73,10 @@ public class VisionController implements PeriodicSubsystem {
                             totalY / targetConstants.kPointsPerTarget);
 
             // Makes the top corners first in the array
-            sortCorners(corners, targetAvg);
+            corners = sortCorners(corners, targetAvg);
             int i;
             // top corners
-            for (i = 0; i < 4; i++) {
+            for (i = 0; i < corners.size(); i++) {
                 // uses the top target height for the first 2 elements, and the bottom target height
                 // for the last two elements;
                 double targetHeight =
@@ -84,7 +85,7 @@ public class VisionController implements PeriodicSubsystem {
                                 : targetConstants.kBottomTargetHeightMeters;
                 Translation2d camToTarget =
                         solveTranslationToTarget(
-                                corners[i],
+                                corners.get(i),
                                 targetHeight,
                                 camera.getConstants(),
                                 camera.getPipeline());
@@ -104,7 +105,6 @@ public class VisionController implements PeriodicSubsystem {
                         targetConstants.kTargetDiameterMeters / 2.0,
                         camToTargetTranslations,
                         kCircleFitPrecision);
-
         synchronized (translationConsumer) {
             translationConsumer.accept(
                     periodicIO.inputs.captureTimestamp - kNetworklatency, fitCircle);
@@ -117,18 +117,18 @@ public class VisionController implements PeriodicSubsystem {
      * @param corners
      * @param average
      */
-    static void sortCorners(VisionPoint[] corners, VisionPoint average) {
-        if (corners.length != 4) {
-            throw new UnsupportedOperation("Corners needs exactly 4 elements");
-        }
+    static List<VisionPoint> sortCorners(List<VisionPoint> corners, VisionPoint average) {
+        // if (corners.size() != 4) {
+        //     throw new UnsupportedOperation("Corners needs exactly 4 elements");
+        // }
         double minAngleInPosDirection = Math.PI;
         double maxAngleInNegDirection = -Math.PI;
-        int topLeftIdx = 0;
-        int topRightIdx = 1; // garbage values
-        int bottomIdx1 = 2;
-        int bottomIdx2 = 3;
-        for (int i = 0; i < corners.length; i++) {
-            VisionPoint corner = corners[i];
+        int topLeftIdx = -1;
+        int topRightIdx = -1; // garbage values
+        int bottomIdx1 = -1;
+        int bottomIdx2 = -1;
+        for (int i = 0; i < corners.size(); i++) {
+            VisionPoint corner = corners.get(i);
             // flip y because 0,0 is the top in the picture
             double angleFromCenterToCorner =
                     new Rotation2d(corner.x - average.x, average.y - corner.y)
@@ -146,15 +146,20 @@ public class VisionController implements PeriodicSubsystem {
                 topRightIdx = i;
             }
         }
-
-        var topLeftCorner = corners[topLeftIdx];
-        var topRightCorner = corners[topRightIdx];
-        var bottomCorner1 = corners[bottomIdx1];
-        var bottomCorner2 = corners[bottomIdx2];
-        corners[0] = topLeftCorner;
-        corners[1] = topRightCorner;
-        corners[2] = bottomCorner1;
-        corners[3] = bottomCorner2;
+        List<VisionPoint> newCorners = new LinkedList<>();
+        if (topLeftIdx != -1) {
+            newCorners.add(corners.get(topLeftIdx));
+        }
+        if (topRightIdx != -1) {
+            newCorners.add(corners.get(topRightIdx));
+        }
+        if (bottomIdx1 != -1) {
+            newCorners.add(corners.get(bottomIdx1));
+        }
+        if (bottomIdx2 != -1) {
+            newCorners.add(corners.get(bottomIdx2));
+        }
+        return newCorners;
     }
 
     public static Translation2d solveTranslationToTarget(
@@ -178,7 +183,7 @@ public class VisionController implements PeriodicSubsystem {
         // This plane is the XZ plane, so the y component of the translation is actually Z
         double z = xzPlaneTranslation.getY();
 
-        double heightDiff = targetHeightMeters / camConstants.kCameraHeightMeters;
+        double heightDiff = targetHeightMeters - camConstants.kCameraHeightMeters;
         if (z < 0.0 != heightDiff < 0.0) {
             return null;
         }

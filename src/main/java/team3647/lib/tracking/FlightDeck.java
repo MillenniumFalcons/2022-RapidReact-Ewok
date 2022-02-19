@@ -25,6 +25,10 @@ public class FlightDeck {
 
     public synchronized void addVisionObservation(double timestamp, Translation2d camToGoal) {
         Pose2d fieldToTurret = robotTracker.getFieldToTurret(timestamp);
+        if (fieldToTurret == null || camToGoal == null) {
+            // System.out.println("One fo the transforms was nul");
+            return;
+        }
         targetTracker.update(
                 timestamp,
                 List.of(

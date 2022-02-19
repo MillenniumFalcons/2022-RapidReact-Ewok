@@ -22,14 +22,14 @@ public class PhotonVisionCamera implements IVisionCamera {
     private double[] xCorners;
     private double[] yCorners;
     private double captureTimestamp = 0.0;
-    private VisionPipeline currentPipeline;
+    private VisionPipeline currentPipeline = new VisionPipeline(0, 960, 720);
 
     public PhotonVisionCamera(String name, double extraLatencySec, CamConstants constants) {
         camera = new PhotonCamera(name);
         this.kCamConstants = constants;
         this.extraLatencySec = extraLatencySec;
         NetworkTableInstance.getDefault()
-                .getEntry("/photonvision/" + name + "latencyMillis")
+                .getEntry("/photonvision/" + name + "/latencyMillis")
                 .addListener(this::processNTEvent, EntryListenerFlags.kUpdate);
     }
 
@@ -49,7 +49,7 @@ public class PhotonVisionCamera implements IVisionCamera {
         for (PhotonTrackedTarget target : result.getTargets()) {
             for (TargetCorner corner : target.getCorners()) {
                 xCornersList.add(corner.x);
-                xCornersList.add(corner.y);
+                yCornersList.add(corner.y);
             }
         }
         synchronized (PhotonVisionCamera.this) {
@@ -72,8 +72,7 @@ public class PhotonVisionCamera implements IVisionCamera {
 
     @Override
     public void setPipeline(VisionPipeline pipeline) {
-        // TODO Auto-generated method stub
-
+        currentPipeline = pipeline;
     }
 
     @Override
@@ -103,7 +102,6 @@ public class PhotonVisionCamera implements IVisionCamera {
 
     @Override
     public VisionPipeline getPipeline() {
-        // TODO Auto-generated method stub
-        return null;
+        return currentPipeline;
     }
 }
