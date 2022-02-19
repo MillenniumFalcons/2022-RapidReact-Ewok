@@ -58,6 +58,8 @@ public class Robot extends TimedRobot {
         double now = Timer.getFPGATimestamp();
         double dt = now - ts;
         ts = now;
+        m_robotContainer.m_flightDeck.getTracker().addTurretObservation();
+        m_robotContainer.m_flightDeck.getTracker().addDrivetrainObservation();
         // System.out.println(dt);
     }
 
@@ -96,12 +98,12 @@ public class Robot extends TimedRobot {
         if (m_autonomousCommand != null) {
             m_autonomousCommand.cancel();
         }
-        m_robotContainer.m_flightDeck.getTracker().startTracking();
     }
 
     /** This function is called periodically during operator control. */
     @Override
     public void teleopPeriodic() {
+        System.out.println("Teleop");
         AimingParameters params = m_robotContainer.m_flightDeck.getAimingParameters(lastId);
         if (params != null) {
             m_robotContainer.field.getObject("vision Pose").setPose(params.getFieldToGoal());

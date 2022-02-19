@@ -48,11 +48,6 @@ public class RobotTracker {
         previousPose = drivetrainGetPose.get();
     }
 
-    public void startTracking() {
-        drivetrainUpdate.startPeriodic(.02);
-        turretUpdate.startPeriodic(.02);
-    }
-
     public void stopTracking() {
         drivetrainUpdate.stop();
         turretUpdate.stop();
@@ -60,11 +55,11 @@ public class RobotTracker {
         this.robotToTurret.clear();
     }
 
-    private synchronized void addTurretObservation() {
+    public synchronized void addTurretObservation() {
         addTurretRotationObservation(turretGetRotationTS.getAsDouble(), turretGetRotation.get());
     }
 
-    private synchronized void addDrivetrainObservation() {
+    public synchronized void addDrivetrainObservation() {
         addFieldToRobotObservation(drivetrainGetPoseTS.getAsDouble(), drivetrainGetPose.get());
     }
 
