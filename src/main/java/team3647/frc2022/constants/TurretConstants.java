@@ -9,11 +9,11 @@ import team3647.lib.drivers.LazyTalonFX;
 
 public class TurretConstants {
 
-    public static final TalonFX kTurretMotor = new LazyTalonFX(GlobalConstants.HoodIds.kMotorId);
-    public static final TalonFXInvertType kTurretMotorInvert = TalonFXInvertType.Clockwise;
+    public static final TalonFX kTurretMotor = new LazyTalonFX(GlobalConstants.TurretIds.kMotorId);
+    public static final TalonFXInvertType kTurretMotorInvert = TalonFXInvertType.CounterClockwise;
 
     public static final TalonFXConfiguration kMasterConfig = new TalonFXConfiguration();
-    public static final double kGearboxReduction = 16 / 48.0 * 24 / 460.0;
+    public static final double kGearboxReduction = 16 / 60.0 * 16 / 150.0;
     public static final double kFalconPositionToDegrees = kGearboxReduction / 2048.0 * 360;
     public static final double kFalconVelocityToDegpS = kFalconPositionToDegrees * 10;
     public static final double kMaxDegree = 200;
