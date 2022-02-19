@@ -1,7 +1,6 @@
 package team3647.frc2022.commands;
 
 import edu.wpi.first.math.filter.SlewRateLimiter;
-import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import java.util.function.DoubleSupplier;
 import team3647.frc2022.subsystems.Drivetrain;
@@ -34,8 +33,7 @@ public class ArcadeDrive extends CommandBase {
         double throttle = m_throttle.getAsDouble() * driveMultiplier;
         double turn = m_turn.getAsDouble() * driveMultiplier;
 
-        // m_drivetrain.curvatureDrive(m_accelerationLimiter.calculate(throttle), turn, false);
-        m_drivetrain.setVelocity(new DifferentialDriveWheelSpeeds(throttle, throttle));
+        m_drivetrain.curvatureDrive(m_accelerationLimiter.calculate(throttle), turn, false);
     }
 
     // Called once the command ends or is interrupted.
