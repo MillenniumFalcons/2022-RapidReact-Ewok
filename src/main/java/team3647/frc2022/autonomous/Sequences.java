@@ -100,4 +100,12 @@ public class Sequences {
                     List.of(),
                     AutoConstants.upperPositionOnTarmac,
                     forwardTrajectoryConfig);
+
+    // straight to test characterization
+    public static Trajectory straightPath =
+            TrajectoryGenerator.generateTrajectory(
+                    AutoConstants.startingStraight,
+                    List.of(),
+                    AutoConstants.endingStraight,
+                    forwardTrajectoryConfig);
 }
