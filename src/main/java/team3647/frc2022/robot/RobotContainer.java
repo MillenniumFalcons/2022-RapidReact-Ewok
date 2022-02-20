@@ -4,6 +4,7 @@
 
 package team3647.frc2022.robot;
 
+import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -11,8 +12,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import team3647.frc2022.autonomous.Sequences;
 import team3647.frc2022.commands.ArcadeDrive;
 import team3647.frc2022.commands.ClimberUpDown;
 import team3647.frc2022.commands.IntakeBallTest;
@@ -141,24 +144,6 @@ public class RobotContainer {
                 new ShootBall(m_flywheel, m_columnTop, m_columnBottom, this::getShooterSpeed));
     }
 
-    /**
-     * Use this to pass the autonomous command to the main {@link Robot} class.
-     *
-     * @return the command to run in autonomous
-     */
-    public Command getAutonomousCommand() {
-        // An ExampleCommand will run in autonomous
-        return null;
-    }
-
-    public double getShooterSpeed() {
-        return SmartDashboard.getNumber("Shooter Speed", 0.0);
-    }
-
-    public double getHoodDegree() {
-        return SmartDashboard.getNumber("Hood angle", 16.0);
-    }
-
     private final CommandScheduler m_commandScheduler = CommandScheduler.getInstance();
     private final PowerDistribution pdp = new PowerDistribution(1, ModuleType.kRev);
 
@@ -273,6 +258,28 @@ public class RobotContainer {
                     TurretConstants.kMinDegree,
                     TurretConstants.kLimitSwitch,
                     TurretConstants.kFeedForwards);
+
+    private final RamseteCommand straight =
+            new RamseteCommand(
+                    Sequences.straightPath,
+                    m_drivetrain::getPose,
+                    new RamseteController(),
+                    DrivetrainConstants.kDriveKinematics,
+                    m_drivetrain::setVelocityLeftRight,
+                    m_drivetrain);
+
+    public Command getAutonomousCommand() {
+        // An ExampleCommand will run in autonomous
+        return null;
+    }
+
+    public double getShooterSpeed() {
+        return SmartDashboard.getNumber("Shooter Speed", 0.0);
+    }
+
+    public double getHoodDegree() {
+        return SmartDashboard.getNumber("Hood angle", 16.0);
+    }
 
     private final Superstructure m_superstructure =
             new Superstructure(
