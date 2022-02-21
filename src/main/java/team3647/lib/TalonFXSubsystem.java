@@ -123,6 +123,11 @@ public abstract class TalonFXSubsystem implements PeriodicSubsystem {
         periodicIO.demand = velocity / velocityConversion;
     }
 
+    protected void setPercentOutput(double percent) {
+        periodicIO.controlMode = ControlMode.PercentOutput;
+        periodicIO.demand = percent;
+    }
+
     /** Sets all motors to brake mode */
     public void setToBrake() {
         setNeutralMode(NeutralMode.Brake);

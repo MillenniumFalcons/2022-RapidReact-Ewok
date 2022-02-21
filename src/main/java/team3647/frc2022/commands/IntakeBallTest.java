@@ -42,7 +42,7 @@ public class IntakeBallTest extends CommandBase {
     public void execute() {
         double out = output.getAsDouble();
         intake.setOpenloop(-out * 0.4);
-        columnBottom.setOpenloop(out * 0.4);
+        columnBottom.setOpenloop(out * 0.3);
         verticalRollers.setOpenloop(0.4 * out);
     }
 

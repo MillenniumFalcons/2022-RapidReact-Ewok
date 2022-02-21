@@ -1,5 +1,6 @@
 package team3647.frc2022.constants;
 
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 
 public final class GlobalConstants {
@@ -7,6 +8,7 @@ public final class GlobalConstants {
     public static final PneumaticsModuleType kPCMType = PneumaticsModuleType.CTREPCM;
     public static final double kDt = 0.02; // 20ms loop
     public static final int kTimeoutMS = 255;
+    public static double centerOffsetMeters = Units.inchesToMeters(34);
 
     public static final class DrivetrainIds {
         public static final int kLeftMasterId = 1;

@@ -3,9 +3,12 @@ package team3647.frc2022.constants;
 import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.util.Units;
 import team3647.lib.drivers.LazyTalonFX;
+import team3647.lib.team254.util.InterpolatingDouble;
+import team3647.lib.team254.util.InterpolatingTreeMap;
 
 public final class FlywheelConstants {
 
@@ -33,6 +36,18 @@ public final class FlywheelConstants {
     public static final double kNativeVelToSurfaceMpS =
             10 * kWheelRotationMeters / GlobalConstants.kFalconTicksPerRotation * kGearboxReduction;
 
+    public static final double[][] kFlywheelMap = {
+        {Units.feetToMeters(2) + GlobalConstants.centerOffsetMeters, 14},
+        {Units.feetToMeters(4) + GlobalConstants.centerOffsetMeters, 16},
+        {Units.feetToMeters(8) + GlobalConstants.centerOffsetMeters, 17},
+        {Units.feetToMeters(12) + GlobalConstants.centerOffsetMeters, 20.5},
+        {Units.feetToMeters(14) + GlobalConstants.centerOffsetMeters, 22.5},
+        {Units.feetToMeters(16) + GlobalConstants.centerOffsetMeters, 24.3}
+    };
+
+    public static InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble>
+            kFlywheelAutoAimMap = new InterpolatingTreeMap<>();
+
     static {
         kMasterConfig.slot0.kP = 0.37289;
         kMasterConfig.slot0.kI = 0;
@@ -48,6 +63,17 @@ public final class FlywheelConstants {
         kMaster.configAllSettings(kMasterConfig, GlobalConstants.kTimeoutMS);
         kFollower.configAllSettings(kMasterConfig, GlobalConstants.kTimeoutMS);
         kMaster.setInverted(kMasterInverted);
+
+        for (double[] pair : kFlywheelMap) {
+            kFlywheelAutoAimMap.put(
+                    new InterpolatingDouble(pair[0]), new InterpolatingDouble(pair[1]));
+        }
+    }
+
+    public static double getFlywheelRPM(double range) {
+        InterpolatingDouble d = kFlywheelAutoAimMap.getInterpolated(new InterpolatingDouble(range));
+
+        return d == null ? 6000 : MathUtil.clamp(d.value, 14, 35);
     }
 
     private FlywheelConstants() {}

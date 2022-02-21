@@ -25,6 +25,10 @@ public class ColumnTop extends TalonFXSubsystem {
         setVelocity(vel, ff.calculate(vel));
     }
 
+    public void setTen() {
+        setSurfaceVelocity(12);
+    }
+
     @Override
     public String getName() {
         return "Column Top";
