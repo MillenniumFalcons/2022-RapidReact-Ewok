@@ -16,6 +16,7 @@ import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive.WheelSpeeds;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import team3647.lib.PeriodicSubsystem;
 import team3647.lib.wpi.HALMethods;
 
@@ -117,6 +118,7 @@ public final class Drivetrain implements PeriodicSubsystem {
 
         pigeonIMU.getYawPitchRoll(periodicIO.ypr);
         periodicIO.heading = Math.IEEEremainder(periodicIO.ypr[0], 360);
+        SmartDashboard.putNumber("Gyro reading", periodicIO.ypr[0]);
 
         periodicIO.timestamp = Timer.getFPGATimestamp();
         periodicIO.pose =

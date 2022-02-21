@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 public class Robot extends TimedRobot {
     private Command m_autonomousCommand;
     public static final double kTenMSLoopTime = 0.01;
+    public static final double kTwentyMSLoopTime = 0.02;
 
     private RobotContainer m_robotContainer = new RobotContainer();
     int lastId = 0;
@@ -26,16 +27,16 @@ public class Robot extends TimedRobot {
         super(.02);
         addPeriodic(
                 m_robotContainer.m_drivetrain::readPeriodicInputs,
-                kTenMSLoopTime,
-                .0025); // 2.5MS offset
+                kTwentyMSLoopTime,
+                .005); // 2.5MS offset
         addPeriodic(
                 m_robotContainer.m_turret::readPeriodicInputs,
-                kTenMSLoopTime,
-                .005); // 5.0 MS offset
+                kTwentyMSLoopTime,
+                .01); // 5.0 MS offset
         addPeriodic(
                 m_robotContainer.m_flightDeck.getTracker()::update,
-                kTenMSLoopTime,
-                .0075); // 7.5 MS offset
+                kTwentyMSLoopTime,
+                .015); // 7.5 MS offset
     }
 
     /**

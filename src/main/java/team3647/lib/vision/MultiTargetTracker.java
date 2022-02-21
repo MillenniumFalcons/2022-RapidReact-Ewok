@@ -10,6 +10,7 @@ public class MultiTargetTracker {
 
     public void update(double timestamp, Iterable<Pose2d> fieldToGoals) {
         for (Pose2d target : fieldToGoals) {
+
             boolean foundCorrespondingTarget = false;
             for (TrackedTarget tracked : trackedTargets) {
                 if (foundCorrespondingTarget) {

@@ -54,7 +54,7 @@ public final class DrivetrainConstants {
     public static final double kMaxSpeedMetersPerSecond = 2;
     public static final double kMaxAccelerationMetersPerSecondSquared = 2;
 
-    public static final double kGearboxReduction = 1;
+    public static final double kGearboxReduction = 10 / 42.0 * 24 / 40.;
 
     public static final double kWheelRotationToMeters =
             kWheelDiameterMeters * Math.PI * kGearboxReduction;

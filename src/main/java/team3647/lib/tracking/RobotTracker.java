@@ -6,6 +6,7 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.interpolation.TimeInterpolatableBuffer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
@@ -83,7 +84,8 @@ public class RobotTracker {
         if (ftr == null || rtt == null) {
             return null;
         }
-        return ftr.transformBy(new Transform2d(kRelativeOrigin, rtt));
+        SmartDashboard.putNumber("Robot To Turret rotation", rtt.getRotation().getDegrees());
+        return ftr.transformBy(new Transform2d(rtt.getTranslation(), rtt.getRotation()));
     }
 
     public Transform2d getTurretToTarget(double timestamp, Pose2d fieldToTarget) {

@@ -2,6 +2,7 @@ package team3647.frc2022.subsystems.vision;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.BiConsumer;
@@ -73,7 +74,6 @@ public class VisionController implements PeriodicSubsystem {
                     new VisionPoint(
                             totalX / targetConstants.kPointsPerTarget,
                             totalY / targetConstants.kPointsPerTarget);
-            System.out.println("Corners length: " + corners.size());
             // Makes the top corners first in the array
             corners = sortCorners(corners, targetAvg);
             int i;
@@ -107,6 +107,9 @@ public class VisionController implements PeriodicSubsystem {
                         targetConstants.kTargetDiameterMeters / 2.0,
                         camToTargetTranslations,
                         kCircleFitPrecision);
+        SmartDashboard.putNumber(
+                "Angle to circle", new Rotation2d(fitCircle.getX(), fitCircle.getY()).getDegrees());
+        SmartDashboard.putNumber("distance to circle", fitCircle.getNorm());
         synchronized (translationConsumer) {
             translationConsumer.accept(
                     periodicIO.inputs.captureTimestamp - kNetworklatency, fitCircle);
@@ -192,8 +195,8 @@ public class VisionController implements PeriodicSubsystem {
         double scale = heightDiff / z;
         double range = Math.hypot(x, y) * scale;
         Rotation2d angleToTarget = new Rotation2d(x, y);
-        System.out.println("Range: " + range);
-        return new Translation2d(range * angleToTarget.getCos(), range * angleToTarget.getSin());
+        return new Translation2d(range, angleToTarget);
+        // return new Translation2d(range * angleToTarget.getCos(), range * angleToTarget.getSin());
     }
 
     @Override

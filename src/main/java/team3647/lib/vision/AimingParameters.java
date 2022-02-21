@@ -10,6 +10,7 @@ public class AimingParameters {
     private final double rangeMeters;
     private final Pose2d fieldToTarget;
     private final Pose2d fieldToRobot;
+    private final Transform2d robotToTarget;
     private final Transform2d turretToTarget;
     private final Rotation2d turretAngleToTarget;
     private final double lastSeenTimestamp;
@@ -26,6 +27,7 @@ public class AimingParameters {
         this.fieldToTarget = fieldToTarget;
         this.turretToTarget = fieldToTarget.minus(fieldToTurret);
         this.fieldToRobot = fieldToRobot;
+        this.robotToTarget = fieldToTarget.minus(fieldToRobot);
         this.rangeMeters = turretToTarget.getTranslation().getNorm();
         this.turretAngleToTarget =
                 new Rotation2d(
@@ -49,6 +51,10 @@ public class AimingParameters {
 
     public Rotation2d getTurretAngleToTarget() {
         return turretAngleToTarget;
+    }
+
+    public Transform2d getRobotToTargetTransform() {
+        return robotToTarget;
     }
 
     public Pose2d getFieldToRobot() {

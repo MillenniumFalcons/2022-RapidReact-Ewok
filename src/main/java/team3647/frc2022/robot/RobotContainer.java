@@ -6,6 +6,9 @@ package team3647.frc2022.robot;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.Timer;
@@ -17,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import team3647.frc2022.commands.AimTurret;
 import team3647.frc2022.commands.ArcadeDrive;
 import team3647.frc2022.commands.ClimberUpDown;
 import team3647.frc2022.commands.IntakeBallTest;
@@ -106,6 +110,8 @@ public class RobotContainer {
         configureSmartDashboardLogging();
         m_hood.resetEncoder();
         HoodContants.kHoodMotor.configAllSettings(HoodContants.kMasterConfig);
+        m_drivetrain.setOdometry(
+                new Pose2d(5.5, 5.5, Rotation2d.fromDegrees(180)), new Rotation2d());
     }
 
     private void configureButtonBindings() {
@@ -123,6 +129,12 @@ public class RobotContainer {
         mainController.buttonB.whenActive(new InstantCommand(m_pivotClimber::setStraight));
 
         coController.dPadUp.whenPressed(new TestHood(m_hood, this::getHoodDegree));
+        mainController.dPadUp.whenHeld(
+                new AimTurret(
+                        m_turret,
+                        this::getLatestAimingParameters,
+                        this.m_flightDeck.getTracker()::getMeasuredVelocity));
+        mainController.dPadDown.whenHeld(new InstantCommand(m_turret::end));
 
         coController.rightTrigger.whenHeld(
                 new ShootBall(m_flywheel, m_columnTop, m_columnBottom, this::getShooterSpeed));
@@ -139,6 +151,7 @@ public class RobotContainer {
         m_printer.addPose("Vision Pose", this::getVisionPose);
         m_printer.addPose("Drivetrain Pose", m_drivetrain::getPose);
         m_printer.addPose("turret Pose", this::getLatestFieldToTurret);
+        m_printer.addPose("Cam Pose", this::getFieldToCam);
         SmartDashboard.putNumber("Shooter Speed", 0.0);
         SmartDashboard.putNumber("Hood angle", 16.0);
     }
@@ -167,7 +180,40 @@ public class RobotContainer {
             return null;
         }
         lastTargetId = params.id;
+        // var fieldToTarget = new Transform2d(new Translation2d(1.5, 5.5), new Rotation2d());
+        // var fieldToCam = getFieldToCam();
+        // var camToFieldTransform = new Transform2d(fieldToCam, new Pose2d(0, 0, new
+        // Rotation2d()));
+        // var camToTargetPose =
+        //         new Pose2d().transformBy(camToFieldTransform).transformBy(fieldToTarget);
+        // var fieldToTurret = getLatestFieldToTurret();
+        // if (fieldToTurret == null) {
+        //     return null;
+        // }
+        // var fieldToTargetAfter =
+        //         fieldToTurret
+        //                 .transformBy(
+        //                         new Transform2d(
+        //                                 TurretConstants.kTurretToCamTranslationMeters,
+        //                                 new Rotation2d()))
+        //                 .transformBy(new Transform2d(new Pose2d(), camToTargetPose));
         return params.getFieldToGoal();
+    }
+
+    public AimingParameters getLatestAimingParameters() {
+        return m_flightDeck.getAimingParameters(lastTargetId);
+    }
+
+    public Pose2d getFieldToCam() {
+        var ftt = getLatestFieldToTurret();
+        if (ftt == null) {
+            return null;
+        }
+
+        return ftt.transformBy(
+                new Transform2d(
+                        new Translation2d(Units.inchesToMeters(6), new Rotation2d()),
+                        new Rotation2d()));
     }
 
     public Pose2d getLatestFieldToTurret() {
@@ -289,6 +335,7 @@ public class RobotContainer {
                     TurretConstants.kFalconPositionToDegrees,
                     TurretConstants.kNominalVoltage,
                     GlobalConstants.kDt,
+                    TurretConstants.kS,
                     TurretConstants.kMaxDegree,
                     TurretConstants.kMinDegree,
                     TurretConstants.kLimitSwitch,

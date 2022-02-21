@@ -12,6 +12,7 @@ public class Turret extends TalonFXSubsystem {
     private final double minAngle;
     private final DigitalInput resetLimitSwitch;
     private final SimpleMotorFeedforward ff;
+    private final double kS;
 
     public Turret(
             TalonFX master,
@@ -19,6 +20,7 @@ public class Turret extends TalonFXSubsystem {
             double positionConversion,
             double nominalVoltage,
             double kDt,
+            double kS,
             double maxAngle,
             double minAngle,
             DigitalInput resetLimitSwitch,
@@ -29,6 +31,7 @@ public class Turret extends TalonFXSubsystem {
         this.minAngle = minAngle;
         this.resetLimitSwitch = resetLimitSwitch;
         this.ff = ff;
+        this.kS = kS;
         resetEncoder();
     }
 
@@ -61,6 +64,9 @@ public class Turret extends TalonFXSubsystem {
         // Multiply the static friction volts by -1 if our target position is less than current
         // position; if we need to move backwards, the volts needs to be negative
         double ffVolts = ff.calculate(velocity);
+        if (ffVolts != 0) {
+            ffVolts = kS;
+        }
 
         setPosition(targetPosition, ffVolts);
     }

@@ -23,8 +23,8 @@ public class TurretConstants {
     public static final double kPosThersholdDeg = 1.0;
     public static final boolean kCurrentLimitingEnable = true;
 
-    public static final double kS = 0.67599;
-    public static final double kV = 0.010994;
+    public static final double kS = 0.713;
+    public static final double kV = 0.0157;
     public static final double kA = 0.000324;
 
     public static final double kMaxVelocityDegPs = 36;
@@ -40,9 +40,9 @@ public class TurretConstants {
     public static final double kNominalVoltage = 11;
 
     public static final Translation2d kRobotToTurretFixed =
-            new Translation2d(Units.inchesToMeters(6), 0);
+            new Translation2d(Units.inchesToMeters(7), 0);
     public static final Translation2d kTurretToCamTranslationMeters =
-            new Translation2d(Units.inchesToMeters(6), 0);
+            new Translation2d(Units.inchesToMeters(7), 0);
 
     public static final SimpleMotorFeedforward kFeedForwards =
             new SimpleMotorFeedforward(kS, kV, kA);
@@ -51,7 +51,7 @@ public class TurretConstants {
             new DigitalInput(GlobalConstants.TurretIds.kLimitSwitchpin);
 
     static {
-        kMasterConfig.slot0.kP = 0;
+        kMasterConfig.slot0.kP = 0.3;
         kMasterConfig.slot0.kI = 0;
         kMasterConfig.slot0.kD = 0;
         kMasterConfig.slot0.kF = 0;
