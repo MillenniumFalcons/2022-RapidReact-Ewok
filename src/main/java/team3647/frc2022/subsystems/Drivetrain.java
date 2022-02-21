@@ -186,6 +186,12 @@ public final class Drivetrain implements PeriodicSubsystem {
         setOpenloop(0, 0);
     }
 
+    public void setVelocityLeftRight(double leftVelocity, double rightVelocity) {
+        DifferentialDriveWheelSpeeds driveLeftRight =
+                new DifferentialDriveWheelSpeeds(leftVelocity, rightVelocity);
+        setVelocity(driveLeftRight);
+    }
+
     public void setVelocity(DifferentialDriveWheelSpeeds wheelSpeeds) {
         if (wheelSpeeds == null) {
             HALMethods.sendDSError(
