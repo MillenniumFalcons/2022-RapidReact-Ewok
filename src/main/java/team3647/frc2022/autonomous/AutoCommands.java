@@ -29,16 +29,20 @@ public class AutoCommands {
 
     public Command getLowFive() {
         return ramseteCommands
-                .tarmacToBottomLeftBall1
+                .getTarmacToBottomLeftBall1()
                 .deadlineWith(intakeFromGround)
-                .andThen(ramseteCommands.bottomLeftBall1ToTarmac.deadlineWith(accelerateFlywheel))
+                .andThen(
+                        ramseteCommands
+                                .getBottomLeftBall1ToTarmac()
+                                .deadlineWith(accelerateFlywheel))
                 .andThen(autoShoot)
                 .andThen(
-                        ramseteCommands.tarmacToBall2.deadlineWith(
-                                intakeFromGround, accelerateFlywheel))
+                        ramseteCommands
+                                .getTarmacToBall2()
+                                .deadlineWith(intakeFromGround, accelerateFlywheel))
                 .andThen(autoShoot)
-                .andThen(ramseteCommands.ball2ToLoad2.deadlineWith(intakeFromGround))
-                .andThen(ramseteCommands.load2ToShoot.deadlineWith(accelerateFlywheel))
+                .andThen(ramseteCommands.getBall2ToLoad2().deadlineWith(intakeFromGround))
+                .andThen(ramseteCommands.getLoad2ToShoot().deadlineWith(accelerateFlywheel))
                 .andThen(autoShoot)
                 .alongWith(aimTurretHood);
     }
