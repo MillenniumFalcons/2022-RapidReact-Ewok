@@ -32,8 +32,8 @@ public class ArcadeDrive extends CommandBase {
     public void execute() {
         double throttle = m_throttle.getAsDouble() * driveMultiplier;
         double turn = m_turn.getAsDouble() * driveMultiplier;
-
-        m_drivetrain.curvatureDrive(m_accelerationLimiter.calculate(throttle), turn, false);
+        m_drivetrain.curvatureDrive(
+                m_accelerationLimiter.calculate(throttle), turn, throttle < 0.12);
     }
 
     // Called once the command ends or is interrupted.
