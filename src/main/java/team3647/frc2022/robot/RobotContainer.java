@@ -12,8 +12,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import team3647.frc2022.autonomous.Sequences;
 import team3647.frc2022.commands.ArcadeDrive;
@@ -267,10 +269,71 @@ public class RobotContainer {
                     DrivetrainConstants.kDriveKinematics,
                     m_drivetrain::setVelocityLeftRight,
                     m_drivetrain);
+    private final RamseteCommand tarmacToBottomLeftBall1 =
+            new RamseteCommand(
+                    Sequences.tarmacToBottomLeftBall1,
+                    m_drivetrain::getPose,
+                    new RamseteController(),
+                    DrivetrainConstants.kDriveKinematics,
+                    m_drivetrain::setVelocityLeftRight,
+                    m_drivetrain);
+    private final RamseteCommand bottomLeftBall1ToTarmac =
+            new RamseteCommand(
+                    Sequences.bottomLeftBall1ToTarmac,
+                    m_drivetrain::getPose,
+                    new RamseteController(),
+                    DrivetrainConstants.kDriveKinematics,
+                    m_drivetrain::setVelocityLeftRight,
+                    m_drivetrain);
+    private final RamseteCommand tarmacToBall2 =
+            new RamseteCommand(
+                    Sequences.tarmacToBall2,
+                    m_drivetrain::getPose,
+                    new RamseteController(),
+                    DrivetrainConstants.kDriveKinematics,
+                    m_drivetrain::setVelocityLeftRight,
+                    m_drivetrain);
+    private final RamseteCommand ball2ToLoad2 =
+            new RamseteCommand(
+                    Sequences.ball2ToLoad2,
+                    m_drivetrain::getPose,
+                    new RamseteController(),
+                    DrivetrainConstants.kDriveKinematics,
+                    m_drivetrain::setVelocityLeftRight,
+                    m_drivetrain);
+    private final RamseteCommand load2ToShoot =
+            new RamseteCommand(
+                    Sequences.load2ToShoot,
+                    m_drivetrain::getPose,
+                    new RamseteController(),
+                    DrivetrainConstants.kDriveKinematics,
+                    m_drivetrain::setVelocityLeftRight,
+                    m_drivetrain);
+
+    private final Command lowFive =
+            new SequentialCommandGroup(
+                    new ParallelDeadlineGroup(
+                            tarmacToBottomLeftBall1,
+                            // ground intake sequence
+                            new RunCommand(this::stopDrivetrain, m_drivetrain).withTimeout(.1)),
+                    bottomLeftBall1ToTarmac,
+                    /*shoot*/ new WaitCommand(.5),
+                    // ground intake sequence
+                    new RunCommand(this::stopDrivetrain, m_drivetrain).withTimeout(.1),
+                    /*shoot*/
+                    // load next 2
+                    new RunCommand(this::stopDrivetrain, m_drivetrain).withTimeout(.1),
+                    load2ToShoot,
+                    new RunCommand(this::stopDrivetrain, m_drivetrain).withTimeout(.1),
+                    /*shoot*/ new WaitCommand(1));
 
     public Command getAutonomousCommand() {
         // An ExampleCommand will run in autonomous
         return null;
+    }
+
+    public void stopDrivetrain() {
+        m_drivetrain.setOpenloop(0, 0);
     }
 
     public double getShooterSpeed() {
