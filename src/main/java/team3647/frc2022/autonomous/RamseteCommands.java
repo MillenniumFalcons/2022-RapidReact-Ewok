@@ -21,7 +21,7 @@ public class RamseteCommands {
         this.kDriveKinematics = driveKinematics;
         straight =
                 new RamseteCommand(
-                        Sequences.straightPath,
+                        Trajectories.straightPath,
                         m_drivetrain::getPose,
                         new RamseteController(),
                         kDriveKinematics,
@@ -29,7 +29,7 @@ public class RamseteCommands {
                         m_drivetrain);
         tarmacToBottomLeftBall1 =
                 new RamseteCommand(
-                        Sequences.tarmacToBottomLeftBall1,
+                        Trajectories.tarmacToBottomLeftBall1,
                         m_drivetrain::getPose,
                         new RamseteController(),
                         kDriveKinematics,
@@ -37,7 +37,7 @@ public class RamseteCommands {
                         m_drivetrain);
         bottomLeftBall1ToTarmac =
                 new RamseteCommand(
-                        Sequences.bottomLeftBall1ToTarmac,
+                        Trajectories.bottomLeftBall1ToTarmac,
                         m_drivetrain::getPose,
                         new RamseteController(),
                         kDriveKinematics,
@@ -45,7 +45,7 @@ public class RamseteCommands {
                         m_drivetrain);
         tarmacToBall2 =
                 new RamseteCommand(
-                        Sequences.tarmacToBall2,
+                        Trajectories.tarmacToBall2,
                         m_drivetrain::getPose,
                         new RamseteController(),
                         kDriveKinematics,
@@ -53,7 +53,7 @@ public class RamseteCommands {
                         m_drivetrain);
         ball2ToLoad2 =
                 new RamseteCommand(
-                        Sequences.ball2ToLoad2,
+                        Trajectories.ball2ToLoad2,
                         m_drivetrain::getPose,
                         new RamseteController(),
                         kDriveKinematics,
@@ -61,7 +61,7 @@ public class RamseteCommands {
                         m_drivetrain);
         load2ToShoot =
                 new RamseteCommand(
-                        Sequences.load2ToShoot,
+                        Trajectories.load2ToShoot,
                         m_drivetrain::getPose,
                         new RamseteController(),
                         kDriveKinematics,

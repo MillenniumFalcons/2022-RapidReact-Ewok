@@ -12,7 +12,7 @@ import java.util.List;
 import team3647.frc2022.constants.DrivetrainConstants;
 
 // previous Trajectories
-public class Sequences {
+public class Trajectories {
     private static final DifferentialDriveVoltageConstraint autoVoltageConstraint =
             new DifferentialDriveVoltageConstraint(
                     new SimpleMotorFeedforward(

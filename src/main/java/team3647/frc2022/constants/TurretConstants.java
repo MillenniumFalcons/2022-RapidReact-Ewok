@@ -4,6 +4,8 @@ import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -43,6 +45,8 @@ public class TurretConstants {
             new Translation2d(Units.inchesToMeters(7), 0);
     public static final Translation2d kTurretToCamTranslationMeters =
             new Translation2d(Units.inchesToMeters(7), 0);
+    public static final Pose2d kTurretToCamFixed =
+            new Pose2d(kTurretToCamTranslationMeters, new Rotation2d());
 
     public static final SimpleMotorFeedforward kFeedForwards =
             new SimpleMotorFeedforward(kS, kV, kA);

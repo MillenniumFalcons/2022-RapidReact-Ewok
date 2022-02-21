@@ -38,6 +38,7 @@ public final class ClimberConstants {
     public static final double kLengthJustOverLowBar = Units.inchesToMeters(30);
     public static final double kMaxLengthAngled = Units.inchesToMeters(36);
     public static final double kMaxLengthStraight = Units.inchesToMeters(34);
+    public static final double kLengthFromStaticHooksToAboveBar = Units.inchesToMeters(10);
 
     public static final TalonFXConfiguration kLeftConfig = new TalonFXConfiguration();
     public static final TalonFXConfiguration kRightConfig = new TalonFXConfiguration();

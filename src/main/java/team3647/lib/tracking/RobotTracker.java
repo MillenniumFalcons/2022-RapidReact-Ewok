@@ -23,8 +23,6 @@ public class RobotTracker {
     private final Supplier<Rotation2d> turretGetRotation;
     private final DoubleSupplier turretGetRotationTS;
 
-    private static final Pose2d kRelativeOrigin = new Pose2d();
-
     private Twist2d measuredVelocity = new Twist2d();
 
     public RobotTracker(
@@ -100,16 +98,4 @@ public class RobotTracker {
     public synchronized Twist2d getMeasuredVelocity() {
         return measuredVelocity;
     }
-
-    /**
-     * Basically what the goal tracker does is every time the vision system sees a target it adds
-     * its position to the goal tracker, if there are previously tracked goals that are close enough
-     * using the norm() to the "new" target then it is assumed to be that target is already tracked
-     * and we are just updating it's location on the field. If unable to update either because
-     * current tracked is too old, or new target is too far away, then assume new target
-     */
-    /**
-     * When we get aiming parameters we need to sort all the tracked goals and get the "best" one
-     * using some custom comparator
-     */
 }
