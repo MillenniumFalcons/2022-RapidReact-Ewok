@@ -11,6 +11,7 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.estimator.DifferentialDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import team3647.lib.drivers.LazyTalonFX;
 
 public final class DrivetrainConstants {
@@ -51,6 +52,8 @@ public final class DrivetrainConstants {
 
     public static final double kWheelDiameterMeters = 0.1016; // 4inches
     public static final double kTrackWidth = 0;
+    public static final DifferentialDriveKinematics kDriveKinematics =
+            new DifferentialDriveKinematics(kTrackWidth);
     public static final double kMaxSpeedMetersPerSecond = 2;
     public static final double kMaxAccelerationMetersPerSecondSquared = 2;
 

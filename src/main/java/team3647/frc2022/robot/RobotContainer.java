@@ -12,14 +12,16 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import team3647.frc2022.autonomous.RamseteCommands;
 import team3647.frc2022.commands.AimTurret;
 import team3647.frc2022.commands.ArcadeDrive;
 import team3647.frc2022.commands.ClimberUpDown;
@@ -57,7 +59,6 @@ import team3647.lib.vision.PhotonVisionCamera;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-    public final Field2d field = new Field2d();
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
         pdp.clearStickyFaults();
@@ -110,8 +111,6 @@ public class RobotContainer {
         configureSmartDashboardLogging();
         m_hood.resetEncoder();
         HoodContants.kHoodMotor.configAllSettings(HoodContants.kMasterConfig);
-        m_drivetrain.setOdometry(
-                new Pose2d(5.5, 5.5, Rotation2d.fromDegrees(180)), new Rotation2d());
     }
 
     private void configureButtonBindings() {
@@ -180,23 +179,6 @@ public class RobotContainer {
             return null;
         }
         lastTargetId = params.id;
-        // var fieldToTarget = new Transform2d(new Translation2d(1.5, 5.5), new Rotation2d());
-        // var fieldToCam = getFieldToCam();
-        // var camToFieldTransform = new Transform2d(fieldToCam, new Pose2d(0, 0, new
-        // Rotation2d()));
-        // var camToTargetPose =
-        //         new Pose2d().transformBy(camToFieldTransform).transformBy(fieldToTarget);
-        // var fieldToTurret = getLatestFieldToTurret();
-        // if (fieldToTurret == null) {
-        //     return null;
-        // }
-        // var fieldToTargetAfter =
-        //         fieldToTurret
-        //                 .transformBy(
-        //                         new Transform2d(
-        //                                 TurretConstants.kTurretToCamTranslationMeters,
-        //                                 new Rotation2d()))
-        //                 .transformBy(new Transform2d(new Pose2d(), camToTargetPose));
         return params.getFieldToGoal();
     }
 
@@ -227,7 +209,6 @@ public class RobotContainer {
     private final Joysticks coController = new Joysticks(1);
 
     private final GroupPrinter m_printer = GroupPrinter.getInstance();
-
     private int lastTargetId = 0;
 
     final Drivetrain m_drivetrain =
@@ -243,6 +224,30 @@ public class RobotContainer {
                     DrivetrainConstants.kFalconTicksToMeters,
                     DrivetrainConstants.kNominalVoltage,
                     GlobalConstants.kDt);
+
+    private final RamseteCommands ramseteCommands =
+            new RamseteCommands(m_drivetrain, DrivetrainConstants.kDriveKinematics);
+
+    private final Command lowFive =
+            new SequentialCommandGroup(
+                    new ParallelDeadlineGroup(
+                            ramseteCommands.tarmacToBottomLeftBall1,
+                            // ground intake sequence
+                            new RunCommand(this::stopDrivetrain, m_drivetrain).withTimeout(.1)),
+                    ramseteCommands.bottomLeftBall1ToTarmac,
+                    /*shoot*/ new WaitCommand(.5),
+                    // ground intake sequence
+                    new RunCommand(this::stopDrivetrain, m_drivetrain).withTimeout(.1),
+                    /*shoot*/
+                    // load next 2
+                    new RunCommand(this::stopDrivetrain, m_drivetrain).withTimeout(.1),
+                    ramseteCommands.load2ToShoot,
+                    new RunCommand(this::stopDrivetrain, m_drivetrain).withTimeout(.1),
+                    /*shoot*/ new WaitCommand(1));
+
+    public void stopDrivetrain() {
+        m_drivetrain.setOpenloop(0, 0);
+    }
 
     final Flywheel m_flywheel =
             new Flywheel(
@@ -341,9 +346,15 @@ public class RobotContainer {
                     TurretConstants.kLimitSwitch,
                     TurretConstants.kFeedForwards);
 
-    final Superstructure m_superstructure =
+    private final Superstructure m_superstructure =
             new Superstructure(
-                    m_pivotClimber, m_columnBottom, null, m_columnTop, m_intake, null, m_flywheel);
+                    m_pivotClimber,
+                    m_columnBottom,
+                    m_verticalRollers,
+                    m_columnTop,
+                    m_intake,
+                    m_turret,
+                    m_flywheel);
 
     final FlightDeck m_flightDeck =
             new FlightDeck(
