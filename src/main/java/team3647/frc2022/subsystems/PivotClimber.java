@@ -93,10 +93,18 @@ public class PivotClimber implements PeriodicSubsystem {
 
     @Override
     public void writePeriodicOutputs() {
+        leftArm.writePeriodicOutputs();
+        rightArm.writePeriodicOutputs();
         if (climberAngle.solenoidVal != prevSolenoidVal) {
             pivotPistons.set(climberAngle.solenoidVal);
             prevSolenoidVal = climberAngle.solenoidVal;
         }
+    }
+
+    @Override
+    public void readPeriodicInputs() {
+        leftArm.readPeriodicInputs();
+        rightArm.readPeriodicInputs();
     }
 
     @Override

@@ -16,6 +16,7 @@ import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive.WheelSpeeds;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import team3647.lib.PeriodicSubsystem;
 import team3647.lib.wpi.HALMethods;
 
@@ -106,8 +107,7 @@ public final class Drivetrain implements PeriodicSubsystem {
     }
 
     @Override
-    public void readPeriodicInputs() {
-        periodicIO.timestamp = Timer.getFPGATimestamp();
+    public synchronized void readPeriodicInputs() {
         periodicIO.leftPosition = leftMaster.getSelectedSensorPosition() * displacementConversion;
         periodicIO.rightPosition = rightMaster.getSelectedSensorPosition() * displacementConversion;
 
@@ -117,12 +117,15 @@ public final class Drivetrain implements PeriodicSubsystem {
                 rightMaster.getSelectedSensorVelocity() * velocityConversion;
 
         pigeonIMU.getYawPitchRoll(periodicIO.ypr);
-        periodicIO.heading = -Math.IEEEremainder(periodicIO.ypr[0], 360);
+        periodicIO.heading = Math.IEEEremainder(periodicIO.ypr[0], 360);
+        SmartDashboard.putNumber("Gyro reading", periodicIO.ypr[0]);
 
-        odometry.update(
-                Rotation2d.fromDegrees(periodicIO.heading),
-                periodicIO.leftPosition,
-                periodicIO.rightPosition);
+        periodicIO.timestamp = Timer.getFPGATimestamp();
+        periodicIO.pose =
+                odometry.update(
+                        Rotation2d.fromDegrees(periodicIO.heading),
+                        periodicIO.leftPosition,
+                        periodicIO.rightPosition);
         /*periodicIO.pose =
         poseEstimator.update(
                 Rotation2d.fromDegrees(periodicIO.heading),
@@ -174,7 +177,7 @@ public final class Drivetrain implements PeriodicSubsystem {
 
     @Override
     public void periodic() {
-        readPeriodicInputs();
+        // readPeriodicInputs(); Write in robot addPeriodic
         writePeriodicOutputs();
     }
 
@@ -234,6 +237,10 @@ public final class Drivetrain implements PeriodicSubsystem {
         return periodicIO.pose;
     }
 
+    public double getTimestamp() {
+        return periodicIO.timestamp;
+    }
+
     public double getDrivetrainXMeters() {
         return periodicIO.pose.getX();
     }
@@ -258,7 +265,7 @@ public final class Drivetrain implements PeriodicSubsystem {
         resetEncoders();
         pigeonIMU.setYaw(angle.getDegrees());
         periodicIO = new PeriodicIO();
-        // poseEstimator.resetPosition(pose, angle);
+        odometry.resetPosition(pose, angle);
     }
 
     private void resetEncoders() {

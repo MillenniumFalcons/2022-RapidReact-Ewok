@@ -5,7 +5,6 @@
 package team3647.frc2022.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -18,12 +17,26 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
  */
 public class Robot extends TimedRobot {
     private Command m_autonomousCommand;
+    public static final double kTenMSLoopTime = 0.01;
+    public static final double kTwentyMSLoopTime = 0.02;
 
-    private RobotContainer m_robotContainer;
-    private double ts = 0;
+    private RobotContainer m_robotContainer = new RobotContainer();
+    int lastId = 0;
 
     public Robot() {
         super(.02);
+        addPeriodic(
+                m_robotContainer.m_drivetrain::readPeriodicInputs,
+                kTwentyMSLoopTime,
+                .005); // 2.5MS offset
+        addPeriodic(
+                m_robotContainer.m_turret::readPeriodicInputs,
+                kTwentyMSLoopTime,
+                .01); // 5.0 MS offset
+        addPeriodic(
+                m_robotContainer.m_flightDeck.getTracker()::update,
+                kTwentyMSLoopTime,
+                .015); // 7.5 MS offset
     }
 
     /**
@@ -35,8 +48,6 @@ public class Robot extends TimedRobot {
         LiveWindow.disableAllTelemetry();
         LiveWindow.setEnabled(false);
         // SmartDashboard.updateValues();
-        m_robotContainer = new RobotContainer();
-        ts = Timer.getFPGATimestamp();
     }
 
     /**
@@ -53,10 +64,6 @@ public class Robot extends TimedRobot {
         // and running subsystem periodic() methods.  This must be called from the robot's periodic
         // block in order for anything in the Command-based framework to work.
         CommandScheduler.getInstance().run();
-        double now = Timer.getFPGATimestamp();
-        double dt = now - ts;
-        ts = now;
-        // System.out.println(dt);
     }
 
     /** This function is called once each time the robot enters Disabled mode. */
