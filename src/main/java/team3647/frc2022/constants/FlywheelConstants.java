@@ -47,6 +47,7 @@ public final class FlywheelConstants {
 
     public static InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble>
             kFlywheelAutoAimMap = new InterpolatingTreeMap<>();
+    public static double constantVelocityMpS = 5;
 
     static {
         kMasterConfig.slot0.kP = 0.37289;

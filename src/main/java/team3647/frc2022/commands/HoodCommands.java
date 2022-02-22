@@ -1,13 +1,11 @@
-package team3647.frc2022.commands.hood;
+package team3647.frc2022.commands;
 
 import edu.wpi.first.math.filter.MedianFilter;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import java.util.function.Function;
-import java.util.function.Supplier;
+import java.util.function.DoubleSupplier;
 import team3647.frc2022.subsystems.Hood;
-import team3647.lib.vision.AimingParameters;
 
 public class HoodCommands {
     private final Hood m_hood;
@@ -40,19 +38,8 @@ public class HoodCommands {
                                 m_hood));
     }
 
-    public Command getAutoAdjustHood(
-            Supplier<AimingParameters> aimParamsSupplier,
-            Function<Double, Double> hoodAngleToDistance) {
-        return new RunCommand(
-                () -> {
-                    var aimingParams = aimParamsSupplier.get();
-                    if (aimingParams == null) {
-                        return;
-                    }
-                    m_hood.setAngleMotionMagic(
-                            hoodAngleToDistance.apply(aimingParams.getRangeMeters()));
-                },
-                m_hood);
+    public Command getAutoAdjustHood(DoubleSupplier hoodAngle) {
+        return new RunCommand(() -> m_hood.setAngleMotionMagic(hoodAngle.getAsDouble()), m_hood);
     }
 
     public Command getHoodToSetpoint(double setpointDegrees) {

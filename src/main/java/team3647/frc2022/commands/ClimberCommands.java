@@ -1,4 +1,4 @@
-package team3647.frc2022.commands.climber;
+package team3647.frc2022.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;

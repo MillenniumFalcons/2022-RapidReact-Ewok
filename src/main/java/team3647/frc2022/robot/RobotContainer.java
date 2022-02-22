@@ -9,7 +9,9 @@ import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import team3647.frc2022.commands.ArcadeDrive;
 import team3647.frc2022.constants.*;
+import team3647.frc2022.subsystems.Ballstopper;
 import team3647.frc2022.subsystems.ClimberArm;
 import team3647.frc2022.subsystems.ColumnBottom;
 import team3647.frc2022.subsystems.ColumnTop;
@@ -54,13 +56,34 @@ public class RobotContainer {
                 m_hood);
         // Configure the button bindings
         m_drivetrain.init();
+        configureDefaultCommands();
         configureButtonBindings();
         configureSmartDashboardLogging();
         m_hood.resetEncoder();
         HoodContants.kHoodMotor.configAllSettings(HoodContants.kMasterConfig);
     }
 
-    private void configureButtonBindings() {}
+    private void configureDefaultCommands() {
+        m_drivetrain.setDefaultCommand(
+                new ArcadeDrive(
+                        m_drivetrain,
+                        mainController::getLeftStickY,
+                        mainController::getRightStickX));
+        m_hood.setDefaultCommand(m_superstructure.getHoodAdjustUnlessClimbing());
+        m_flywheel.setDefaultCommand(
+                m_superstructure.flywheelCommands.waitToSpinDownThenHold(
+                        FlywheelConstants.constantVelocityMpS));
+        m_turret.setDefaultCommand(m_superstructure.turretCommands.holdPositionAtCall());
+    }
+
+    private void configureButtonBindings() {
+        mainController.rightTrigger.whenHeld(m_superstructure.getAutoAimAndShoot());
+        mainController.buttonX.whenPressed(m_superstructure.getAutoClimbSequence());
+
+        coController.buttonA.whenHeld(m_superstructure.getAimTurretCommand());
+        coController.leftTrigger.whenHeld(
+                m_superstructure.getIntakeSequence(coController::getLeftTriggerValue));
+    }
 
     private void configureSmartDashboardLogging() {
         m_printer.addDouble("Shooter velocity", m_flywheel::getVelocity);
@@ -211,16 +234,7 @@ public class RobotContainer {
                     TurretConstants.kMinDegree,
                     TurretConstants.kLimitSwitch,
                     TurretConstants.kFeedForwards);
-
-    private final Superstructure m_superstructure =
-            new Superstructure(
-                    m_pivotClimber,
-                    m_columnBottom,
-                    m_verticalRollers,
-                    m_columnTop,
-                    m_intake,
-                    m_turret,
-                    m_flywheel);
+    final Ballstopper m_stopper = new Ballstopper(ColumnBottomConstants.ballStopper);
 
     final FlightDeck m_flightDeck =
             new FlightDeck(
@@ -239,4 +253,17 @@ public class RobotContainer {
                     new PhotonVisionCamera("gloworm", 0.06, VisionConstants.limelightConstants),
                     VisionConstants.kCenterGoalTargetConstants,
                     m_flightDeck::addVisionObservation);
+
+    private final Superstructure m_superstructure =
+            new Superstructure(
+                    m_flightDeck,
+                    m_pivotClimber,
+                    m_columnBottom,
+                    m_verticalRollers,
+                    m_columnTop,
+                    m_intake,
+                    m_turret,
+                    m_hood,
+                    m_flywheel,
+                    m_stopper);
 }
