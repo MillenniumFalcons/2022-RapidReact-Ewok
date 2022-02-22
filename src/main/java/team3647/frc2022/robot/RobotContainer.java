@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import team3647.frc2022.commands.ArcadeDrive;
 import team3647.frc2022.constants.*;
 import team3647.frc2022.subsystems.Ballstopper;
@@ -74,11 +75,16 @@ public class RobotContainer {
                 m_superstructure.flywheelCommands.waitToSpinDownThenHold(
                         FlywheelConstants.constantVelocityMpS));
         m_turret.setDefaultCommand(m_superstructure.turretCommands.holdPositionAtCall());
+        m_pivotClimber.setDefaultCommand(new RunCommand(m_pivotClimber::end));
     }
 
     private void configureButtonBindings() {
         mainController.rightTrigger.whenHeld(m_superstructure.getAutoAimAndShoot());
         mainController.buttonX.whenPressed(m_superstructure.getAutoClimbSequence());
+        mainController.leftBumper.whenHeld(m_superstructure.getClimberManualControl(() -> 0.5));
+        mainController.rightBumper.whenHeld(m_superstructure.getClimberManualControl(() -> -0.5));
+        mainController.dPadLeft.whenHeld(m_superstructure.getRetractClimbManual());
+        mainController.dPadLeft.whenHeld(m_superstructure.getExtendClimberManual());
 
         coController.buttonA.whenHeld(m_superstructure.getAimTurretCommand());
         coController.leftTrigger.whenHeld(

@@ -141,6 +141,16 @@ public class Superstructure {
         return intakeCommands.getIntakeSequnce(intakeCommands.getRunIntakeOpenloop(percentOut));
     }
 
+    public Command getExtendClimberManual() {
+        return new ConditionalCommand(
+                climberCommands.setAngled(), new InstantCommand(), this::isClimbing);
+    }
+
+    public Command getRetractClimbManual() {
+        return new ConditionalCommand(
+                climberCommands.setStraight(), new InstantCommand(), this::isClimbing);
+    }
+
     public Command getAimTurretCommand() {
         return new ConditionalCommand(
                 new InstantCommand(),
@@ -148,6 +158,13 @@ public class Superstructure {
                         m_turret,
                         this::getAimingParameters,
                         deck.getTracker()::getMeasuredVelocity),
+                this::isClimbing);
+    }
+
+    public Command getClimberManualControl(DoubleSupplier percentOut) {
+        return new ConditionalCommand(
+                climberCommands.getClimberOpenloop(percentOut),
+                new InstantCommand(),
                 this::isClimbing);
     }
 

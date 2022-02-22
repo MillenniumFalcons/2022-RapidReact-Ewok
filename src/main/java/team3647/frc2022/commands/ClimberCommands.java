@@ -44,9 +44,15 @@ public class ClimberCommands {
                 .andThen(climber::setAngled);
     }
 
-    public Command getClimberOpenloop(DoubleSupplier upFunction, DoubleSupplier downFunction) {
-        return new RunCommand(
-                () -> climber.setOpenloop(upFunction.getAsDouble() - downFunction.getAsDouble()),
-                climber);
+    public Command setAngled() {
+        return new InstantCommand(climber::setAngled);
+    }
+
+    public Command setStraight() {
+        return new InstantCommand(climber::setStraight);
+    }
+
+    public Command getClimberOpenloop(DoubleSupplier percentout) {
+        return new RunCommand(() -> climber.setOpenloop(percentout.getAsDouble()), climber);
     }
 }
