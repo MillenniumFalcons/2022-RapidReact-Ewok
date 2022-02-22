@@ -171,7 +171,7 @@ public class Superstructure {
     }
 
     public Command getWaitForShooter() {
-        return new WaitUntilCommand(() -> m_flywheel.getVelocity() >= getAimedFlywheelSurfaceVel());
+        return new WaitUntilCommand(this::getFlywheelAtSurfaceVel);
     }
 
     public Command getDeployStopper() {

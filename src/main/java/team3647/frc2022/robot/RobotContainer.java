@@ -88,7 +88,7 @@ public class RobotContainer {
 
         coController.buttonA.whenHeld(m_superstructure.getAimTurretCommand());
         coController.leftTrigger.whenHeld(
-                m_superstructure.getIntakeSequence(coController::getLeftTriggerValue));
+                m_superstructure.intakeAndIndex(coController::getLeftTriggerValue));
     }
 
     private void configureSmartDashboardLogging() {
