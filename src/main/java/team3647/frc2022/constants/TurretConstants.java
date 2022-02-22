@@ -42,7 +42,7 @@ public class TurretConstants {
     public static final double kNominalVoltage = 11;
 
     public static final Translation2d kRobotToTurretFixed =
-            new Translation2d(Units.inchesToMeters(7), 0);
+            new Translation2d(Units.inchesToMeters(-7), 0);
     public static final Translation2d kTurretToCamTranslationMeters =
             new Translation2d(Units.inchesToMeters(7), 0);
     public static final Pose2d kTurretToCamFixed =
