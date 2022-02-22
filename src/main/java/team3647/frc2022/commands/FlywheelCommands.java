@@ -29,8 +29,8 @@ public class FlywheelCommands {
 
     public Command waitToSpinDownThenHold(double velToKeep) {
         return new WaitUntilCommand(() -> m_flywheel.getVelocity() < velToKeep)
-                .deadlineWith(new RunCommand(() -> m_flywheel.setOpenloop(0)))
-                .andThen(new RunCommand(() -> m_flywheel.setSurfaceSpeed(velToKeep)));
+                .deadlineWith(new RunCommand(() -> m_flywheel.setOpenloop(0), m_flywheel))
+                .andThen(new RunCommand(() -> m_flywheel.setSurfaceSpeed(velToKeep), m_flywheel));
     }
 
     /**

@@ -34,7 +34,7 @@ public class FeederCommands {
                 () -> verticalRollers.setOpenloop(0.6),
                 interrupted -> verticalRollers.setOpenloop(0),
                 () -> false,
-                columnBottom);
+                verticalRollers);
     }
 
     public Command getFeedUntil(BooleanSupplier interruptOn) {

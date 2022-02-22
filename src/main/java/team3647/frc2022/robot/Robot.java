@@ -5,6 +5,7 @@
 package team3647.frc2022.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -28,7 +29,7 @@ public class Robot extends TimedRobot {
         addPeriodic(
                 m_robotContainer.m_drivetrain::readPeriodicInputs,
                 kTwentyMSLoopTime,
-                .005); // 2.5MS offset
+                .004); // 2.5MS offset
         addPeriodic(
                 m_robotContainer.m_turret::readPeriodicInputs,
                 kTwentyMSLoopTime,
@@ -36,7 +37,11 @@ public class Robot extends TimedRobot {
         addPeriodic(
                 m_robotContainer.m_flightDeck.getTracker()::update,
                 kTwentyMSLoopTime,
-                .015); // 7.5 MS offset
+                .016); // 7.5 MS offset
+        addPeriodic(
+                () -> m_robotContainer.m_superstructure.periodic(Timer.getFPGATimestamp()),
+                kTwentyMSLoopTime,
+                0.019);
     }
 
     /**

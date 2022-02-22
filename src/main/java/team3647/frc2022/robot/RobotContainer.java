@@ -70,12 +70,12 @@ public class RobotContainer {
                         m_drivetrain,
                         mainController::getLeftStickY,
                         mainController::getRightStickX));
-        m_hood.setDefaultCommand(m_superstructure.getHoodAdjustUnlessClimbing());
+        m_hood.setDefaultCommand(m_superstructure.getHoodAutoAdjustCommand());
         m_flywheel.setDefaultCommand(
                 m_superstructure.flywheelCommands.waitToSpinDownThenHold(
                         FlywheelConstants.constantVelocityMpS));
         m_turret.setDefaultCommand(m_superstructure.turretCommands.holdPositionAtCall());
-        m_pivotClimber.setDefaultCommand(new RunCommand(m_pivotClimber::end));
+        m_pivotClimber.setDefaultCommand(new RunCommand(m_pivotClimber::end, m_pivotClimber));
     }
 
     private void configureButtonBindings() {
@@ -260,7 +260,7 @@ public class RobotContainer {
                     VisionConstants.kCenterGoalTargetConstants,
                     m_flightDeck::addVisionObservation);
 
-    private final Superstructure m_superstructure =
+    final Superstructure m_superstructure =
             new Superstructure(
                     m_flightDeck,
                     m_pivotClimber,

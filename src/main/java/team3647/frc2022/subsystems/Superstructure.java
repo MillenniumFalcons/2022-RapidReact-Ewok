@@ -3,6 +3,7 @@ package team3647.frc2022.subsystems;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import java.util.function.DoubleSupplier;
@@ -68,6 +69,7 @@ public class Superstructure {
         this.m_hood = m_hood;
         this.m_flywheel = m_flywheel;
         this.stopper = stopper;
+        this.aimedState = RobotState.STOPPED;
 
         flywheelCommands = new FlywheelCommands(m_flywheel);
         hoodCommands = new HoodCommands(m_hood);
@@ -124,7 +126,7 @@ public class Superstructure {
 
     public Command getHoodAdjustUnlessClimbing() {
         return new ConditionalCommand(
-                new InstantCommand(() -> m_hood.setOpenloop(0)),
+                new RunCommand(() -> m_hood.setOpenloop(0), m_hood),
                 getHoodAutoAdjustCommand(),
                 this::isClimbing);
     }

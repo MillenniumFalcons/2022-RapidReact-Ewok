@@ -47,8 +47,8 @@ public class HoodContants {
         {Units.feetToMeters(16) + GlobalConstants.centerOffsetMeters, 31.97}
     };
 
-    public static InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble> kHoodAutoAimMap =
-            new InterpolatingTreeMap<>();
+    public static final InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble>
+            kHoodAutoAimMap = new InterpolatingTreeMap<>();
 
     static {
         kMasterConfig.slot0.kP = 0.21;
