@@ -39,9 +39,13 @@ public final class FlywheelConstants {
     public static final double[][] kFlywheelMap = {
         {Units.feetToMeters(2) + GlobalConstants.centerOffsetMeters, 14},
         {Units.feetToMeters(4) + GlobalConstants.centerOffsetMeters, 16},
-        {Units.feetToMeters(8) + GlobalConstants.centerOffsetMeters, 17},
+        {Units.feetToMeters(8) + GlobalConstants.centerOffsetMeters, 17.5},
+        {Units.feetToMeters(9) + GlobalConstants.centerOffsetMeters, 18},
+        {Units.feetToMeters(10) + GlobalConstants.centerOffsetMeters, 19},
+        {Units.feetToMeters(11) + GlobalConstants.centerOffsetMeters, 20},
         {Units.feetToMeters(12) + GlobalConstants.centerOffsetMeters, 20.5},
-        {Units.feetToMeters(14) + GlobalConstants.centerOffsetMeters, 22.5},
+        {Units.feetToMeters(13) + GlobalConstants.centerOffsetMeters, 21},
+        {Units.feetToMeters(14) + GlobalConstants.centerOffsetMeters, 22},
         {Units.feetToMeters(16) + GlobalConstants.centerOffsetMeters, 24.3}
     };
 

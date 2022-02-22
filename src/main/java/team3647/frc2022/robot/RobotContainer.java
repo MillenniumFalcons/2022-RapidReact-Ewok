@@ -24,7 +24,8 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import team3647.frc2022.autonomous.RamseteCommands;
 import team3647.frc2022.commands.AimTurret;
 import team3647.frc2022.commands.ArcadeDrive;
-import team3647.frc2022.commands.ClimberUpDown;
+import team3647.frc2022.commands.AutoAdjustHood;
+import team3647.frc2022.commands.AutoShoot;
 import team3647.frc2022.commands.IntakeBallTest;
 import team3647.frc2022.commands.ShootBall;
 import team3647.frc2022.commands.TestHood;
@@ -32,6 +33,7 @@ import team3647.frc2022.commands.climber.ClimberDeploy;
 import team3647.frc2022.commands.climber.ClimberLength;
 import team3647.frc2022.constants.*;
 import team3647.frc2022.states.RobotState;
+import team3647.frc2022.subsystems.Ballstopper;
 import team3647.frc2022.subsystems.ClimberArm;
 import team3647.frc2022.subsystems.ColumnBottom;
 import team3647.frc2022.subsystems.ColumnTop;
@@ -96,17 +98,19 @@ public class RobotContainer {
                             m_intake.setOpenloop(-coController.getRightStickY());
                         },
                         m_intake));
-        coController.leftTrigger.whenHeld(
-                new IntakeBallTest(
-                        m_intake,
-                        m_columnBottom,
-                        m_verticalRollers,
-                        coController::getLeftTriggerValue));
-        m_pivotClimber.setDefaultCommand(
-                new ClimberUpDown(
-                        m_pivotClimber,
-                        mainController::getLeftTriggerValue,
-                        mainController::getRightTriggerValue));
+        mainController.leftTrigger.whenHeld(
+                new InstantCommand(m_ballstopper::extend)
+                        .andThen(
+                                new IntakeBallTest(
+                                        m_intake,
+                                        m_columnBottom,
+                                        m_verticalRollers,
+                                        mainController::getLeftTriggerValue)));
+        // m_pivotClimber.setDefaultCommand(
+        //         new ClimberUpDown(
+        //                 m_pivotClimber,
+        //                 mainController::getLeftTriggerValue,
+        //                 mainController::getRightTriggerValue));
         configureButtonBindings();
         configureSmartDashboardLogging();
         m_hood.resetEncoder();
@@ -126,8 +130,6 @@ public class RobotContainer {
                         m_superstructure::isClimbing));
 
         mainController.buttonB.whenActive(new InstantCommand(m_pivotClimber::setStraight));
-
-        coController.dPadUp.whenPressed(new TestHood(m_hood, this::getHoodDegree));
         mainController.dPadUp.whenHeld(
                 new AimTurret(
                         m_turret,
@@ -135,8 +137,29 @@ public class RobotContainer {
                         this.m_flightDeck.getTracker()::getMeasuredVelocity));
         mainController.dPadDown.whenHeld(new InstantCommand(m_turret::end));
 
-        coController.rightTrigger.whenHeld(
+        mainController.rightTrigger.whenHeld(
+                new AimTurret(
+                                m_turret,
+                                this::getLatestAimingParameters,
+                                this.m_flightDeck.getTracker()::getMeasuredVelocity)
+                        .alongWith(
+                                new AutoShoot(
+                                        m_flywheel,
+                                        m_columnTop,
+                                        m_columnBottom,
+                                        m_ballstopper,
+                                        this::getLatestAimingParameters,
+                                        FlywheelConstants::getFlywheelRPM))
+                        .alongWith(
+                                new AutoAdjustHood(
+                                        m_hood,
+                                        this::getLatestAimingParameters,
+                                        HoodContants::getHoodAngle)));
+
+        coController.leftTrigger.whenHeld(
                 new ShootBall(m_flywheel, m_columnTop, m_columnBottom, this::getShooterSpeed));
+        coController.rightTrigger.whenHeld(new TestHood(m_hood, this::getHoodDegree));
+        coController.buttonX.whenHeld(new RunCommand(m_columnTop::setTen, m_columnTop));
     }
 
     private void configureSmartDashboardLogging() {
@@ -295,6 +318,8 @@ public class RobotContainer {
                     ColumnTopConstants.kNominalVoltage,
                     GlobalConstants.kDt,
                     ColumnTopConstants.kFeedForward);
+
+    final Ballstopper m_ballstopper = new Ballstopper(ColumnBottomConstants.ballStopper);
 
     private final ClimberArm m_leftArm =
             new ClimberArm(

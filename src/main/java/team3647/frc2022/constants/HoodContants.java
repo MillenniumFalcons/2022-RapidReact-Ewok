@@ -41,9 +41,13 @@ public class HoodContants {
     public static final double[][] kHoodMap = {
         {Units.feetToMeters(2) + GlobalConstants.centerOffsetMeters, 18},
         {Units.feetToMeters(4) + GlobalConstants.centerOffsetMeters, 22.5},
-        {Units.feetToMeters(8) + GlobalConstants.centerOffsetMeters, 27.97},
-        {Units.feetToMeters(12) + GlobalConstants.centerOffsetMeters, 31.97},
-        {Units.feetToMeters(14) + GlobalConstants.centerOffsetMeters, 32},
+        {Units.feetToMeters(8) + GlobalConstants.centerOffsetMeters, 28},
+        {Units.feetToMeters(9) + GlobalConstants.centerOffsetMeters, 28},
+        {Units.feetToMeters(10) + GlobalConstants.centerOffsetMeters, 29},
+        {Units.feetToMeters(11) + GlobalConstants.centerOffsetMeters, 29},
+        {Units.feetToMeters(12) + GlobalConstants.centerOffsetMeters, 29},
+        {Units.feetToMeters(13) + GlobalConstants.centerOffsetMeters, 30},
+        {Units.feetToMeters(14) + GlobalConstants.centerOffsetMeters, 30},
         {Units.feetToMeters(16) + GlobalConstants.centerOffsetMeters, 31.97}
     };
 
