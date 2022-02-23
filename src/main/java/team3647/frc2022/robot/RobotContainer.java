@@ -52,7 +52,7 @@ public class RobotContainer {
                 m_intake,
                 m_flywheel,
                 m_pivotClimber,
-                m_visionController,
+                //m_visionController,
                 m_turret,
                 m_hood);
         // Configure the button bindings
@@ -254,11 +254,11 @@ public class RobotContainer {
                     new MultiTargetTracker(),
                     TurretConstants.kTurretToCamFixed);
 
-    final VisionController m_visionController =
+    /*final VisionController m_visionController =
             new VisionController(
                     new PhotonVisionCamera("gloworm", 0.06, VisionConstants.limelightConstants),
                     VisionConstants.kCenterGoalTargetConstants,
-                    m_flightDeck::addVisionObservation);
+                    m_flightDeck::addVisionObservation);*/
 
     final Superstructure m_superstructure =
             new Superstructure(
