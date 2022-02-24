@@ -87,8 +87,11 @@ public class RobotContainer {
         mainController.dPadLeft.whenHeld(m_superstructure.getExtendClimberManual());
 
         coController.buttonA.whenHeld(m_superstructure.getAimTurretCommand());
-        coController.leftTrigger.whenHeld(
-                m_superstructure.intakeAndIndex(coController::getLeftTriggerValue));
+        // coController.leftTrigger.whenHeld(
+        //         m_superstructure.intakeAndIndex(coController::getLeftTriggerValue));
+        coController.leftTrigger.whenActive(
+                m_superstructure.getIntakeHoldCommand(coController::getLeftTriggerValue));
+        coController.leftTrigger.whenInactive(m_superstructure.getIntakeReleaseCommand());
     }
 
     private void configureSmartDashboardLogging() {
@@ -167,6 +170,8 @@ public class RobotContainer {
     final ColumnBottom m_columnBottom =
             new ColumnBottom(
                     ColumnBottomConstants.kColumnMotor,
+                    ColumnBottomConstants.kBottomBanner,
+                    ColumnBottomConstants.kMiddleBanner,
                     ColumnBottomConstants.kNativeVelToSurfaceMpS,
                     ColumnBottomConstants.kPosConverstion,
                     ColumnBottomConstants.kNominalVoltage,
@@ -185,6 +190,7 @@ public class RobotContainer {
     final ColumnTop m_columnTop =
             new ColumnTop(
                     ColumnTopConstants.kColumnMotor,
+                    ColumnTopConstants.kTopBanner,
                     ColumnTopConstants.kNativeVelToSurfaceMpS,
                     ColumnTopConstants.kPosConverstion,
                     ColumnTopConstants.kNominalVoltage,

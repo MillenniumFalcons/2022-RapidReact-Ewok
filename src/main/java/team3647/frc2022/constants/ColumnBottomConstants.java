@@ -33,7 +33,9 @@ public final class ColumnBottomConstants {
     public static final TalonFX kColumnMotor =
             new LazyTalonFX(GlobalConstants.ColumnBottomIds.kMotorId);
     public static final DigitalInput kBottomBanner =
-            new DigitalInput(GlobalConstants.ColumnBottomIds.kBottomSwitchPin);
+            new DigitalInput(GlobalConstants.ColumnBottomIds.kBottomSensorPin);
+    public static final DigitalInput kMiddleBanner =
+            new DigitalInput(GlobalConstants.ColumnBottomIds.kMiddleSensorPin);
 
     static {
         kMasterConfig.slot0.kP = 0;

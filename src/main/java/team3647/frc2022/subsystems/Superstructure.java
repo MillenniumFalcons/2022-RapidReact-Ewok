@@ -94,11 +94,12 @@ public class Superstructure {
                                 .andThen(
                                         getRetractStopper(),
                                         feederCommands
-                                                .getFeedUntil(this::getFlywheelNotAtSurfaceVel)
+                                                .getFeedInwardsUntil(
+                                                        this::getFlywheelNotAtSurfaceVel)
                                                 .andThen(getDeployStopper(), getWaitForShooter()))
                                 .andThen(
                                         getRetractStopper(),
-                                        feederCommands.getFeedUntil(
+                                        feederCommands.getFeedInwardsUntil(
                                                 this::getFlywheelNotAtSurfaceVel))
                                 .andThen(getDeployStopper()));
     }
@@ -108,7 +109,7 @@ public class Superstructure {
                 .andThen(
                         getIntakeSequence(percentOut)
                                 .alongWith(
-                                        feederCommands.getRunColmnBottom(),
+                                        feederCommands.getRunColmnBottomInwards(),
                                         feederCommands.getRunVerticalRollers()));
     }
 
@@ -207,6 +208,26 @@ public class Superstructure {
 
     public double getAimedHoodAngle() {
         return hoodAngle;
+    }
+
+    public Command getIntakeHoldCommand(DoubleSupplier output) {
+        return intakeCommands
+                .getIntakeSequnce(
+                        intakeCommands.getIntakeSequnce(
+                                intakeCommands.getRunIntakeOpenloop(output)))
+                .alongWith(
+                        new ConditionalCommand(
+                                feederCommands.getFeedInwardsUntil(
+                                        m_columnBottom::getMiddleBannerValue),
+                                feederCommands.getFeedInwards(),
+                                m_columnTop::getTopBannerValue));
+    }
+
+    public Command getIntakeReleaseCommand() {
+        return feederCommands
+                .getFeedOutwardsUntil(m_columnTop::getNotTopBannerValue)
+                .andThen(
+                        intakeCommands.getEndSequence().alongWith(feederCommands.getEndSequence()));
     }
 
     public AimingParameters getAimingParameters() {
