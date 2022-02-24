@@ -78,6 +78,19 @@ public class PivotClimber implements PeriodicSubsystem {
         rightArm.setOpenloop(demand);
     }
 
+    public void setOpenloop(double leftDemand, double rightDemand) {
+        leftArm.setOpenloop(leftDemand);
+        rightArm.setOpenloop(rightDemand);
+    }
+
+    public double getLeftCurrent() {
+        return leftArm.getMasterCurrent();
+    }
+
+    public double getRightCurrent() {
+        return rightArm.getMasterCurrent();
+    }
+
     public double getLeftPosition() {
         return leftArm.getPosition();
     }
@@ -95,6 +108,7 @@ public class PivotClimber implements PeriodicSubsystem {
     public void writePeriodicOutputs() {
         leftArm.writePeriodicOutputs();
         rightArm.writePeriodicOutputs();
+
         if (climberAngle.solenoidVal != prevSolenoidVal) {
             pivotPistons.set(climberAngle.solenoidVal);
             prevSolenoidVal = climberAngle.solenoidVal;
