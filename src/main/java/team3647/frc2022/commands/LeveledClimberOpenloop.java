@@ -47,15 +47,15 @@ public class LeveledClimberOpenloop extends CommandBase {
         if (leftCurrent - kCurrentThreshold > rightCurrent) {
             double percentOutput =
                     MathUtil.clamp(pid.calculate(leftCurrent - rightCurrent, 0), demand, 0);
-            leftDemand = demand + percentOutput;
-            rightDemand = demand - percentOutput;
+            leftDemand = demand - percentOutput;
+            rightDemand = demand + percentOutput;
             climber.setOpenloop(leftDemand, rightDemand);
 
         } else if (rightCurrent - kCurrentThreshold > leftCurrent) {
             double percentOutput =
                     MathUtil.clamp(pid.calculate(rightCurrent - leftCurrent, 0), demand, 0);
-            leftDemand = demand - percentOutput;
-            rightDemand = demand + percentOutput;
+            leftDemand = demand + percentOutput;
+            rightDemand = demand - percentOutput;
             climber.setOpenloop(leftDemand, rightDemand);
         } else {
             climber.setOpenloop(demand);
