@@ -31,7 +31,6 @@ public class Superstructure {
     private final Turret m_turret;
     private final Hood m_hood;
     private final Flywheel m_flywheel;
-    private final Ballstopper stopper;
 
     public final FlywheelCommands flywheelCommands;
     public final HoodCommands hoodCommands;
@@ -57,8 +56,7 @@ public class Superstructure {
             Intake m_intake,
             Turret m_turret,
             Hood m_hood,
-            Flywheel m_flywheel,
-            Ballstopper stopper) {
+            Flywheel m_flywheel) {
         this.deck = deck;
         this.m_climber = m_climber;
         this.m_columnBottom = m_columnBottom;
@@ -68,7 +66,6 @@ public class Superstructure {
         this.m_turret = m_turret;
         this.m_hood = m_hood;
         this.m_flywheel = m_flywheel;
-        this.stopper = stopper;
         this.aimedState = RobotState.STOPPED;
 
         flywheelCommands = new FlywheelCommands(m_flywheel);
@@ -92,25 +89,13 @@ public class Superstructure {
                         columnTopCommands.getGoVariableVelocity(this::getAimedKickerVelocity),
                         getWaitForShooter()
                                 .andThen(
-                                        getRetractStopper(),
                                         feederCommands
                                                 .getFeedInwardsUntil(
                                                         this::getFlywheelNotAtSurfaceVel)
-                                                .andThen(getDeployStopper(), getWaitForShooter()))
+                                                .andThen(getWaitForShooter()))
                                 .andThen(
-                                        getRetractStopper(),
                                         feederCommands.getFeedInwardsUntil(
-                                                this::getFlywheelNotAtSurfaceVel))
-                                .andThen(getDeployStopper()));
-    }
-
-    public Command intakeAndIndex(DoubleSupplier percentOut) {
-        return getDeployStopper()
-                .andThen(
-                        getIntakeSequence(percentOut)
-                                .alongWith(
-                                        feederCommands.getRunColmnBottomInwards(),
-                                        feederCommands.getRunVerticalRollers()));
+                                                this::getFlywheelNotAtSurfaceVel)));
     }
 
     public Command getAutoClimbSequence() {
@@ -173,14 +158,6 @@ public class Superstructure {
 
     public Command getWaitForShooter() {
         return new WaitUntilCommand(this::getFlywheelAtSurfaceVel);
-    }
-
-    public Command getDeployStopper() {
-        return new InstantCommand(stopper::extend);
-    }
-
-    public Command getRetractStopper() {
-        return new InstantCommand(stopper::retract);
     }
 
     public double getDistanceToTarget() {

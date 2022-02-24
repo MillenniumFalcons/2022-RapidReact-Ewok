@@ -12,7 +12,6 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import team3647.frc2022.commands.ArcadeDrive;
 import team3647.frc2022.constants.*;
-import team3647.frc2022.subsystems.Ballstopper;
 import team3647.frc2022.subsystems.ClimberArm;
 import team3647.frc2022.subsystems.ColumnBottom;
 import team3647.frc2022.subsystems.ColumnTop;
@@ -246,7 +245,6 @@ public class RobotContainer {
                     TurretConstants.kMinDegree,
                     TurretConstants.kLimitSwitch,
                     TurretConstants.kFeedForwards);
-    final Ballstopper m_stopper = new Ballstopper(ColumnBottomConstants.ballStopper);
 
     final FlightDeck m_flightDeck =
             new FlightDeck(
@@ -276,6 +274,5 @@ public class RobotContainer {
                     m_intake,
                     m_turret,
                     m_hood,
-                    m_flywheel,
-                    m_stopper);
+                    m_flywheel);
 }
