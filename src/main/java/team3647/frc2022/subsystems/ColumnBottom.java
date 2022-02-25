@@ -44,11 +44,11 @@ public class ColumnBottom extends TalonFXSubsystem {
     }
     /** @return bottomBannerValue returns false when no ball, returns true when ball */
     public boolean getBottomBannerValue() {
-        return bottomBannerValue;
+        return !bottomBannerValue;
     }
     /** @return middleBannerValue returns false when no ball, returns true when ball */
     public boolean getMiddleBannerValue() {
-        return middleBannerValue;
+        return !middleBannerValue;
     }
 
     public void stop() {

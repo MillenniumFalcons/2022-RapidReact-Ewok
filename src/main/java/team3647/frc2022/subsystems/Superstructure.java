@@ -189,20 +189,26 @@ public class Superstructure {
 
     public Command getIntakeHoldCommand(DoubleSupplier output) {
         return intakeCommands
-                .getIntakeSequnce(
-                        intakeCommands.getIntakeSequnce(
-                                intakeCommands.getRunIntakeOpenloop(output)))
+                .getIntakeSequnce(intakeCommands.getRunIntakeOpenloop(output))
                 .alongWith(
                         new ConditionalCommand(
-                                feederCommands.getFeedInwardsUntil(
+                                feederCommands.getBottomCheckFeed(
+                                        m_columnTop::getTopBannerValue,
                                         m_columnBottom::getMiddleBannerValue),
-                                feederCommands.getFeedInwards(),
+                                feederCommands
+                                        .getFeedInwards()
+                                        .alongWith(
+                                                columnTopCommands
+                                                        .getRunInwards()
+                                                        .withInterrupt(
+                                                                m_columnTop::getTopBannerValue)),
                                 m_columnTop::getTopBannerValue));
     }
 
     public Command getIntakeReleaseCommand() {
         return feederCommands
                 .getFeedOutwardsUntil(m_columnTop::getNotTopBannerValue)
+                .alongWith(columnTopCommands.getRunOutwardsUntil(m_columnTop::getNotTopBannerValue))
                 .andThen(
                         intakeCommands.getEndSequence().alongWith(feederCommands.getEndSequence()));
     }

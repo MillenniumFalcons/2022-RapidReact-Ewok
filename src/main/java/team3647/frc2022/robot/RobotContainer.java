@@ -100,6 +100,10 @@ public class RobotContainer {
         m_printer.addDouble("Kicker current", m_columnTop::getMasterCurrent);
         m_printer.addDouble("Hood Position", m_hood::getPosition);
         m_printer.addDouble("turret rotation", m_turret::getAngle);
+        m_printer.addBoolean("Top sensor", m_columnTop::getTopBannerValue);
+        m_printer.addBoolean("mid sensor", m_columnBottom::getMiddleBannerValue);
+        m_printer.addBoolean("low sensor", m_columnBottom::getBottomBannerValue);
+
         // m_printer.addPose("Vision Pose", this::getVisionPose);
         m_printer.addPose("Drivetrain Pose", m_drivetrain::getPose);
         SmartDashboard.putNumber("Shooter Speed", 0.0);
@@ -243,7 +247,6 @@ public class RobotContainer {
                     TurretConstants.kS,
                     TurretConstants.kMaxDegree,
                     TurretConstants.kMinDegree,
-                    TurretConstants.kLimitSwitch,
                     TurretConstants.kFeedForwards);
 
     final FlightDeck m_flightDeck =

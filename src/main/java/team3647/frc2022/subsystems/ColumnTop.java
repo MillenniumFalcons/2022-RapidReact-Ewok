@@ -39,11 +39,11 @@ public class ColumnTop extends TalonFXSubsystem {
     }
     /** @return topbannerValue returns false when no ball, returns true when ball */
     public boolean getTopBannerValue() {
-        return topBannerValue;
+        return !topBannerValue;
     }
 
     public boolean getNotTopBannerValue() {
-        return !topBannerValue;
+        return topBannerValue;
     }
 
     @Override

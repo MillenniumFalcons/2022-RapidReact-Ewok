@@ -63,6 +63,10 @@ public class FeederCommands {
         return getRunColmnBottomInwards().alongWith(getRunVerticalRollers());
     }
 
+    public Command getBottomCheckFeed(BooleanSupplier topSensor, BooleanSupplier middleSensor) {
+        return new FeederSensoredBalls(columnBottom, topSensor, middleSensor);
+    }
+
     public Command getEndSequence() {
         return new RunCommand(columnTop::end, columnTop)
                 .alongWith(new RunCommand(columnBottom::end, columnBottom))

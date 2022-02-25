@@ -40,7 +40,6 @@ public final class GlobalConstants {
 
     public static final class TurretIds {
         public static final int kMotorId = 9;
-        public static final int kLimitSwitchpin = 2;
     }
 
     public static final class HoodIds {
