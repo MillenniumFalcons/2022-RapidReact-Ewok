@@ -24,13 +24,11 @@ import team3647.frc2022.subsystems.PivotClimber;
 import team3647.frc2022.subsystems.Superstructure;
 import team3647.frc2022.subsystems.Turret;
 import team3647.frc2022.subsystems.VerticalRollers;
-import team3647.frc2022.subsystems.vision.VisionController;
 import team3647.lib.GroupPrinter;
 import team3647.lib.inputs.Joysticks;
 import team3647.lib.tracking.FlightDeck;
 import team3647.lib.tracking.RobotTracker;
 import team3647.lib.vision.MultiTargetTracker;
-import team3647.lib.vision.PhotonVisionCamera;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -52,7 +50,7 @@ public class RobotContainer {
                 m_intake,
                 m_flywheel,
                 m_pivotClimber,
-                m_visionController,
+                // m_visionController,
                 m_turret,
                 m_hood);
         // Configure the button bindings
@@ -254,11 +252,11 @@ public class RobotContainer {
                     new MultiTargetTracker(),
                     TurretConstants.kTurretToCamFixed);
 
-    final VisionController m_visionController =
-            new VisionController(
-                    new PhotonVisionCamera("gloworm", 0.06, VisionConstants.limelightConstants),
-                    VisionConstants.kCenterGoalTargetConstants,
-                    m_flightDeck::addVisionObservation);
+    /*final VisionController m_visionController =
+    new VisionController(
+            new PhotonVisionCamera("gloworm", 0.06, VisionConstants.limelightConstants),
+            VisionConstants.kCenterGoalTargetConstants,
+            m_flightDeck::addVisionObservation);*/
 
     final Superstructure m_superstructure =
             new Superstructure(
