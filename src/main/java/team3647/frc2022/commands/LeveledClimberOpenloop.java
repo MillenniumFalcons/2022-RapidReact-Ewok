@@ -4,11 +4,10 @@
 
 package team3647.frc2022.commands;
 
-import java.util.function.DoubleSupplier;
-
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import java.util.function.DoubleSupplier;
 import team3647.frc2022.subsystems.PivotClimber;
 
 public class LeveledClimberOpenloop extends CommandBase {
@@ -24,7 +23,10 @@ public class LeveledClimberOpenloop extends CommandBase {
     private final double kCurrentThreshold;
 
     public LeveledClimberOpenloop(
-            DoubleSupplier demand, double kCurrentThreshold, PivotClimber climber, PIDController pid) {
+            DoubleSupplier demand,
+            double kCurrentThreshold,
+            PivotClimber climber,
+            PIDController pid) {
         this.demand = demand;
         this.kCurrentThreshold = kCurrentThreshold;
         this.climber = climber;
