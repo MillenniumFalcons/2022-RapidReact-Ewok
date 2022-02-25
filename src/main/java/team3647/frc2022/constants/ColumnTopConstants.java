@@ -31,7 +31,7 @@ public final class ColumnTopConstants {
     public static final TalonFX kColumnMotor =
             new LazyTalonFX(GlobalConstants.ColumnTopIds.kMotorId);
     public static final DigitalInput kTopBanner =
-            new DigitalInput(GlobalConstants.ColumnTopIds.kTopLimitSwitchPin);
+            new DigitalInput(GlobalConstants.ColumnTopIds.kTopSensorPin);
 
     static {
         kMasterConfig.slot0.kP = 0.014327;
