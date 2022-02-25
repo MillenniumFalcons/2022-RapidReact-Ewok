@@ -43,15 +43,15 @@ public final class DrivetrainConstants {
     public static final TalonFXConfiguration kLeftMasterConfig = new TalonFXConfiguration();
     public static final TalonFXConfiguration kRightMasterConfig = new TalonFXConfiguration();
 
-    public static final double kS = 0.77918; // Volts
-    public static final double kV = 2.4288; // Volts
-    public static final double kA = 0.57834; // Volts
+    public static final double kS = 0.70649; // Volts
+    public static final double kV = 2.1964; // Volts
+    public static final double kA = 0.33557; // Volts
 
     public static final SimpleMotorFeedforward kFeedforward =
             new SimpleMotorFeedforward(kS, kV, kA);
 
     public static final double kWheelDiameterMeters = 0.1016; // 4inches
-    public static final double kTrackWidth = 0;
+    public static final double kTrackWidth = 0.75;
     public static final DifferentialDriveKinematics kDriveKinematics =
             new DifferentialDriveKinematics(kTrackWidth);
     public static final double kMaxSpeedMetersPerSecond = 2;
