@@ -80,11 +80,6 @@ public class Superstructure {
         turretCommands = new TurretCommands(m_turret);
     }
 
-    public Command getSpinupCommand() {
-        return flywheelCommands.getVariableAccelerateFlywheel(
-                () -> FlywheelConstants.getFlywheelRPM(getDistanceToTarget()));
-    }
-
     public Command getShootCommand() {
         return flywheelCommands
                 .getGoVariableVelocity(this::getAimedFlywheelSurfaceVel)
@@ -129,6 +124,16 @@ public class Superstructure {
                 new RunCommand(() -> m_hood.setOpenloop(0), m_hood),
                 getHoodAutoAdjustCommand(),
                 this::isClimbing);
+    }
+
+    public Command getSpinupCommandWithMaxDistance(double maxDistance) {
+        return flywheelCommands.getGoVariableVelocity(
+                () -> Math.min(getDistanceToTarget(), maxDistance));
+    }
+
+    public Command getBatterSpinupCommand() {
+        // distance from bumper to center of turret from the intake side (meters)
+        return flywheelCommands.getGoVariableVelocity(() -> 0.304);
     }
 
     public Command getAutoAimAndShoot() {

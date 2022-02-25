@@ -84,7 +84,24 @@ public class RobotContainer {
         mainController.dPadLeft.whenHeld(m_superstructure.getRetractClimbManual());
         mainController.dPadLeft.whenHeld(m_superstructure.getExtendClimberManual());
 
-        coController.buttonA.whenHeld(m_superstructure.getAimTurretCommand());
+        coController.buttonA.whenHeld(
+                m_superstructure
+                        .getAimTurretCommand()
+                        .alongWith(
+                                m_superstructure.getSpinupCommandWithMaxDistance(
+                                        GlobalConstants.kDistanceFarToGoalCenter)));
+        coController.buttonB.whenHeld(
+                m_superstructure
+                        .getAimTurretCommand()
+                        .alongWith(
+                                m_superstructure.getSpinupCommandWithMaxDistance(
+                                        GlobalConstants.kDistanceTarmacToGoalCenter)));
+        coController.buttonY.whenHeld(
+                m_superstructure
+                        .turretCommands
+                        .getTurretMotionMagic(0)
+                        .alongWith(m_superstructure.getBatterSpinupCommand()));
+
         coController.leftTrigger.whenHeld(
                 m_superstructure.intakeAndIndex(coController::getLeftTriggerValue));
     }
