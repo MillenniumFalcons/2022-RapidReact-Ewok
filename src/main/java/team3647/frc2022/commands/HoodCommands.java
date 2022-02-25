@@ -3,6 +3,7 @@ package team3647.frc2022.commands;
 import edu.wpi.first.math.filter.MedianFilter;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import java.util.function.DoubleSupplier;
 import team3647.frc2022.subsystems.Hood;
@@ -49,5 +50,13 @@ public class HoodCommands {
                 interrupted -> {},
                 () -> Math.abs(m_hood.getAngle() - setpointDegrees) < 0.05,
                 m_hood);
+    }
+
+    public Command getResetHoodForwards() {
+        return new InstantCommand(m_hood::resetEncoderForward);
+    }
+
+    public Command getResetHoodReverse() {
+        return new InstantCommand(m_hood::resetEncoder);
     }
 }

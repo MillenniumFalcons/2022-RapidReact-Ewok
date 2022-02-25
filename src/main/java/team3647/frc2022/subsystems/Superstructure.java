@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import java.util.function.DoubleSupplier;
 import team3647.frc2022.commands.ClimberCommands;
 import team3647.frc2022.commands.ColumnTopCommands;
@@ -47,6 +48,8 @@ public class Superstructure {
     private double flywheelVelocity = 0;
     private double kickerVelocity = 0;
     private double hoodAngle = 16;
+    private Trigger forwardTrigger;
+    private Trigger reverseTrigger;
 
     public Superstructure(
             FlightDeck deck,
@@ -224,6 +227,10 @@ public class Superstructure {
             kickerVelocity = flywheelVelocity * 0.5;
             hoodAngle = HoodContants.getHoodAngle(aimingParameters.getRangeMeters());
         }
+        // forwardTrigger = new Trigger(m_hood::hitForwardHardstop);
+        // reverseTrigger = new Trigger(m_hood::hitReverseHardstop);
+        // forwardTrigger.whileActiveOnce(hoodCommands.getResetHoodForwards());
+        // reverseTrigger.whileActiveOnce(hoodCommands.getResetHoodReverse());
     }
 
     public boolean isClimbing() {
