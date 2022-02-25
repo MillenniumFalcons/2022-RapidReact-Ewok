@@ -83,11 +83,26 @@ public class RobotContainer {
         mainController.leftBumper.whenHeld(m_superstructure.getClimberManualControl(() -> 0.5));
         mainController.rightBumper.whenHeld(m_superstructure.getClimberManualControl(() -> -0.5));
         mainController.dPadLeft.whenHeld(m_superstructure.getRetractClimbManual());
-        mainController.dPadLeft.whenHeld(m_superstructure.getExtendClimberManual());
+        mainController.dPadRight.whenHeld(m_superstructure.getExtendClimberManual());
 
-        coController.buttonA.whenHeld(m_superstructure.getAimTurretCommand());
-        // coController.leftTrigger.whenHeld(
-        //         m_superstructure.intakeAndIndex(coController::getLeftTriggerValue));
+        coController.buttonA.whenHeld(
+                m_superstructure
+                        .getAimTurretCommand()
+                        .alongWith(
+                                m_superstructure.getSpinupCommandWithMaxDistance(
+                                        GlobalConstants.kDistanceFarToGoalCenter)));
+        coController.buttonB.whenHeld(
+                m_superstructure
+                        .getAimTurretCommand()
+                        .alongWith(
+                                m_superstructure.getSpinupCommandWithMaxDistance(
+                                        GlobalConstants.kDistanceTarmacToGoalCenter)));
+        coController.buttonY.whenHeld(
+                m_superstructure
+                        .turretCommands
+                        .getTurretMotionMagic(0)
+                        .alongWith(m_superstructure.getBatterSpinupCommand()));
+
         coController.leftTrigger.whenActive(
                 m_superstructure.getIntakeHoldCommand(coController::getLeftTriggerValue));
         coController.leftTrigger.whenInactive(m_superstructure.getIntakeReleaseCommand());

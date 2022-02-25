@@ -9,6 +9,8 @@ public final class GlobalConstants {
     public static final double kDt = 0.02; // 20ms loop
     public static final int kTimeoutMS = 255;
     public static double centerOffsetMeters = Units.inchesToMeters(34);
+    public static double kDistanceTarmacToGoalCenter = Units.inchesToMeters(84);
+    public static double kDistanceFarToGoalCenter = Units.feetToMeters(14) + centerOffsetMeters;
 
     public static final class DrivetrainIds {
         public static final int kLeftMasterId = 1;
