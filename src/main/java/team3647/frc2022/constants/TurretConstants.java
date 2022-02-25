@@ -8,7 +8,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DigitalInput;
 import team3647.lib.drivers.LazyTalonFX;
 
 public class TurretConstants {
@@ -50,9 +49,6 @@ public class TurretConstants {
 
     public static final SimpleMotorFeedforward kFeedForwards =
             new SimpleMotorFeedforward(kS, kV, kA);
-
-    public static final DigitalInput kLimitSwitch =
-            new DigitalInput(GlobalConstants.TurretIds.kLimitSwitchpin);
 
     static {
         kMasterConfig.slot0.kP = 0.3;

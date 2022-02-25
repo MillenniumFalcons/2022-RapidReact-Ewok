@@ -12,7 +12,6 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import team3647.frc2022.commands.ArcadeDrive;
 import team3647.frc2022.constants.*;
-import team3647.frc2022.subsystems.Ballstopper;
 import team3647.frc2022.subsystems.ClimberArm;
 import team3647.frc2022.subsystems.ColumnBottom;
 import team3647.frc2022.subsystems.ColumnTop;
@@ -85,8 +84,11 @@ public class RobotContainer {
         mainController.dPadLeft.whenHeld(m_superstructure.getExtendClimberManual());
 
         coController.buttonA.whenHeld(m_superstructure.getAimTurretCommand());
-        coController.leftTrigger.whenHeld(
-                m_superstructure.intakeAndIndex(coController::getLeftTriggerValue));
+        // coController.leftTrigger.whenHeld(
+        //         m_superstructure.intakeAndIndex(coController::getLeftTriggerValue));
+        coController.leftTrigger.whenActive(
+                m_superstructure.getIntakeHoldCommand(coController::getLeftTriggerValue));
+        coController.leftTrigger.whenInactive(m_superstructure.getIntakeReleaseCommand());
     }
 
     private void configureSmartDashboardLogging() {
@@ -96,6 +98,10 @@ public class RobotContainer {
         m_printer.addDouble("Kicker current", m_columnTop::getMasterCurrent);
         m_printer.addDouble("Hood Position", m_hood::getPosition);
         m_printer.addDouble("turret rotation", m_turret::getAngle);
+        m_printer.addBoolean("Top sensor", m_columnTop::getTopBannerValue);
+        m_printer.addBoolean("mid sensor", m_columnBottom::getMiddleBannerValue);
+        m_printer.addBoolean("low sensor", m_columnBottom::getBottomBannerValue);
+
         // m_printer.addPose("Vision Pose", this::getVisionPose);
         m_printer.addPose("Drivetrain Pose", m_drivetrain::getPose);
         SmartDashboard.putNumber("Shooter Speed", 0.0);
@@ -165,6 +171,8 @@ public class RobotContainer {
     final ColumnBottom m_columnBottom =
             new ColumnBottom(
                     ColumnBottomConstants.kColumnMotor,
+                    ColumnBottomConstants.kBottomBanner,
+                    ColumnBottomConstants.kMiddleBanner,
                     ColumnBottomConstants.kNativeVelToSurfaceMpS,
                     ColumnBottomConstants.kPosConverstion,
                     ColumnBottomConstants.kNominalVoltage,
@@ -183,6 +191,7 @@ public class RobotContainer {
     final ColumnTop m_columnTop =
             new ColumnTop(
                     ColumnTopConstants.kColumnMotor,
+                    ColumnTopConstants.kTopBanner,
                     ColumnTopConstants.kNativeVelToSurfaceMpS,
                     ColumnTopConstants.kPosConverstion,
                     ColumnTopConstants.kNominalVoltage,
@@ -236,9 +245,7 @@ public class RobotContainer {
                     TurretConstants.kS,
                     TurretConstants.kMaxDegree,
                     TurretConstants.kMinDegree,
-                    TurretConstants.kLimitSwitch,
                     TurretConstants.kFeedForwards);
-    final Ballstopper m_stopper = new Ballstopper(ColumnBottomConstants.ballStopper);
 
     final FlightDeck m_flightDeck =
             new FlightDeck(
@@ -268,6 +275,5 @@ public class RobotContainer {
                     m_intake,
                     m_turret,
                     m_hood,
-                    m_flywheel,
-                    m_stopper);
+                    m_flywheel);
 }

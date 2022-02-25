@@ -9,7 +9,7 @@ import team3647.lib.drivers.LazyTalonFX;
 
 public final class IntakeConstants {
 
-    public static final InvertType kMasterInverted = InvertType.None;
+    public static final InvertType kMasterInverted = InvertType.InvertMotorOutput;
     public static final TalonFXConfiguration kMasterConfig = new TalonFXConfiguration();
 
     public static final double kS = 0.75412;
@@ -34,8 +34,8 @@ public final class IntakeConstants {
         kMasterConfig.slot0.kF = 0;
 
         kMasterConfig.voltageCompSaturation = kNominalVoltage;
-
         kIntakeMotor.configAllSettings(kMasterConfig, GlobalConstants.kTimeoutMS);
+        kIntakeMotor.setInverted(kMasterInverted);
     }
 
     private IntakeConstants() {}

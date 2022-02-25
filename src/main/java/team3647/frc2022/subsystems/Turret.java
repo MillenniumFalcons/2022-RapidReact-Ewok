@@ -3,14 +3,12 @@ package team3647.frc2022.subsystems;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.DigitalInput;
 import team3647.lib.TalonFXSubsystem;
 
 public class Turret extends TalonFXSubsystem {
 
     private final double maxAngle;
     private final double minAngle;
-    private final DigitalInput resetLimitSwitch;
     private final SimpleMotorFeedforward ff;
     private final double kS;
 
@@ -23,13 +21,11 @@ public class Turret extends TalonFXSubsystem {
             double kS,
             double maxAngle,
             double minAngle,
-            DigitalInput resetLimitSwitch,
             SimpleMotorFeedforward ff) {
         super(master, velocityConversion, positionConversion, nominalVoltage, kDt);
         setStatusFramesThatDontMatter(master, kLongStatusTimeMS, kTimeoutMS);
         this.maxAngle = maxAngle;
         this.minAngle = minAngle;
-        this.resetLimitSwitch = resetLimitSwitch;
         this.ff = ff;
         this.kS = kS;
         resetEncoder();
@@ -90,10 +86,6 @@ public class Turret extends TalonFXSubsystem {
 
     public Rotation2d getRotation() {
         return Rotation2d.fromDegrees(getAngle());
-    }
-
-    public boolean getLimitSwitchValue() {
-        return resetLimitSwitch.get();
     }
 
     @Override

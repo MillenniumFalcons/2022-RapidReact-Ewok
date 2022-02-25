@@ -5,7 +5,6 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.Solenoid;
 import team3647.lib.drivers.LazyTalonFX;
 
 public final class ColumnBottomConstants {
@@ -16,7 +15,6 @@ public final class ColumnBottomConstants {
     public static final double kA = 0;
     public static final SimpleMotorFeedforward kFeedForward =
             new SimpleMotorFeedforward(kS, kV, kA);
-    public static final Solenoid ballStopper = new Solenoid(GlobalConstants.kPCMType, 5);
 
     public static final double kNominalVoltage = 12;
     public static final double kGearboxReduction = 1;
@@ -33,7 +31,9 @@ public final class ColumnBottomConstants {
     public static final TalonFX kColumnMotor =
             new LazyTalonFX(GlobalConstants.ColumnBottomIds.kMotorId);
     public static final DigitalInput kBottomBanner =
-            new DigitalInput(GlobalConstants.ColumnBottomIds.kBottomSwitchPin);
+            new DigitalInput(GlobalConstants.ColumnBottomIds.kBottomSensorPin);
+    public static final DigitalInput kMiddleBanner =
+            new DigitalInput(GlobalConstants.ColumnBottomIds.kMiddleSensorPin);
 
     static {
         kMasterConfig.slot0.kP = 0;
