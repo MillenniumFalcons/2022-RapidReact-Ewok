@@ -114,7 +114,9 @@ public class Superstructure {
 
     public Command getSpinupCommandWithMaxDistance(double maxDistance) {
         return flywheelCommands.getGoVariableVelocity(
-                () -> Math.min(getDistanceToTarget(), maxDistance));
+                () ->
+                        FlywheelConstants.getFlywheelRPM(
+                                Math.min(getDistanceToTarget(), maxDistance)));
     }
 
     public Command getBatterSpinupCommand() {

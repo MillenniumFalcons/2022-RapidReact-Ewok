@@ -33,6 +33,9 @@ public class AimTurret extends CommandBase {
     @Override
     public void execute() {
         var aimingParams = aimingParameters.get();
+        if (aimingParams == null) {
+            return;
+        }
         if (aimingParams.getRangeMeters() > 8) {
             return;
         }

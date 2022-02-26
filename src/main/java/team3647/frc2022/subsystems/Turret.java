@@ -68,7 +68,8 @@ public class Turret extends TalonFXSubsystem {
     }
 
     public void setAngleMotionMagic(double angle) {
-        throw new UnsupportedOperationException("Method unimplemented yet");
+        setAngle(angle, 0);
+        // throw new UnsupportedOperationException("Method unimplemented yet");
     }
 
     /** @return angle in [-180,180] */

@@ -51,7 +51,7 @@ public class RobotContainer {
                 m_intake,
                 m_flywheel,
                 m_pivotClimber,
-                // m_visionController,
+                m_visionController,
                 m_turret,
                 m_hood);
         // Configure the button bindings
@@ -86,25 +86,19 @@ public class RobotContainer {
         mainController.dPadRight.whenHeld(m_superstructure.getExtendClimberManual());
 
         coController.buttonA.whenHeld(
-                m_superstructure
-                        .getAimTurretCommand()
-                        .alongWith(
-                                m_superstructure.getSpinupCommandWithMaxDistance(
-                                        GlobalConstants.kDistanceFarToGoalCenter)));
+                m_superstructure.getSpinupCommandWithMaxDistance(
+                        GlobalConstants.kDistanceFarToGoalCenter));
         coController.buttonB.whenHeld(
-                m_superstructure
-                        .getAimTurretCommand()
-                        .alongWith(
-                                m_superstructure.getSpinupCommandWithMaxDistance(
-                                        GlobalConstants.kDistanceTarmacToGoalCenter)));
+                m_superstructure.getSpinupCommandWithMaxDistance(
+                        GlobalConstants.kDistanceTarmacToGoalCenter));
         coController.buttonY.whenHeld(
                 m_superstructure
                         .turretCommands
                         .getTurretMotionMagic(0)
                         .alongWith(m_superstructure.getBatterSpinupCommand()));
+        coController.leftBumper.whenHeld(m_superstructure.getAimTurretCommand());
 
-        coController.leftTrigger.whenActive(
-                m_superstructure.getIntakeHoldCommand(coController::getLeftTriggerValue));
+        coController.leftTrigger.whenActive(m_superstructure.getIntakeHoldCommand(() -> 0.3));
         coController.leftTrigger.whenInactive(m_superstructure.getIntakeReleaseCommand());
     }
 
