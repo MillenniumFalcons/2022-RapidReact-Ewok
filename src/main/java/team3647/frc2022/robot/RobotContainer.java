@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import team3647.frc2022.commands.ArcadeDrive;
 import team3647.frc2022.constants.*;
+import team3647.frc2022.subsystems.Ballstopper;
 import team3647.frc2022.subsystems.ClimberArm;
 import team3647.frc2022.subsystems.ColumnBottom;
 import team3647.frc2022.subsystems.ColumnTop;
@@ -78,7 +79,8 @@ public class RobotContainer {
     }
 
     private void configureButtonBindings() {
-        mainController.rightTrigger.whenHeld(m_superstructure.getAutoAimAndShoot());
+        // mainController.rightTrigger.whenHeld(m_superstructure.getAutoAimAndShootSensored());
+        mainController.rightTrigger.whenHeld(m_superstructure.getAutoAimAndShootStopper());
         mainController.buttonX.whenPressed(m_superstructure.getAutoClimbSequence());
         mainController.leftBumper.whenHeld(m_superstructure.getClimberManualControl(() -> 0.5));
         mainController.rightBumper.whenHeld(m_superstructure.getClimberManualControl(() -> -0.5));
@@ -98,8 +100,10 @@ public class RobotContainer {
                         .alongWith(m_superstructure.getBatterSpinupCommand()));
         coController.leftBumper.whenHeld(m_superstructure.getAimTurretCommand());
 
-        coController.leftTrigger.whenActive(m_superstructure.getIntakeHoldCommand(() -> 0.3));
-        coController.leftTrigger.whenInactive(m_superstructure.getIntakeReleaseCommand());
+        coController.leftTrigger.whenHeld(m_superstructure.getBallstopIntakeCommand(() -> 0.3));
+
+        // coController.leftTrigger.whenActive(m_superstructure.getIntakeHoldCommand(() -> 0.3));
+        // coController.leftTrigger.whenInactive(m_superstructure.getIntakeReleaseCommand());
     }
 
     private void configureSmartDashboardLogging() {
@@ -189,6 +193,8 @@ public class RobotContainer {
                     ColumnBottomConstants.kNominalVoltage,
                     GlobalConstants.kDt,
                     ColumnBottomConstants.kFeedForward);
+
+    final Ballstopper m_ballstopper = new Ballstopper(ColumnBottomConstants.kBallstopperPiston);
 
     final VerticalRollers m_verticalRollers =
             new VerticalRollers(
@@ -286,5 +292,6 @@ public class RobotContainer {
                     m_intake,
                     m_turret,
                     m_hood,
-                    m_flywheel);
+                    m_flywheel,
+                    m_ballstopper);
 }
