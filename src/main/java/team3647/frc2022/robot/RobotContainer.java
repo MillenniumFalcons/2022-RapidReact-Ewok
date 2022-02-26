@@ -76,7 +76,6 @@ public class RobotContainer {
     }
 
     private void configureButtonBindings() {
-        // StatusLight.Color("purple", 1.0));
         mainController.rightTrigger.whenHeld(m_superstructure.getAutoAimAndShoot());
         mainController.buttonX.whenPressed(m_superstructure.getAutoClimbSequence());
         mainController.leftBumper.whenHeld(m_superstructure.getClimberManualControl(() -> 0.5));

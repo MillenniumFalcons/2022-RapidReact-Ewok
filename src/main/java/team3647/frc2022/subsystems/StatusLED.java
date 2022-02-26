@@ -6,12 +6,32 @@ package team3647.frc2022.subsystems;
 
 import com.ctre.phoenix.led.Animation;
 import com.ctre.phoenix.led.CANdle;
-import com.ctre.phoenix.led.StrobeAnimation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import team3647.frc2022.constants.LEDConstants;
 
 public class StatusLED extends SubsystemBase {
-    // public static class LEDColor {}
+    public static class Color {
+        public static final Color WHITE = new Color(255, 255, 255);
+        public static final Color BLACK = new Color(0, 0, 0);
+        public static final Color RED = new Color(255, 0, 0);
+        public static final Color ORANGE = new Color(255, 100, 0);
+        public static final Color YELLOW = new Color(255, 255, 0);
+        public static final Color GREEN = new Color(0, 255, 0);
+        public static final Color LIGHTBLUE = new Color(0, 255, 255);
+        public static final Color BLUE = new Color(0, 255, 0);
+        public static final Color PURPLE = new Color(150, 0, 255);
+        public static final Color PINK = new Color(255, 0, 255);
+
+        public final int red;
+        public final int green;
+        public final int blue;
+
+        public Color(int red, int green, int blue) {
+            this.red = red;
+            this.green = green;
+            this.blue = blue;
+        }
+    }
 
     private final CANdle candle;
 
@@ -24,30 +44,8 @@ public class StatusLED extends SubsystemBase {
 
     private Animation m_toAnimate = null;
 
-    public void setColor(String color, double BlinkSpeed) {
-        this.BlinkSpeed = BlinkSpeed;
-        if (color == "red") {
-            m_toAnimate = new StrobeAnimation(255, 0, 0, 0, BlinkSpeed, LEDConstants.numofLED);
-            candle.animate(m_toAnimate);
-        } else if (color == "orange") {
-            m_toAnimate = new StrobeAnimation(255, 165, 0, 0, BlinkSpeed, LEDConstants.numofLED);
-            candle.animate(m_toAnimate);
-        } else if (color == "yellow") {
-            m_toAnimate = new StrobeAnimation(255, 255, 0, 0, BlinkSpeed, LEDConstants.numofLED);
-            candle.animate(m_toAnimate);
-        } else if (color == "green") {
-            m_toAnimate = new StrobeAnimation(0, 255, 0, 0, BlinkSpeed, LEDConstants.numofLED);
-            candle.animate(m_toAnimate);
-        } else if (color == "blue") {
-            m_toAnimate = new StrobeAnimation(0, 0, 255, 0, BlinkSpeed, LEDConstants.numofLED);
-            candle.animate(m_toAnimate);
-        } else if (color == "purple") {
-            m_toAnimate = new StrobeAnimation(255, 0, 255, 0, BlinkSpeed, LEDConstants.numofLED);
-            candle.animate(m_toAnimate);
-        } else if (color == "white") {
-            m_toAnimate = new StrobeAnimation(255, 0, 255, 255, BlinkSpeed, LEDConstants.numofLED);
-            candle.animate(m_toAnimate);
-        }
+    public void setColor(Color color, double blinkSpeed) {
+        this.candle.setLEDs(color.red, color.green, color.blue);
     }
 
     @Override
