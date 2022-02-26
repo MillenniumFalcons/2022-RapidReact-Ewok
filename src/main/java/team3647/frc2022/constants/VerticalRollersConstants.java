@@ -7,7 +7,8 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import team3647.lib.drivers.LazyTalonFX;
 
 public final class VerticalRollersConstants {
-    public static final TalonFXInvertType kMasterInverted = TalonFXInvertType.CounterClockwise;
+    public static final TalonFXInvertType kMasterInverted =
+            TalonFXInvertType.Clockwise; // Counerclockwise comp
     public static final TalonFXConfiguration kMasterConfig = new TalonFXConfiguration();
     public static final double kS = 0;
     public static final double kV = 0;

@@ -155,6 +155,11 @@ public abstract class TalonFXSubsystem implements PeriodicSubsystem {
         setEncoder(0);
     }
 
+    /** Sets the selected sensor to 0 (default) */
+    public void resetEncoder(int timeoutMS) {
+        master.setSelectedSensorPosition(0, 0, timeoutMS);
+    }
+
     /**
      * sets the selected sensor to position
      *

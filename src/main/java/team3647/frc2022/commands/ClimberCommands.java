@@ -1,9 +1,11 @@
 package team3647.frc2022.commands;
 
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import java.util.function.DoubleSupplier;
 import team3647.frc2022.constants.ClimberConstants;
@@ -29,19 +31,42 @@ public class ClimberCommands {
                 climber);
     }
 
+    public class ClimberEightInchesUp extends CommandBase {
+        double lengthMeters = ClimberConstants.kLengthFromStaticHooksToAboveBar;
+
+        @Override
+        public void initialize() {
+            lengthMeters =
+                    (climber.getLeftPosition() + climber.getRightPosition()) / 2
+                            + Units.inchesToMeters(8);
+        }
+
+        @Override
+        public void execute() {
+            climber.moveMotionMagic(lengthMeters);
+        }
+
+        @Override
+        public boolean isFinished() {
+            return Math.abs(climber.getLeftPosition() - lengthMeters) < 0.0254
+                    && Math.abs(climber.getRightPosition() - lengthMeters) < 0.0254;
+        }
+    }
+
     public Command getClimberDeploy() {
         return new InstantCommand(climber::setAngled)
+                .andThen(new PrintCommand("Deploying Climber"))
                 .andThen(new WaitCommand(0.1))
                 .andThen(getClimberToLength(ClimberConstants.kLengthJustOverLowBar))
                 .andThen(climber::setStraight);
     }
 
     public Command getClimberToNextRung() {
-        return getClimberToLength(ClimberConstants.kLengthFromStaticHooksToAboveBar)
+        return new ClimberEightInchesUp()
                 .andThen(climber::setAngled)
                 .andThen(new WaitCommand(0.1))
-                .andThen(getClimberToLength(ClimberConstants.kMaxLengthAngled))
-                .andThen(climber::setAngled);
+                .andThen(getClimberToLength(ClimberConstants.kMaxLengthAngled));
+        // .andThen(climber::setStraight);
     }
 
     public Command setAngled() {
@@ -53,6 +78,11 @@ public class ClimberCommands {
     }
 
     public Command getClimberOpenloop(DoubleSupplier percentout) {
-        return new RunCommand(() -> climber.setOpenloop(percentout.getAsDouble()), climber);
+        return new FunctionalCommand(
+                () -> {},
+                () -> climber.setOpenloop(percentout.getAsDouble()),
+                (interrupted) -> climber.setOpenloop(0),
+                () -> false,
+                climber);
     }
 }

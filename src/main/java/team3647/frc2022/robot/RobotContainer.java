@@ -84,8 +84,8 @@ public class RobotContainer {
         mainController.buttonX.whenPressed(m_superstructure.getAutoClimbSequence());
         mainController.leftBumper.whenHeld(m_superstructure.getClimberManualControl(() -> 0.5));
         mainController.rightBumper.whenHeld(m_superstructure.getClimberManualControl(() -> -0.5));
-        mainController.dPadLeft.whenHeld(m_superstructure.getRetractClimbManual());
-        mainController.dPadRight.whenHeld(m_superstructure.getExtendClimberManual());
+        mainController.dPadUp.whenHeld(m_superstructure.getRetractClimbManual());
+        mainController.dPadDown.whenHeld(m_superstructure.getExtendClimberManual());
 
         coController.buttonA.whenHeld(
                 m_superstructure.getSpinupCommandWithMaxDistance(
@@ -116,6 +116,8 @@ public class RobotContainer {
         m_printer.addBoolean("Top sensor", m_columnTop::getTopBannerValue);
         m_printer.addBoolean("mid sensor", m_columnBottom::getMiddleBannerValue);
         m_printer.addBoolean("low sensor", m_columnBottom::getBottomBannerValue);
+        m_printer.addDouble("Left Climber", m_pivotClimber::getLeftPosition);
+        m_printer.addDouble("Right Climber", m_pivotClimber::getRightPosition);
 
         // m_printer.addPose("Vision Pose", this::getVisionPose);
         m_printer.addPose("Drivetrain Pose", m_drivetrain::getPose);

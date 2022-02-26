@@ -123,7 +123,7 @@ public class Superstructure {
                         new InstantCommand(() -> setState(RobotState.CLIMB))
                                 .andThen(
                                         turretCommands
-                                                .getTurretMotionMagic(180)
+                                                .getTurretMotionMagic(0)
                                                 .andThen(climberCommands.getClimberDeploy())),
                         this::isClimbing)
                 .alongWith(new ScheduleCommand(flywheelCommands.stopFlywheel()));
