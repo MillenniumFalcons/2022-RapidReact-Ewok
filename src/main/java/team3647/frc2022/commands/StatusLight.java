@@ -8,14 +8,17 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import team3647.frc2022.subsystems.StatusLED;
 
 public class StatusLight extends CommandBase {
-    private final StatusLED statusLight;
+    private static StatusLED statusLight;
     private String color;
+    private double BlinkSpeed;
     /** Creates a new StatusLight. */
-    public StatusLight(String color, double BlinkSpeed, StatusLED statusLED) {
-        this.statusLight = statusLED;
-        this.color = color;
-        statusLight.setColor(color, BlinkSpeed);
+    public StatusLight(StatusLED statusLED) {
+        StatusLight.statusLight = statusLED;
         // Use addRequirements() here to declare subsystem dependencies.
+    }
+
+    public static void Color(String color, double BlinkSpeed) {
+        statusLight.setColor(color, BlinkSpeed);
     }
 
     // Called when the command is initially scheduled.
