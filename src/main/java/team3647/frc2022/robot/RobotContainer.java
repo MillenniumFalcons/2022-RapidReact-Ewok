@@ -56,7 +56,7 @@ public class RobotContainer {
                 m_visionController,
                 m_turret,
                 m_hood,
-                statusLED);
+                m_statusLED);
         // Configure the button bindings
         m_drivetrain.init();
         configureDefaultCommands();
@@ -64,6 +64,7 @@ public class RobotContainer {
         configureSmartDashboardLogging();
         m_hood.resetEncoder();
         HoodContants.kHoodMotor.configAllSettings(HoodContants.kMasterConfig);
+        m_statusLED.setColor(LEDConstants.Color.BLACK, 0);
     }
 
     private void configureDefaultCommands() {
@@ -111,7 +112,8 @@ public class RobotContainer {
         m_printer.addDouble("Shooter current", m_flywheel::getMasterCurrent);
         m_printer.addDouble("Kicker current", m_columnTop::getMasterCurrent);
         m_printer.addDouble("Hood Position", m_hood::getPosition);
-        m_printer.addDouble("turret rotation", m_turret::getAngle);
+        m_printer.addDouble("Turret Angle", m_turret::getAngle);
+        m_printer.addDouble("Turret Pos", m_turret::getPosition);
         m_printer.addBoolean("Top sensor", m_columnTop::getTopBannerValue);
         m_printer.addBoolean("mid sensor", m_columnBottom::getMiddleBannerValue);
         m_printer.addBoolean("low sensor", m_columnBottom::getBottomBannerValue);
@@ -263,9 +265,10 @@ public class RobotContainer {
                     TurretConstants.kS,
                     TurretConstants.kMaxDegree,
                     TurretConstants.kMinDegree,
+                    TurretConstants.kStartingAngle,
                     TurretConstants.kFeedForwards);
 
-    final StatusLED statusLED = new StatusLED(LEDConstants.kCANdle);
+    final StatusLED m_statusLED = new StatusLED(LEDConstants.kCANdle);
 
     final FlightDeck m_flightDeck =
             new FlightDeck(
@@ -284,7 +287,6 @@ public class RobotContainer {
                     new PhotonVisionCamera("gloworm", 0.06, VisionConstants.limelightConstants),
                     VisionConstants.kCenterGoalTargetConstants,
                     m_flightDeck::addVisionObservation);
-
     final Superstructure m_superstructure =
             new Superstructure(
                     m_flightDeck,
@@ -296,5 +298,6 @@ public class RobotContainer {
                     m_turret,
                     m_hood,
                     m_flywheel,
-                    m_ballstopper);
+                    m_ballstopper,
+                    m_statusLED);
 }

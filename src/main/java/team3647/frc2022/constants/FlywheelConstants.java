@@ -37,8 +37,8 @@ public final class FlywheelConstants {
             10 * kWheelRotationMeters / GlobalConstants.kFalconTicksPerRotation * kGearboxReduction;
 
     public static final double[][] kFlywheelMap = {
-        // {Units.feetToMeters(2) + GlobalConstants.centerOffsetMeters, 14},
-        // {Units.feetToMeters(4) + GlobalConstants.centerOffsetMeters, 16},
+        {Units.feetToMeters(2) + GlobalConstants.centerOffsetMeters, 14},
+        {Units.feetToMeters(4) + GlobalConstants.centerOffsetMeters, 16},
         // {Units.feetToMeters(8) + GlobalConstants.centerOffsetMeters, 17},
         // {Units.feetToMeters(12) + GlobalConstants.centerOffsetMeters, 20.5},
         // {Units.feetToMeters(14) + GlobalConstants.centerOffsetMeters, 22.5},

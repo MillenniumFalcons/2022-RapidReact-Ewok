@@ -19,8 +19,8 @@ public class TurretConstants {
     public static final double kGearboxReduction = 16 / 60.0 * 16 / 150.0;
     public static final double kFalconPositionToDegrees = kGearboxReduction / 2048.0 * 360;
     public static final double kFalconVelocityToDegpS = kFalconPositionToDegrees * 10;
-    public static final double kMaxDegree = 200;
-    public static final double kMinDegree = -200;
+    public static final double kMaxDegree = 315;
+    public static final double kMinDegree = -45;
     public static final double kPosThersholdDeg = 1.0;
     public static final boolean kCurrentLimitingEnable = true;
 
@@ -28,8 +28,8 @@ public class TurretConstants {
     public static final double kV = 0.0157;
     public static final double kA = 0.000324;
 
-    public static final double kMaxVelocityDegPs = 36;
-    public static final double kMaxAccelerationDegPss = 36;
+    public static final double kMaxVelocityDegPs = 90;
+    public static final double kMaxAccelerationDegPss = 90;
     public static final double kMaxVelocityTicks = kMaxVelocityDegPs / kFalconVelocityToDegpS;
     public static final double kMaxAccelerationTicks =
             kMaxAccelerationDegPss / kFalconVelocityToDegpS;
@@ -49,6 +49,7 @@ public class TurretConstants {
 
     public static final SimpleMotorFeedforward kFeedForwards =
             new SimpleMotorFeedforward(kS, kV, kA);
+    public static final double kStartingAngle = 90;
 
     static {
         kMasterConfig.slot0.kP = 0.3;
@@ -56,11 +57,19 @@ public class TurretConstants {
         kMasterConfig.slot0.kD = 0;
         kMasterConfig.slot0.kF = 0;
 
+        kMasterConfig.slot1.kP = 0.3;
+        kMasterConfig.slot1.kI = 0;
+        kMasterConfig.slot1.kD = 0;
+        kMasterConfig.slot1.kF = kV / kNominalVoltage * kFalconVelocityToDegpS * 1023;
+
         kMasterConfig.voltageCompSaturation = kNominalVoltage;
         kMasterConfig.supplyCurrLimit.enable = kCurrentLimitingEnable;
         kMasterConfig.supplyCurrLimit.currentLimit = kStallCurrent;
         kMasterConfig.supplyCurrLimit.triggerThresholdCurrent = kPeakCurrentLimit;
         kMasterConfig.supplyCurrLimit.triggerThresholdTime = kPeakCurrentDuration;
+        kMasterConfig.closedloopRamp = 1;
+        // kMasterConfig.peakOutputForward = 0.5;
+        // kMasterConfig.peakOutputReverse = -0.5;
 
         // in native units/100ms/s
         kMasterConfig.motionAcceleration = kMaxVelocityTicks;

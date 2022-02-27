@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import java.util.function.DoubleSupplier;
 import team3647.frc2022.commands.ClimberCommands;
 import team3647.frc2022.commands.ColumnTopCommands;
@@ -32,6 +33,7 @@ public class Superstructure {
     private final Hood m_hood;
     private final Flywheel m_flywheel;
     public final Ballstopper m_ballstopper;
+    public final StatusLED m_statusLED;
 
     public final FlywheelCommands flywheelCommands;
     public final HoodCommands hoodCommands;
@@ -40,6 +42,7 @@ public class Superstructure {
     public final ColumnTopCommands columnTopCommands;
     public final FeederCommands feederCommands;
     public final IntakeCommands intakeCommands;
+    private final Trigger flywheelAtSpeed;
 
     private RobotState currentState, aimedState;
 
@@ -58,7 +61,8 @@ public class Superstructure {
             Turret m_turret,
             Hood m_hood,
             Flywheel m_flywheel,
-            Ballstopper ballstopper) {
+            Ballstopper m_ballstopper,
+            StatusLED m_statusLED) {
         this.deck = deck;
         this.m_climber = m_climber;
         this.m_columnBottom = m_columnBottom;
@@ -68,7 +72,8 @@ public class Superstructure {
         this.m_turret = m_turret;
         this.m_hood = m_hood;
         this.m_flywheel = m_flywheel;
-        this.m_ballstopper = ballstopper;
+        this.m_ballstopper = m_ballstopper;
+        this.m_statusLED = m_statusLED;
         this.aimedState = RobotState.STOPPED;
 
         flywheelCommands = new FlywheelCommands(m_flywheel);
@@ -79,6 +84,10 @@ public class Superstructure {
                 new FeederCommands(m_columnBottom, m_columnTop, m_verticalRollers, m_ballstopper);
         intakeCommands = new IntakeCommands(m_intake);
         turretCommands = new TurretCommands(m_turret);
+
+        flywheelAtSpeed =
+                new Trigger(() -> m_flywheel.getVelocity() > this.getAimedFlywheelSurfaceVel());
+        // flywheelAtSpeed.whenActive(() -> m_statusLED.set)
     }
 
     public Command getShootCommandWithStopper() {
@@ -123,7 +132,7 @@ public class Superstructure {
                         new InstantCommand(() -> setState(RobotState.CLIMB))
                                 .andThen(
                                         turretCommands
-                                                .getTurretMotionMagic(0)
+                                                .getTurretMotionMagic(180)
                                                 .andThen(climberCommands.getClimberDeploy())),
                         this::isClimbing)
                 .alongWith(new ScheduleCommand(flywheelCommands.stopFlywheel()));
