@@ -21,6 +21,7 @@ import team3647.frc2022.subsystems.Flywheel;
 import team3647.frc2022.subsystems.Hood;
 import team3647.frc2022.subsystems.Intake;
 import team3647.frc2022.subsystems.PivotClimber;
+import team3647.frc2022.subsystems.StatusLED;
 import team3647.frc2022.subsystems.Superstructure;
 import team3647.frc2022.subsystems.Turret;
 import team3647.frc2022.subsystems.VerticalRollers;
@@ -54,7 +55,8 @@ public class RobotContainer {
                 m_pivotClimber,
                 m_visionController,
                 m_turret,
-                m_hood);
+                m_hood,
+                statusLED);
         // Configure the button bindings
         m_drivetrain.init();
         configureDefaultCommands();
@@ -101,9 +103,6 @@ public class RobotContainer {
         coController.leftBumper.whenHeld(m_superstructure.getAimTurretCommand());
 
         coController.leftTrigger.whenHeld(m_superstructure.getBallstopIntakeCommand(() -> 0.3));
-
-        // coController.leftTrigger.whenActive(m_superstructure.getIntakeHoldCommand(() -> 0.3));
-        // coController.leftTrigger.whenInactive(m_superstructure.getIntakeReleaseCommand());
     }
 
     private void configureSmartDashboardLogging() {
@@ -265,6 +264,8 @@ public class RobotContainer {
                     TurretConstants.kMaxDegree,
                     TurretConstants.kMinDegree,
                     TurretConstants.kFeedForwards);
+
+    final StatusLED statusLED = new StatusLED(LEDConstants.kCANdle);
 
     final FlightDeck m_flightDeck =
             new FlightDeck(
