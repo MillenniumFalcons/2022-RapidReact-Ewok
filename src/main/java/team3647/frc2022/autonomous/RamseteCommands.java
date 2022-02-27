@@ -16,30 +16,38 @@ public class RamseteCommands {
     }
 
     public RamseteCommand getStraight() {
-        return createDefaulRamseteCommand(Trajectories.straightPath);
+        return createDefaultRamseteCommand(Trajectories.straightPath);
     }
 
     public RamseteCommand getTarmacToBottomLeftBall1() {
-        return createDefaulRamseteCommand(Trajectories.tarmacToBottomLeftBall1);
+        return createDefaultRamseteCommand(Trajectories.tarmacToBottomLeftBall1);
     }
 
     public RamseteCommand getBottomLeftBall1ToTarmac() {
-        return createDefaulRamseteCommand(Trajectories.bottomLeftBall1ToTarmac);
+        return createDefaultRamseteCommand(Trajectories.bottomLeftBall1ToTarmac);
     }
 
     public RamseteCommand getTarmacToBall2() {
-        return createDefaulRamseteCommand(Trajectories.tarmacToBall2);
+        return createDefaultRamseteCommand(Trajectories.tarmacToBall2);
     }
 
     public RamseteCommand getBall2ToLoad2() {
-        return createDefaulRamseteCommand(Trajectories.ball2ToLoad2);
+        return createDefaultRamseteCommand(Trajectories.ball2ToLoad2);
     }
 
     public RamseteCommand getLoad2ToShoot() {
-        return createDefaulRamseteCommand(Trajectories.load2ToShoot);
+        return createDefaultRamseteCommand(Trajectories.load2ToShoot);
     }
 
-    private RamseteCommand createDefaulRamseteCommand(Trajectory trajectory) {
+    public RamseteCommand getTarmacToHighBall() {
+        return createDefaultRamseteCommand(Trajectories.upperTarmacToUpperBall1);
+    }
+
+    public RamseteCommand getHighBallToShoot() {
+        return createDefaultRamseteCommand(Trajectories.upperBall1ToUpperTarmac);
+    }
+
+    private RamseteCommand createDefaultRamseteCommand(Trajectory trajectory) {
         return new RamseteCommand(
                 trajectory,
                 m_drivetrain::getPose,
