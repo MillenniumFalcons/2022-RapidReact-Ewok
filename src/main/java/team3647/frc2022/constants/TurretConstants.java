@@ -61,6 +61,8 @@ public class TurretConstants {
         kMasterConfig.supplyCurrLimit.currentLimit = kStallCurrent;
         kMasterConfig.supplyCurrLimit.triggerThresholdCurrent = kPeakCurrentLimit;
         kMasterConfig.supplyCurrLimit.triggerThresholdTime = kPeakCurrentDuration;
+        kMasterConfig.peakOutputForward = 0.7;
+        kMasterConfig.peakOutputForward = -0.7;
 
         // in native units/100ms/s
         kMasterConfig.motionAcceleration = kMaxVelocityTicks;

@@ -1,11 +1,13 @@
 package team3647.frc2022.subsystems;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import java.util.function.DoubleSupplier;
 import team3647.frc2022.commands.ClimberCommands;
 import team3647.frc2022.commands.ColumnTopCommands;
@@ -31,7 +33,8 @@ public class Superstructure {
     private final Turret m_turret;
     private final Hood m_hood;
     private final Flywheel m_flywheel;
-    public final Ballstopper m_ballstopper;
+    private final Ballstopper m_ballstopper;
+    private final StatusLED m_statusLED;
 
     public final FlywheelCommands flywheelCommands;
     public final HoodCommands hoodCommands;
@@ -40,6 +43,10 @@ public class Superstructure {
     public final ColumnTopCommands columnTopCommands;
     public final FeederCommands feederCommands;
     public final IntakeCommands intakeCommands;
+
+    public final Trigger readyToShootTrigger;
+    public final Trigger newTargetTrigger;
+    public final Trigger hasTargetTrigger;
 
     private RobotState currentState, aimedState;
 
@@ -58,7 +65,8 @@ public class Superstructure {
             Turret m_turret,
             Hood m_hood,
             Flywheel m_flywheel,
-            Ballstopper ballstopper) {
+            Ballstopper ballstopper,
+            StatusLED statusLEDs) {
         this.deck = deck;
         this.m_climber = m_climber;
         this.m_columnBottom = m_columnBottom;
@@ -69,6 +77,7 @@ public class Superstructure {
         this.m_hood = m_hood;
         this.m_flywheel = m_flywheel;
         this.m_ballstopper = ballstopper;
+        this.m_statusLED = statusLEDs;
         this.aimedState = RobotState.STOPPED;
 
         flywheelCommands = new FlywheelCommands(m_flywheel);
@@ -79,6 +88,16 @@ public class Superstructure {
                 new FeederCommands(m_columnBottom, m_columnTop, m_verticalRollers, m_ballstopper);
         intakeCommands = new IntakeCommands(m_intake);
         turretCommands = new TurretCommands(m_turret);
+        readyToShootTrigger = new Trigger(this::getReadyToShoot);
+        newTargetTrigger = new Trigger(this::hasNewTarget);
+        hasTargetTrigger = new Trigger(this::hasTarget);
+        // hasTargetTrigger.whenInactive(() -> statusLEDs.setColor(Color.RED, 0));
+        // hasTargetTrigger
+        //         .and(newTargetTrigger)
+        //         .whenActive(() -> statusLEDs.setAnimation(LEDConstants.kBlinkWhite));
+        // hasTargetTrigger
+        //         .and(newTargetTrigger.negate())
+        //         .whenActive(() -> statusLEDs.setAnimation(LEDConstants.kBlinkYellow));
     }
 
     public Command getShootCommandWithStopper() {
@@ -93,12 +112,11 @@ public class Superstructure {
                                                 .andThen(
                                                         feederCommands
                                                                 .getFeedInwardsUntil(
-                                                                        this
-                                                                                ::getFlywheelNotAtSurfaceVel)
+                                                                        this::getNotReadyToShoot)
                                                                 .andThen(getWaitForShooter())))
                                 .andThen(
                                         feederCommands.getFeedInwardsUntil(
-                                                this::getFlywheelNotAtSurfaceVel)));
+                                                this::getNotReadyToShoot)));
     }
 
     public Command getShootCommand() {
@@ -109,12 +127,11 @@ public class Superstructure {
                         getWaitForShooter()
                                 .andThen(
                                         feederCommands
-                                                .getFeedInwardsUntil(
-                                                        this::getFlywheelNotAtSurfaceVel)
+                                                .getFeedInwardsUntil(this::getNotReadyToShoot)
                                                 .andThen(getWaitForShooter()))
                                 .andThen(
                                         feederCommands.getFeedInwardsUntil(
-                                                this::getFlywheelNotAtSurfaceVel)));
+                                                this::getNotReadyToShoot)));
     }
 
     public Command getAutoClimbSequence() {
@@ -192,34 +209,7 @@ public class Superstructure {
     }
 
     public Command getWaitForShooter() {
-        return new WaitUntilCommand(this::getFlywheelAtSurfaceVel);
-    }
-
-    public double getDistanceToTarget() {
-        if (aimingParameters == null) {
-            return 0;
-        }
-        return aimingParameters.getRangeMeters();
-    }
-
-    public boolean getFlywheelAtSurfaceVel() {
-        return m_flywheel.getVelocity() > getAimedFlywheelSurfaceVel();
-    }
-
-    public boolean getFlywheelNotAtSurfaceVel() {
-        return !getFlywheelAtSurfaceVel();
-    }
-
-    public double getAimedFlywheelSurfaceVel() {
-        return flywheelVelocity;
-    }
-
-    public double getAimedKickerVelocity() {
-        return kickerVelocity;
-    }
-
-    public double getAimedHoodAngle() {
-        return hoodAngle;
+        return new WaitUntilCommand(this::getReadyToShoot);
     }
 
     public Command getBallstopIntakeCommand(DoubleSupplier output) {
@@ -286,5 +276,46 @@ public class Superstructure {
 
     public boolean isClimbing() {
         return RobotState.CLIMB.equals(aimedState);
+    }
+
+    public boolean hasTarget() {
+        return getAimingParameters() != null;
+    }
+
+    public boolean hasNewTarget() {
+        var aimingParams = getAimingParameters();
+        if (aimingParams == null) {
+            return false;
+        }
+
+        return (aimingParams.getLastSeenTimestamp() - Timer.getFPGATimestamp()) < 15;
+    }
+
+    public double getDistanceToTarget() {
+        if (aimingParameters == null) {
+            return 0;
+        }
+        return aimingParameters.getRangeMeters();
+    }
+
+    public boolean getReadyToShoot() {
+        return m_flywheel.getVelocity() > getAimedFlywheelSurfaceVel()
+                && m_columnTop.getVelocity() > getAimedKickerVelocity();
+    }
+
+    public boolean getNotReadyToShoot() {
+        return !getReadyToShoot();
+    }
+
+    public double getAimedFlywheelSurfaceVel() {
+        return flywheelVelocity;
+    }
+
+    public double getAimedKickerVelocity() {
+        return kickerVelocity;
+    }
+
+    public double getAimedHoodAngle() {
+        return hoodAngle;
     }
 }

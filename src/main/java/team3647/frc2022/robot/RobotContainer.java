@@ -296,5 +296,6 @@ public class RobotContainer {
                     m_turret,
                     m_hood,
                     m_flywheel,
-                    m_ballstopper);
+                    m_ballstopper,
+                    statusLED);
 }
