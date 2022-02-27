@@ -12,8 +12,8 @@ public final class ClimberConstants {
             new LazyTalonFX(GlobalConstants.ClimberIds.kLeftMotorId);
     public static final TalonFX kRightMotor =
             new LazyTalonFX(GlobalConstants.ClimberIds.kRightMotorId);
-    public static final TalonFXInvertType kLeftInvert = TalonFXInvertType.CounterClockwise;
-    public static final TalonFXInvertType kRightInvert = TalonFXInvertType.Clockwise;
+    public static final TalonFXInvertType kRightInvert = TalonFXInvertType.CounterClockwise;
+    public static final TalonFXInvertType kLeftInvert = TalonFXInvertType.Clockwise;
 
     public static final Solenoid kPivotPistons =
             new Solenoid(GlobalConstants.kPCMType, GlobalConstants.ClimberIds.kSolenoidPin);
@@ -29,15 +29,15 @@ public final class ClimberConstants {
             kOutputRotationMeters / GlobalConstants.kFalconTicksPerRotation;
     public static final double kNativeVelToMpS =
             10 * kOutputRotationMeters / GlobalConstants.kFalconTicksPerRotation;
-    public static final double kMaxVelocity = Units.inchesToMeters(10);
-    public static final double kMaxAcceleration = Units.inchesToMeters(20);
+    public static final double kMaxVelocity = Units.inchesToMeters(16);
+    public static final double kMaxAcceleration = Units.inchesToMeters(40);
 
     public static final double kRevSoftLimit = 0;
     public static final double kFwdSoftLimit = 1000000; // Native units
 
-    public static final double kLengthJustOverLowBar = Units.inchesToMeters(30);
-    public static final double kMaxLengthAngled = Units.inchesToMeters(36);
-    public static final double kMaxLengthStraight = Units.inchesToMeters(34);
+    public static final double kLengthJustOverLowBar = Units.inchesToMeters(25);
+    public static final double kMaxLengthAngled = Units.inchesToMeters(30);
+    public static final double kMaxLengthStraight = Units.inchesToMeters(27);
     public static final double kLengthFromStaticHooksToAboveBar = Units.inchesToMeters(10);
 
     public static final TalonFXConfiguration kLeftConfig = new TalonFXConfiguration();

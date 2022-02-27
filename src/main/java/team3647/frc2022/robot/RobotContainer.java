@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import team3647.frc2022.commands.ArcadeDrive;
 import team3647.frc2022.constants.*;
+import team3647.frc2022.subsystems.Ballstopper;
 import team3647.frc2022.subsystems.ClimberArm;
 import team3647.frc2022.subsystems.ColumnBottom;
 import team3647.frc2022.subsystems.ColumnTop;
@@ -23,11 +24,13 @@ import team3647.frc2022.subsystems.PivotClimber;
 import team3647.frc2022.subsystems.Superstructure;
 import team3647.frc2022.subsystems.Turret;
 import team3647.frc2022.subsystems.VerticalRollers;
+import team3647.frc2022.subsystems.vision.VisionController;
 import team3647.lib.GroupPrinter;
 import team3647.lib.inputs.Joysticks;
 import team3647.lib.tracking.FlightDeck;
 import team3647.lib.tracking.RobotTracker;
 import team3647.lib.vision.MultiTargetTracker;
+import team3647.lib.vision.PhotonVisionCamera;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -49,7 +52,7 @@ public class RobotContainer {
                 m_intake,
                 m_flywheel,
                 m_pivotClimber,
-                // m_visionController,
+                m_visionController,
                 m_turret,
                 m_hood);
         // Configure the button bindings
@@ -76,19 +79,31 @@ public class RobotContainer {
     }
 
     private void configureButtonBindings() {
-        mainController.rightTrigger.whenHeld(m_superstructure.getAutoAimAndShoot());
+        // mainController.rightTrigger.whenHeld(m_superstructure.getAutoAimAndShootSensored());
+        mainController.rightTrigger.whenHeld(m_superstructure.getAutoAimAndShootStopper());
         mainController.buttonX.whenPressed(m_superstructure.getAutoClimbSequence());
         mainController.leftBumper.whenHeld(m_superstructure.getClimberManualControl(() -> 0.5));
         mainController.rightBumper.whenHeld(m_superstructure.getClimberManualControl(() -> -0.5));
-        mainController.dPadLeft.whenHeld(m_superstructure.getRetractClimbManual());
-        mainController.dPadLeft.whenHeld(m_superstructure.getExtendClimberManual());
+        mainController.dPadUp.whenHeld(m_superstructure.getRetractClimbManual());
+        mainController.dPadDown.whenHeld(m_superstructure.getExtendClimberManual());
 
-        coController.buttonA.whenHeld(m_superstructure.getAimTurretCommand());
-        // coController.leftTrigger.whenHeld(
-        //         m_superstructure.intakeAndIndex(coController::getLeftTriggerValue));
-        coController.leftTrigger.whenActive(
-                m_superstructure.getIntakeHoldCommand(coController::getLeftTriggerValue));
-        coController.leftTrigger.whenInactive(m_superstructure.getIntakeReleaseCommand());
+        coController.buttonA.whenHeld(
+                m_superstructure.getSpinupCommandWithMaxDistance(
+                        GlobalConstants.kDistanceFarToGoalCenter));
+        coController.buttonB.whenHeld(
+                m_superstructure.getSpinupCommandWithMaxDistance(
+                        GlobalConstants.kDistanceTarmacToGoalCenter));
+        coController.buttonY.whenHeld(
+                m_superstructure
+                        .turretCommands
+                        .getTurretMotionMagic(0)
+                        .alongWith(m_superstructure.getBatterSpinupCommand()));
+        coController.leftBumper.whenHeld(m_superstructure.getAimTurretCommand());
+
+        coController.leftTrigger.whenHeld(m_superstructure.getBallstopIntakeCommand(() -> 0.3));
+
+        // coController.leftTrigger.whenActive(m_superstructure.getIntakeHoldCommand(() -> 0.3));
+        // coController.leftTrigger.whenInactive(m_superstructure.getIntakeReleaseCommand());
     }
 
     private void configureSmartDashboardLogging() {
@@ -101,6 +116,8 @@ public class RobotContainer {
         m_printer.addBoolean("Top sensor", m_columnTop::getTopBannerValue);
         m_printer.addBoolean("mid sensor", m_columnBottom::getMiddleBannerValue);
         m_printer.addBoolean("low sensor", m_columnBottom::getBottomBannerValue);
+        m_printer.addDouble("Left Climber", m_pivotClimber::getLeftPosition);
+        m_printer.addDouble("Right Climber", m_pivotClimber::getRightPosition);
 
         // m_printer.addPose("Vision Pose", this::getVisionPose);
         m_printer.addPose("Drivetrain Pose", m_drivetrain::getPose);
@@ -178,6 +195,8 @@ public class RobotContainer {
                     ColumnBottomConstants.kNominalVoltage,
                     GlobalConstants.kDt,
                     ColumnBottomConstants.kFeedForward);
+
+    final Ballstopper m_ballstopper = new Ballstopper(ColumnBottomConstants.kBallstopperPiston);
 
     final VerticalRollers m_verticalRollers =
             new VerticalRollers(
@@ -259,11 +278,11 @@ public class RobotContainer {
                     new MultiTargetTracker(),
                     TurretConstants.kTurretToCamFixed);
 
-    /*final VisionController m_visionController =
-    new VisionController(
-            new PhotonVisionCamera("gloworm", 0.06, VisionConstants.limelightConstants),
-            VisionConstants.kCenterGoalTargetConstants,
-            m_flightDeck::addVisionObservation);*/
+    final VisionController m_visionController =
+            new VisionController(
+                    new PhotonVisionCamera("gloworm", 0.06, VisionConstants.limelightConstants),
+                    VisionConstants.kCenterGoalTargetConstants,
+                    m_flightDeck::addVisionObservation);
 
     final Superstructure m_superstructure =
             new Superstructure(
@@ -275,5 +294,6 @@ public class RobotContainer {
                     m_intake,
                     m_turret,
                     m_hood,
-                    m_flywheel);
+                    m_flywheel,
+                    m_ballstopper);
 }

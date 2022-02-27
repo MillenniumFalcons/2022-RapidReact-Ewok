@@ -41,6 +41,10 @@ public class PivotClimber implements PeriodicSubsystem {
         this.leftArm = leftArm;
         this.rightArm = rightArm;
         setState(ClimberAngle.STRAIGHT);
+        leftArm.resetEncoder(255);
+        rightArm.resetEncoder(255);
+        leftArm.setToBrake();
+        rightArm.setToBrake();
     }
 
     public void setAngled() {

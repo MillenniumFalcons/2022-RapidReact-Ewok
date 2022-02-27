@@ -31,6 +31,7 @@ public class Superstructure {
     private final Turret m_turret;
     private final Hood m_hood;
     private final Flywheel m_flywheel;
+    public final Ballstopper m_ballstopper;
 
     public final FlywheelCommands flywheelCommands;
     public final HoodCommands hoodCommands;
@@ -56,7 +57,8 @@ public class Superstructure {
             Intake m_intake,
             Turret m_turret,
             Hood m_hood,
-            Flywheel m_flywheel) {
+            Flywheel m_flywheel,
+            Ballstopper ballstopper) {
         this.deck = deck;
         this.m_climber = m_climber;
         this.m_columnBottom = m_columnBottom;
@@ -66,20 +68,37 @@ public class Superstructure {
         this.m_turret = m_turret;
         this.m_hood = m_hood;
         this.m_flywheel = m_flywheel;
+        this.m_ballstopper = ballstopper;
         this.aimedState = RobotState.STOPPED;
 
         flywheelCommands = new FlywheelCommands(m_flywheel);
         hoodCommands = new HoodCommands(m_hood);
         climberCommands = new ClimberCommands(m_climber);
         columnTopCommands = new ColumnTopCommands(m_columnTop);
-        feederCommands = new FeederCommands(m_columnBottom, m_columnTop, m_verticalRollers);
+        feederCommands =
+                new FeederCommands(m_columnBottom, m_columnTop, m_verticalRollers, m_ballstopper);
         intakeCommands = new IntakeCommands(m_intake);
         turretCommands = new TurretCommands(m_turret);
     }
 
-    public Command getSpinupCommand() {
-        return flywheelCommands.getVariableAccelerateFlywheel(
-                () -> FlywheelConstants.getFlywheelRPM(getDistanceToTarget()));
+    public Command getShootCommandWithStopper() {
+        return flywheelCommands
+                .getGoVariableVelocity(this::getAimedFlywheelSurfaceVel)
+                .alongWith(
+                        columnTopCommands.getGoVariableVelocity(this::getAimedKickerVelocity),
+                        getWaitForShooter()
+                                .andThen(
+                                        feederCommands
+                                                .getRetractBallstopper()
+                                                .andThen(
+                                                        feederCommands
+                                                                .getFeedInwardsUntil(
+                                                                        this
+                                                                                ::getFlywheelNotAtSurfaceVel)
+                                                                .andThen(getWaitForShooter())))
+                                .andThen(
+                                        feederCommands.getFeedInwardsUntil(
+                                                this::getFlywheelNotAtSurfaceVel)));
     }
 
     public Command getShootCommand() {
@@ -104,7 +123,7 @@ public class Superstructure {
                         new InstantCommand(() -> setState(RobotState.CLIMB))
                                 .andThen(
                                         turretCommands
-                                                .getTurretMotionMagic(180)
+                                                .getTurretMotionMagic(0)
                                                 .andThen(climberCommands.getClimberDeploy())),
                         this::isClimbing)
                 .alongWith(new ScheduleCommand(flywheelCommands.stopFlywheel()));
@@ -117,8 +136,24 @@ public class Superstructure {
                 this::isClimbing);
     }
 
-    public Command getAutoAimAndShoot() {
+    public Command getSpinupCommandWithMaxDistance(double maxDistance) {
+        return flywheelCommands.getGoVariableVelocity(
+                () ->
+                        FlywheelConstants.getFlywheelRPM(
+                                Math.min(getDistanceToTarget(), maxDistance)));
+    }
+
+    public Command getBatterSpinupCommand() {
+        // distance from bumper to center of turret from the intake side (meters)
+        return flywheelCommands.getGoVariableVelocity(() -> 0.304);
+    }
+
+    public Command getAutoAimAndShootSensored() {
         return getAimTurretCommand().alongWith(getShootCommand());
+    }
+
+    public Command getAutoAimAndShootStopper() {
+        return getAimTurretCommand().alongWith(getShootCommandWithStopper());
     }
 
     public Command getHoodAutoAdjustCommand() {
@@ -186,6 +221,25 @@ public class Superstructure {
     public double getAimedHoodAngle() {
         return hoodAngle;
     }
+
+    public Command getBallstopIntakeCommand(DoubleSupplier output) {
+        return new InstantCommand(m_ballstopper::extend)
+                .andThen(
+                        intakeCommands
+                                .getIntakeSequnce(intakeCommands.getRunIntakeOpenloop(output))
+                                .alongWith(feederCommands.getFeedInwards()));
+    }
+
+    // public Command getBallStopperIntakeCommand(DoubleSupplier output) {
+    //     return intakeCommands
+    //             .getIntakeSequnce(intakeCommands.getRunIntakeOpenloop(output))
+    //             .alongWith(
+    //                     new ConditionalCommand(
+    //                             new RunCommand(m_ballstopper::extend, m_ballstopper),
+    //                             feederCommands.getFeedInwardsUntil(
+    //                                     m_columnBottom::getBottomBannerValue),
+    //                             m_columnBottom::getBottomBannerValue));
+    // }
 
     public Command getIntakeHoldCommand(DoubleSupplier output) {
         return intakeCommands
