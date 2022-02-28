@@ -14,8 +14,8 @@ public class StatusLED extends SubsystemBase {
     private final CANdle candle;
 
     private int blinkSpeed = 1;
-    private Color ledColor = Color.WHITE;
-    private Animation animation;
+    private Color ledColor = null;
+    private Animation animation = null;
     /** Creates a new StatusLED. */
     public StatusLED(CANdle candle) {
         this.candle = candle;
@@ -25,19 +25,20 @@ public class StatusLED extends SubsystemBase {
         ledColor = color;
         this.blinkSpeed = blinkSpeed;
         animation = null;
+        candle.setLEDs(ledColor.red, ledColor.green, ledColor.blue);
     }
 
     public void setAnimation(Animation animation) {
         this.animation = animation;
         this.ledColor = null;
+        candle.animate(this.animation);
     }
 
     @Override
     public void periodic() {
-        if (animation == null && this.ledColor != null) {
-            candle.setLEDs(ledColor.red, ledColor.green, ledColor.blue);
+        if (this.ledColor != null) {
         } else if (animation != null) {
-            candle.animate(this.animation);
+
         }
     }
 }

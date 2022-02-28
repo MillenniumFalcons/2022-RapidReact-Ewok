@@ -215,6 +215,7 @@ public final class Drivetrain implements PeriodicSubsystem {
     }
 
     public void curvatureDrive(double xSpeed, double zRotation, boolean isQuickTurn) {
+        zRotation = isQuickTurn ? zRotation * 0.8 : zRotation;
         WheelSpeeds ws = DifferentialDrive.curvatureDriveIK(xSpeed, zRotation, isQuickTurn);
         // isQuickTurn);
         setOpenloop(ws.left, ws.right);

@@ -46,4 +46,12 @@ public class AutoCommands {
                 .andThen(autoShoot)
                 .alongWith(aimTurretHood);
     }
+
+    public Command getHighTwo() {
+        return ramseteCommands
+                .getTarmacToHighBall()
+                .deadlineWith(intakeFromGround)
+                .andThen(ramseteCommands.getHighBallToShoot().deadlineWith(accelerateFlywheel))
+                .andThen(autoShoot);
+    }
 }

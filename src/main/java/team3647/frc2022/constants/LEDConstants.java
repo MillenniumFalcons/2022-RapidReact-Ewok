@@ -39,11 +39,18 @@ public class LEDConstants {
     public static Animation kBlinkWhite =
             new StrobeAnimation(Color.WHITE.red, Color.WHITE.green, Color.WHITE.blue, 255, 1, 511);
     public static Animation kBlinkYellow =
+            new StrobeAnimation(
+                    Color.YELLOW.red, Color.YELLOW.green, Color.YELLOW.blue, 128, 0, 511);
+    public static Animation kBlinkGreen =
+            new StrobeAnimation(Color.GREEN.red, Color.GREEN.green, Color.GREEN.blue, 128, 1, 511);
+
+    public static Animation kBlinkRed =
             new StrobeAnimation(Color.RED.red, Color.RED.green, Color.RED.blue, 128, 1, 511);
     public static CANdleConfiguration kCANdleConfig = new CANdleConfiguration();
 
     static {
         kCANdleConfig.vBatOutputMode = VBatOutputMode.Off;
+        kCANdleConfig.brightnessScalar = 0.7;
         kCANdle.configAllSettings(kCANdleConfig);
     }
 }

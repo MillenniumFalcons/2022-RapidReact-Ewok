@@ -56,7 +56,7 @@ public class RobotContainer {
                 m_visionController,
                 m_turret,
                 m_hood,
-                statusLED);
+                m_statusLED);
         // Configure the button bindings
         m_drivetrain.init();
         configureDefaultCommands();
@@ -71,7 +71,8 @@ public class RobotContainer {
                 new ArcadeDrive(
                         m_drivetrain,
                         mainController::getLeftStickY,
-                        mainController::getRightStickX));
+                        mainController::getRightStickX,
+                        () -> mainController.rightJoyStickPress.get()));
         m_hood.setDefaultCommand(m_superstructure.getHoodAutoAdjustCommand());
         m_flywheel.setDefaultCommand(
                 m_superstructure.flywheelCommands.waitToSpinDownThenHold(
@@ -82,7 +83,11 @@ public class RobotContainer {
 
     private void configureButtonBindings() {
         // mainController.rightTrigger.whenHeld(m_superstructure.getAutoAimAndShootSensored());
-        mainController.rightTrigger.whenHeld(m_superstructure.getAutoAimAndShootStopper());
+        mainController
+                .rightTrigger
+                .and(coController.rightTrigger.negate())
+                .whileActiveOnce(m_superstructure.getAutoAimAndShootStopper());
+
         mainController.buttonX.whenPressed(m_superstructure.getAutoClimbSequence());
         mainController.leftBumper.whenHeld(m_superstructure.getClimberManualControl(() -> 0.5));
         mainController.rightBumper.whenHeld(m_superstructure.getClimberManualControl(() -> -0.5));
@@ -102,21 +107,29 @@ public class RobotContainer {
                         .alongWith(m_superstructure.getBatterSpinupCommand()));
         coController.leftBumper.whenHeld(m_superstructure.getAimTurretCommand());
 
-        coController.leftTrigger.whenHeld(m_superstructure.getBallstopIntakeCommand(() -> 0.3));
+        coController
+                .rightTrigger
+                .and(mainController.rightTrigger.negate())
+                .whileActiveOnce(m_superstructure.getBallstopIntakeCommand(() -> 0.3));
     }
 
     private void configureSmartDashboardLogging() {
         m_printer.addDouble("Shooter velocity", m_flywheel::getVelocity);
+        m_printer.addDouble("Needed velocity", m_superstructure::getAimedFlywheelSurfaceVel);
+        m_printer.addDouble("kicker Needed velocity", m_superstructure::getAimedKickerVelocity);
+        m_printer.addBoolean("Ready to Shoot", m_superstructure::getReadyToShoot);
         m_printer.addDouble("Kicker Velocity", m_columnTop::getVelocity);
         m_printer.addDouble("Shooter current", m_flywheel::getMasterCurrent);
         m_printer.addDouble("Kicker current", m_columnTop::getMasterCurrent);
         m_printer.addDouble("Hood Position", m_hood::getPosition);
-        m_printer.addDouble("turret rotation", m_turret::getAngle);
+        m_printer.addDouble("Turret Angle", m_turret::getAngle);
+        m_printer.addDouble("Turret Pos", m_turret::getPosition);
         m_printer.addBoolean("Top sensor", m_columnTop::getTopBannerValue);
         m_printer.addBoolean("mid sensor", m_columnBottom::getMiddleBannerValue);
         m_printer.addBoolean("low sensor", m_columnBottom::getBottomBannerValue);
         m_printer.addDouble("Left Climber", m_pivotClimber::getLeftPosition);
         m_printer.addDouble("Right Climber", m_pivotClimber::getRightPosition);
+        m_printer.addBoolean("Right stick", () -> mainController.rightJoyStickPress.get());
 
         // m_printer.addPose("Vision Pose", this::getVisionPose);
         m_printer.addPose("Drivetrain Pose", m_drivetrain::getPose);
@@ -263,9 +276,10 @@ public class RobotContainer {
                     TurretConstants.kS,
                     TurretConstants.kMaxDegree,
                     TurretConstants.kMinDegree,
+                    TurretConstants.kStartingAngle,
                     TurretConstants.kFeedForwards);
 
-    final StatusLED statusLED = new StatusLED(LEDConstants.kCANdle);
+    final StatusLED m_statusLED = new StatusLED(LEDConstants.kCANdle);
 
     final FlightDeck m_flightDeck =
             new FlightDeck(
@@ -284,7 +298,6 @@ public class RobotContainer {
                     new PhotonVisionCamera("gloworm", 0.06, VisionConstants.limelightConstants),
                     VisionConstants.kCenterGoalTargetConstants,
                     m_flightDeck::addVisionObservation);
-
     final Superstructure m_superstructure =
             new Superstructure(
                     m_flightDeck,
@@ -297,5 +310,5 @@ public class RobotContainer {
                     m_hood,
                     m_flywheel,
                     m_ballstopper,
-                    statusLED);
+                    m_statusLED);
 }

@@ -39,8 +39,8 @@ public class HoodContants {
     public static final double kNominalVoltage = 11;
 
     public static final double[][] kHoodMap = {
-        // {Units.feetToMeters(2) + GlobalConstants.centerOffsetMeters, 18},
-        // {Units.feetToMeters(4) + GlobalConstants.centerOffsetMeters, 22.5},
+        {Units.feetToMeters(2) + GlobalConstants.centerOffsetMeters, 18},
+        {Units.feetToMeters(4) + GlobalConstants.centerOffsetMeters, 22.5},
         // {Units.feetToMeters(8) + GlobalConstants.centerOffsetMeters, 27.97},
         // {Units.feetToMeters(12) + GlobalConstants.centerOffsetMeters, 31.97},
         // {Units.feetToMeters(14) + GlobalConstants.centerOffsetMeters, 32},

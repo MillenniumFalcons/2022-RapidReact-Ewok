@@ -56,7 +56,7 @@ public class FeederCommands {
     public Command getRunVerticalRollers() {
         return new FunctionalCommand(
                 () -> {},
-                () -> verticalRollers.setOpenloop(0.6),
+                () -> verticalRollers.setOpenloop(0.4),
                 interrupted -> verticalRollers.setOpenloop(0),
                 () -> false,
                 verticalRollers);

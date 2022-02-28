@@ -1,6 +1,5 @@
 package team3647.frc2022.subsystems;
 
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -19,6 +18,7 @@ import team3647.frc2022.commands.turret.AimTurret;
 import team3647.frc2022.commands.turret.TurretCommands;
 import team3647.frc2022.constants.FlywheelConstants;
 import team3647.frc2022.constants.HoodContants;
+import team3647.frc2022.constants.LEDConstants;
 import team3647.frc2022.states.RobotState;
 import team3647.lib.tracking.FlightDeck;
 import team3647.lib.vision.AimingParameters;
@@ -47,6 +47,7 @@ public class Superstructure {
     public final Trigger readyToShootTrigger;
     public final Trigger newTargetTrigger;
     public final Trigger hasTargetTrigger;
+    public final Trigger oldTargetTrigger;
 
     private RobotState currentState, aimedState;
 
@@ -89,34 +90,59 @@ public class Superstructure {
         intakeCommands = new IntakeCommands(m_intake);
         turretCommands = new TurretCommands(m_turret);
         readyToShootTrigger = new Trigger(this::getReadyToShoot);
-        newTargetTrigger = new Trigger(this::hasNewTarget);
         hasTargetTrigger = new Trigger(this::hasTarget);
-        // hasTargetTrigger.whenInactive(() -> statusLEDs.setColor(Color.RED, 0));
-        // hasTargetTrigger
-        //         .and(newTargetTrigger)
-        //         .whenActive(() -> statusLEDs.setAnimation(LEDConstants.kBlinkWhite));
-        // hasTargetTrigger
-        //         .and(newTargetTrigger.negate())
-        //         .whenActive(() -> statusLEDs.setAnimation(LEDConstants.kBlinkYellow));
+        newTargetTrigger = new Trigger(this::hasNewTarget);
+        oldTargetTrigger = new Trigger(() -> !this.hasNewTarget());
+        hasTargetTrigger
+                .negate()
+                .whileActiveContinuous(
+                        new InstantCommand(
+                                () -> m_statusLED.setAnimation(LEDConstants.kBlinkRed),
+                                m_statusLED));
+        //         .whileActiveOnce(new PrintCommand("Lost Target"));
+        // // oldTargetTrigger
+        // //         .and(readyToShootTrigger.negate())
+        // //         .whileActiveOnce(
+        // //                 new InstantCommand(
+        // //                         () -> statusLEDs.setAnimation(LEDConstants.kBlinkYellow)));
+        hasTargetTrigger
+                .and(newTargetTrigger)
+                .and(readyToShootTrigger)
+                .whileActiveContinuous(
+                        new InstantCommand(
+                                () -> m_statusLED.setAnimation(LEDConstants.kBlinkGreen),
+                                m_statusLED));
+        hasTargetTrigger
+                .and(newTargetTrigger)
+                .and(readyToShootTrigger.negate())
+                .whileActiveContinuous(
+                        new InstantCommand(
+                                () -> m_statusLED.setAnimation(LEDConstants.kBlinkWhite),
+                                m_statusLED));
+        //         .whileActiveOnce(new PrintCommand("Has Target no velocity"));
+        // oldTargetTrigger
+        //         .and(readyToShootTrigger)
+        //         .whileActiveOnce(new InstantCommand(() -> statusLEDs.setColor(Color.YELLOW, 0)));
     }
 
     public Command getShootCommandWithStopper() {
         return flywheelCommands
                 .getGoVariableVelocity(this::getAimedFlywheelSurfaceVel)
+                .alongWith(columnTopCommands.getGoVariableVelocity(this::getAimedKickerVelocity))
                 .alongWith(
-                        columnTopCommands.getGoVariableVelocity(this::getAimedKickerVelocity),
-                        getWaitForShooter()
+                        new InstantCommand()
                                 .andThen(
-                                        feederCommands
-                                                .getRetractBallstopper()
-                                                .andThen(
-                                                        feederCommands
-                                                                .getFeedInwardsUntil(
-                                                                        this::getNotReadyToShoot)
-                                                                .andThen(getWaitForShooter())))
-                                .andThen(
+                                        getWaitForShooter(),
+                                        feederCommands.getRetractBallstopper(),
                                         feederCommands.getFeedInwardsUntil(
-                                                this::getNotReadyToShoot)));
+                                                this::getNotReadyToShoot),
+                                        feederCommands.getExtendBallstopper(),
+                                        getWaitForShooter()
+                                                .deadlineWith(feederCommands.getFeedInwards()),
+                                        feederCommands.getRetractBallstopper(),
+                                        feederCommands.getFeedInwardsUntil(
+                                                this::getNotReadyToShoot),
+                                        feederCommands.getExtendBallstopper()));
     }
 
     public Command getShootCommand() {
@@ -140,7 +166,7 @@ public class Superstructure {
                         new InstantCommand(() -> setState(RobotState.CLIMB))
                                 .andThen(
                                         turretCommands
-                                                .getTurretMotionMagic(0)
+                                                .getTurretMotionMagic(180)
                                                 .andThen(climberCommands.getClimberDeploy())),
                         this::isClimbing)
                 .alongWith(new ScheduleCommand(flywheelCommands.stopFlywheel()));
@@ -284,11 +310,8 @@ public class Superstructure {
 
     public boolean hasNewTarget() {
         var aimingParams = getAimingParameters();
-        if (aimingParams == null) {
-            return false;
-        }
-
-        return (aimingParams.getLastSeenTimestamp() - Timer.getFPGATimestamp()) < 15;
+        return aimingParams != null;
+        // return (aimingParams.getLastSeenTimestamp() - Timer.getFPGATimestamp()) < 5;
     }
 
     public double getDistanceToTarget() {
@@ -299,8 +322,10 @@ public class Superstructure {
     }
 
     public boolean getReadyToShoot() {
-        return m_flywheel.getVelocity() > getAimedFlywheelSurfaceVel()
-                && m_columnTop.getVelocity() > getAimedKickerVelocity();
+        return m_flywheel.getVelocity() >= getAimedFlywheelSurfaceVel() - 0.1
+                && m_columnTop.getVelocity() > getAimedKickerVelocity() - 2
+                && Math.abs(m_flywheel.getVelocity()) > 5
+                && Math.abs(m_columnTop.getVelocity()) > 2;
     }
 
     public boolean getNotReadyToShoot() {

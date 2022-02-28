@@ -30,7 +30,7 @@ public class TurretCommands {
 
     public Command holdPositionAtCall() {
         return new Command() {
-            double degreeAtStart = 0;
+            double degreeAtStart = 90;
 
             @Override
             public void initialize() {
