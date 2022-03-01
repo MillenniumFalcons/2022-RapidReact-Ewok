@@ -8,6 +8,7 @@
   "gyro ctor": "16",
   "is drivetrain": true,
   "motor controllers": [
+    "TalonFX",
     "TalonFX"
   ],
   "number of samples per average": 1,
@@ -17,9 +18,11 @@
     1
   ],
   "primary motor ports": [
-    1
+    1,
+    2
   ],
   "primary motors inverted": [
+    false,
     false
   ],
   "secondary encoder inverted": false,
@@ -28,9 +31,11 @@
     3
   ],
   "secondary motor ports": [
-    3
+    3,
+    4
   ],
   "secondary motors inverted": [
+    true,
     true
   ],
   "velocity measurement period": 100
