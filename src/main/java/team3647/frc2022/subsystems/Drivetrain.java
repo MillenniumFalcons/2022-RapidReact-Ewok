@@ -97,6 +97,9 @@ public final class Drivetrain implements PeriodicSubsystem {
         public double leftFeedForward = 0;
         /** Volts */
         public double rightFeedForward = 0;
+
+        public double rightMasterVelocity = 0;
+        public double leftMasterVelocity = 0;
     }
 
     @Override
@@ -115,6 +118,8 @@ public final class Drivetrain implements PeriodicSubsystem {
                 leftMaster.getSelectedSensorVelocity() * velocityConversion;
         periodicIO.wheelSpeeds.rightMetersPerSecond =
                 rightMaster.getSelectedSensorVelocity() * velocityConversion;
+        periodicIO.leftMasterVelocity = periodicIO.wheelSpeeds.leftMetersPerSecond;
+        periodicIO.rightMasterVelocity = periodicIO.wheelSpeeds.rightMetersPerSecond;
 
         pigeonIMU.getYawPitchRoll(periodicIO.ypr);
         periodicIO.heading = Math.IEEEremainder(periodicIO.ypr[0], 360);
@@ -204,6 +209,8 @@ public final class Drivetrain implements PeriodicSubsystem {
         periodicIO.rightFeedForward = feedforward.calculate(wheelSpeeds.rightMetersPerSecond);
         periodicIO.leftOutput = wheelSpeeds.leftMetersPerSecond / velocityConversion;
         periodicIO.rightOutput = wheelSpeeds.rightMetersPerSecond / velocityConversion;
+        periodicIO.leftMasterVelocity = leftMaster.getSelectedSensorVelocity();
+        periodicIO.rightMasterVelocity = rightMaster.getSelectedSensorVelocity();
     }
 
     public void setOpenloop(double leftOut, double rightOut) {
@@ -215,7 +222,6 @@ public final class Drivetrain implements PeriodicSubsystem {
     }
 
     public void curvatureDrive(double xSpeed, double zRotation, boolean isQuickTurn) {
-        zRotation = isQuickTurn ? zRotation * 0.8 : zRotation;
         WheelSpeeds ws = DifferentialDrive.curvatureDriveIK(xSpeed, zRotation, isQuickTurn);
         // isQuickTurn);
         setOpenloop(ws.left, ws.right);
@@ -256,11 +262,19 @@ public final class Drivetrain implements PeriodicSubsystem {
         return periodicIO.pose.getY();
     }
 
-    public double getLeftVelocity() {
+    public double getLeftMasterVelocity() {
+        return periodicIO.leftMasterVelocity;
+    }
+
+    public double getRightMasterVelocity() {
+        return periodicIO.rightMasterVelocity;
+    }
+
+    public double getLeftDemand() {
         return periodicIO.wheelSpeeds.leftMetersPerSecond;
     }
 
-    public double getRightVelocity() {
+    public double getRightDemand() {
         return periodicIO.wheelSpeeds.rightMetersPerSecond;
     }
 

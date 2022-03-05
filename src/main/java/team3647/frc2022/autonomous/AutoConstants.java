@@ -45,7 +45,13 @@ public class AutoConstants {
                     new Rotation2d(-38.65980825));
 
     public static final Pose2d startingStraight =
-            new Pose2d(Units.inchesToMeters(0), Units.inchesToMeters(50), new Rotation2d(90));
-    public static final Pose2d endingStraight =
-            new Pose2d(Units.inchesToMeters(50), Units.inchesToMeters(50), new Rotation2d(90));
+            new Pose2d(
+                    Units.inchesToMeters(0),
+                    Units.inchesToMeters(0),
+                    new Rotation2d(Units.degreesToRadians(0)));
+    public static final Pose2d endingTurn =
+            new Pose2d(
+                    Units.inchesToMeters(60),
+                    Units.inchesToMeters(-60),
+                    new Rotation2d(Units.degreesToRadians(-90)));
 }

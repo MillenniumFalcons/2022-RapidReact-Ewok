@@ -27,7 +27,7 @@ public class AutoCommands {
         ramseteCommands = new RamseteCommands(drivetrain, driveKinematics);
     }
 
-    public Command getLowFive() {
+    /*public Command getLowFive() {
         return ramseteCommands
                 .getTarmacToBottomLeftBall1()
                 .deadlineWith(intakeFromGround)
@@ -45,6 +45,17 @@ public class AutoCommands {
                 .andThen(ramseteCommands.getLoad2ToShoot().deadlineWith(accelerateFlywheel))
                 .andThen(autoShoot)
                 .alongWith(aimTurretHood);
+    }*/
+
+    public Command getLowFive() {
+        return ramseteCommands.getTarmacToBottomLeftBall1()
+        /*.andThen(ramseteCommands.getBottomLeftBall1ToTarmac(),
+        new WaitCommand(1),
+                ramseteCommands.getTarmacToBall2(),
+                new WaitCommand(1),
+                ramseteCommands.getBall2ToLoad2(),
+                new WaitCommand(1),
+                ramseteCommands.getLoad2ToShoot()*/ ;
     }
 
     public Command getHighTwo() {
@@ -53,5 +64,13 @@ public class AutoCommands {
                 .deadlineWith(intakeFromGround)
                 .andThen(ramseteCommands.getHighBallToShoot().deadlineWith(accelerateFlywheel))
                 .andThen(autoShoot);
+    }
+
+    public Command getStraightTurn() {
+        return ramseteCommands.getStraight();
+    }
+
+    public Command getOneTraj() {
+        return ramseteCommands.getTarmacToBottomLeftBall1();
     }
 }

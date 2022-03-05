@@ -10,6 +10,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
+import team3647.frc2022.autonomous.AutoCommands;
+import team3647.frc2022.autonomous.AutoConstants;
 import team3647.frc2022.commands.ArcadeDrive;
 import team3647.frc2022.constants.*;
 import team3647.frc2022.subsystems.Ballstopper;
@@ -64,6 +67,15 @@ public class RobotContainer {
         configureSmartDashboardLogging();
         m_hood.resetEncoder();
         HoodContants.kHoodMotor.configAllSettings(HoodContants.kMasterConfig);
+
+        /*m_drivetrain.setOdometry(
+                AutoConstants.positionOnTarmacParallel,
+                AutoConstants.positionOnTarmacParallel.getRotation());
+        runningAutoSequence = autoCommands.getOneTraj();*/
+
+        m_drivetrain.setOdometry(
+                AutoConstants.startingStraight, AutoConstants.startingStraight.getRotation());
+        runningAutoSequence = autoCommands.getStraightTurn();
     }
 
     private void configureDefaultCommands() {
@@ -130,6 +142,10 @@ public class RobotContainer {
         m_printer.addDouble("Left Climber", m_pivotClimber::getLeftPosition);
         m_printer.addDouble("Right Climber", m_pivotClimber::getRightPosition);
         m_printer.addBoolean("Right stick", () -> mainController.rightJoyStickPress.get());
+        m_printer.addDouble("Right Demand", m_drivetrain::getRightDemand);
+        m_printer.addDouble("Left Demand", m_drivetrain::getLeftDemand);
+        m_printer.addDouble("x position", m_drivetrain::getDrivetrainXMeters);
+        m_printer.addDouble("y position", m_drivetrain::getDrivetrainYMeters);
 
         // m_printer.addPose("Vision Pose", this::getVisionPose);
         m_printer.addPose("Drivetrain Pose", m_drivetrain::getPose);
@@ -311,4 +327,24 @@ public class RobotContainer {
                     m_flywheel,
                     m_ballstopper,
                     m_statusLED);
+    private final Command runningAutoSequence;
+    /*private final AutoCommands autoCommands =
+    new AutoCommands(
+            m_drivetrain,
+            DrivetrainConstants.kDriveKinematics,
+            m_superstructure.getBallstopIntakeCommand(() -> 0.4),
+            m_superstructure.getAimTurretCommand(),
+            m_superstructure
+                    .turretCommands
+                    .getTurretMotionMagic(0)
+                    .alongWith(m_superstructure.getBatterSpinupCommand()),
+            m_superstructure.getShootCommand());*/
+    private final AutoCommands autoCommands =
+            new AutoCommands(
+                    m_drivetrain,
+                    DrivetrainConstants.kDriveKinematics,
+                    new WaitCommand(2),
+                    new WaitCommand(2),
+                    new WaitCommand(2),
+                    new WaitCommand(2));
 }

@@ -20,7 +20,7 @@ public class Trajectories {
                     DrivetrainConstants.kDriveKinematics,
                     DrivetrainConstants.kNominalVoltage);
 
-    private static final TrajectoryConfig forwardTrajectoryConfig =
+    private static final TrajectoryConfig forwardTrajectoryConfigSlow =
             new TrajectoryConfig(
                             DrivetrainConstants.kMaxSpeedMetersPerSecond,
                             DrivetrainConstants.kMaxAccelerationMetersPerSecondSquared)
@@ -41,13 +41,6 @@ public class Trajectories {
                     .setKinematics(DrivetrainConstants.kDriveKinematics)
                     .addConstraint(autoVoltageConstraint)
                     .setReversed(true);
-    private static final TrajectoryConfig forwardTrajectoryConfigFast =
-            new TrajectoryConfig(
-                            DrivetrainConstants.kMaxSpeedMetersPerSecond,
-                            AutoConstants.fastBoiAutoAccel)
-                    .setKinematics(DrivetrainConstants.kDriveKinematics)
-                    .addConstraint(autoVoltageConstraint)
-                    .setReversed(true);
 
     // 5 ball
     public static Trajectory tarmacToBottomLeftBall1 =
@@ -55,13 +48,13 @@ public class Trajectories {
                     AutoConstants.positionOnTarmacParallel,
                     List.of(),
                     AutoConstants.bottomLeftBall1,
-                    reverseTrajectoryConfigSlow);
+                    forwardTrajectoryConfigSlow);
     public static Trajectory bottomLeftBall1ToTarmac =
             TrajectoryGenerator.generateTrajectory(
                     AutoConstants.bottomLeftBall1,
                     List.of(),
                     AutoConstants.positionOnTarmacParallel,
-                    forwardTrajectoryConfig);
+                    reverseTrajectoryConfigSlow);
     public static Trajectory tarmacToBall2 =
             TrajectoryGenerator.generateTrajectory(
                     AutoConstants.positionOnTarmacParallel,
@@ -69,7 +62,7 @@ public class Trajectories {
                     new Pose2d(
                             AutoConstants.bottomLeftBall2,
                             new Rotation2d(Units.degreesToRadians(-45))),
-                    reverseTrajectoryConfig);
+                    forwardTrajectoryConfigSlow);
     public static Trajectory ball2ToLoad2 =
             TrajectoryGenerator.generateTrajectory(
                     new Pose2d(
@@ -77,7 +70,7 @@ public class Trajectories {
                             new Rotation2d(Units.degreesToRadians(0))),
                     List.of(),
                     AutoConstants.bottomLeftBall3,
-                    reverseTrajectoryConfig);
+                    forwardTrajectoryConfigSlow);
     public static Trajectory load2ToShoot =
             TrajectoryGenerator.generateTrajectory(
                     AutoConstants.bottomLeftBall3,
@@ -85,7 +78,7 @@ public class Trajectories {
                     new Pose2d(
                             AutoConstants.bottomLeftBall2,
                             new Rotation2d(Units.degreesToRadians(45))),
-                    forwardTrajectoryConfigFast);
+                    reverseTrajectoryConfigSlow);
 
     // 2 ball
     public static Trajectory upperTarmacToUpperBall1 =
@@ -99,13 +92,13 @@ public class Trajectories {
                     AutoConstants.upperBall1,
                     List.of(),
                     AutoConstants.upperPositionOnTarmac,
-                    forwardTrajectoryConfig);
+                    forwardTrajectoryConfigSlow);
 
     // straight to test characterization
     public static Trajectory straightPath =
             TrajectoryGenerator.generateTrajectory(
                     AutoConstants.startingStraight,
                     List.of(),
-                    AutoConstants.endingStraight,
-                    forwardTrajectoryConfig);
+                    AutoConstants.endingTurn,
+                    forwardTrajectoryConfigSlow);
 }

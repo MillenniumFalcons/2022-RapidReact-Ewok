@@ -70,14 +70,19 @@ public final class DrivetrainConstants {
             kWheelRotationToMeters / GlobalConstants.kFalconTicksPerRotation;
 
     static {
-        kLeftMasterConfig.slot0.kP = 2.5812;
+        kLeftMasterConfig.slot0.kP = 0.000001;
+        kLeftMasterConfig.slot0.kI = 0;
+        kLeftMasterConfig.slot0.kD = 0;
 
         kLeftMasterConfig.supplyCurrLimit.enable = true;
         kLeftMasterConfig.supplyCurrLimit.currentLimit = kStallCurrent;
         kLeftMasterConfig.supplyCurrLimit.triggerThresholdCurrent = kMaxCurrent;
         kLeftMasterConfig.voltageCompSaturation = 12.0;
 
-        kRightMasterConfig.slot0.kP = 0.35;
+        kLeftMasterConfig.slot0.kP = 0.000001;
+        kRightMasterConfig.slot0.kI = 0;
+        kRightMasterConfig.slot0.kD = 0;
+
         kRightMasterConfig.supplyCurrLimit.enable = true;
         kRightMasterConfig.supplyCurrLimit.currentLimit = kStallCurrent;
         kRightMasterConfig.supplyCurrLimit.triggerThresholdCurrent = kMaxCurrent;
