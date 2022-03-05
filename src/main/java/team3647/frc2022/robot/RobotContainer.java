@@ -9,9 +9,11 @@ import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import team3647.frc2022.commands.ArcadeDrive;
 import team3647.frc2022.constants.*;
+import team3647.frc2022.states.ShooterState;
 import team3647.frc2022.subsystems.Ballstopper;
 import team3647.frc2022.subsystems.ClimberArm;
 import team3647.frc2022.subsystems.ColumnBottom;
@@ -73,44 +75,83 @@ public class RobotContainer {
                         mainController::getLeftStickY,
                         mainController::getRightStickX,
                         () -> mainController.rightJoyStickPress.get()));
-        m_hood.setDefaultCommand(m_superstructure.getHoodAutoAdjustCommand());
+        m_hood.setDefaultCommand(
+                m_superstructure.hoodCommands.autoAdjustAngle(m_superstructure::getAimedHoodAngle));
         m_flywheel.setDefaultCommand(
-                m_superstructure.flywheelCommands.waitToSpinDownThenHold(
-                        FlywheelConstants.constantVelocityMpS));
+                new InstantCommand(
+                                () ->
+                                        m_superstructure.currentState.shooterState =
+                                                ShooterState.IDLE)
+                        .andThen(
+                                m_superstructure.flywheelCommands.waitToSpinDownThenHold(
+                                        FlywheelConstants.constantVelocityMpS)));
         m_turret.setDefaultCommand(m_superstructure.turretCommands.holdPositionAtCall());
         m_pivotClimber.setDefaultCommand(new RunCommand(m_pivotClimber::end, m_pivotClimber));
+        m_intake.setDefaultCommand(
+                m_superstructure
+                        .intakeCommands
+                        .openLoopAndStop(0.3)
+                        .withTimeout(1)
+                        .andThen(new RunCommand(() -> m_intake.setOpenloop(0), m_intake)));
+        m_columnBottom.setDefaultCommand(
+                m_superstructure
+                        .feederCommands
+                        .feedIn(() -> 2.5, () -> 2.5)
+                        .withTimeout(1)
+                        .andThen(
+                                new RunCommand(
+                                        () -> {
+                                            m_columnBottom.setOpenloop(0);
+                                            m_verticalRollers.setOpenloop(0);
+                                        },
+                                        m_columnBottom,
+                                        m_verticalRollers)));
     }
 
     private void configureButtonBindings() {
-        // mainController.rightTrigger.whenHeld(m_superstructure.getAutoAimAndShootSensored());
-        mainController
-                .rightTrigger
-                .and(coController.rightTrigger.negate())
-                .whileActiveOnce(m_superstructure.getAutoAimAndShootStopper());
+        mainController.rightTrigger.whileActiveOnce(m_superstructure.accelerateAndShoot());
+        mainController.rightTrigger.whileActiveOnce(m_superstructure.aimTurret());
+        mainController.rightTrigger.whileActiveOnce(
+                m_superstructure.intakeCommands.runOpenLoop(.6).withTimeout(0.5));
 
-        mainController.buttonX.whenPressed(m_superstructure.getAutoClimbSequence());
-        mainController.leftBumper.whenHeld(m_superstructure.getClimberManualControl(() -> 0.5));
-        mainController.rightBumper.whenHeld(m_superstructure.getClimberManualControl(() -> -0.5));
-        mainController.dPadUp.whenHeld(m_superstructure.getRetractClimbManual());
-        mainController.dPadDown.whenHeld(m_superstructure.getExtendClimberManual());
+        // mainController.buttonY.whileActiveOnce(new InstantCommand()); // Batter shot spinup
+        mainController.buttonY.whileActiveOnce(m_superstructure.turretCommands.motionMagic(0));
 
-        coController.buttonA.whenHeld(
-                m_superstructure.getSpinupCommandWithMaxDistance(
-                        GlobalConstants.kDistanceFarToGoalCenter));
-        coController.buttonB.whenHeld(
-                m_superstructure.getSpinupCommandWithMaxDistance(
-                        GlobalConstants.kDistanceTarmacToGoalCenter));
-        coController.buttonY.whenHeld(
-                m_superstructure
-                        .turretCommands
-                        .getTurretMotionMagic(0)
-                        .alongWith(m_superstructure.getBatterSpinupCommand()));
-        coController.leftBumper.whenHeld(m_superstructure.getAimTurretCommand());
+        mainController.buttonX.whenPressed(m_superstructure.autoClimbSequnce());
+        mainController.leftBumper.whenHeld(m_superstructure.climberManualControl(() -> 0.5));
+        mainController.rightBumper.whenHeld(m_superstructure.climberManualControl(() -> -0.5));
+        mainController.dPadUp.whenHeld(m_superstructure.retractClimberIfClimbing());
+        mainController.dPadDown.whenHeld(m_superstructure.extendClimberIfClimbing());
+
+        coController
+                .buttonA
+                .and(m_superstructure.isShooting.negate())
+                .whileActiveOnce(
+                        m_superstructure.spinupUpToDistance(
+                                GlobalConstants.kDistanceFarToGoalCenter));
+        coController
+                .buttonB
+                .and(m_superstructure.isShooting.negate())
+                .whileActiveOnce(
+                        m_superstructure.spinupUpToDistance(
+                                GlobalConstants.kDistanceTarmacToGoalCenter));
+        coController
+                .buttonY
+                .and(m_superstructure.isShooting.negate())
+                .whileActiveOnce(
+                        m_superstructure
+                                .turretCommands
+                                .motionMagic(0)
+                                .alongWith(m_superstructure.batterSpinup()));
+
+        coController.leftBumper.whileActiveOnce(m_superstructure.aimTurret());
 
         coController
                 .rightTrigger
-                .and(mainController.rightTrigger.negate())
-                .whileActiveOnce(m_superstructure.getBallstopIntakeCommand(() -> 0.3));
+                .whileActiveOnce(
+                        m_superstructure.deployAndRunIntake(this::calculateIntakeSurfaceSpeed))
+                .and(m_superstructure.isShooting.negate())
+                .whileActiveOnce(m_superstructure.runFeeder(this::calculateIntakeSurfaceSpeed));
     }
 
     private void configureSmartDashboardLogging() {
@@ -153,6 +194,13 @@ public class RobotContainer {
 
     public double getHoodDegree() {
         return SmartDashboard.getNumber("Hood angle", 16.0);
+    }
+
+    public double calculateIntakeSurfaceSpeed() {
+        double leftVel = Math.abs(m_drivetrain.getLeftVelocity());
+        double rightVel = Math.abs(m_drivetrain.getRightVelocity());
+        double max = Math.max(leftVel, rightVel) * 1.5;
+        return max < 3 ? 3 : max;
     }
 
     private final CommandScheduler m_commandScheduler = CommandScheduler.getInstance();

@@ -14,7 +14,7 @@ public class HoodCommands {
         this.m_hood = hood;
     }
 
-    public Command getHoodZeroing() {
+    public Command zero() {
         MedianFilter hiVelFilter = new MedianFilter(10);
         MedianFilter loVelFilter = new MedianFilter(10);
 
@@ -38,11 +38,11 @@ public class HoodCommands {
                                 m_hood));
     }
 
-    public Command getAutoAdjustHood(DoubleSupplier hoodAngle) {
+    public Command autoAdjustAngle(DoubleSupplier hoodAngle) {
         return new RunCommand(() -> m_hood.setAngleMotionMagic(hoodAngle.getAsDouble()), m_hood);
     }
 
-    public Command getHoodToSetpoint(double setpointDegrees) {
+    public Command motionMagic(double setpointDegrees) {
         return new FunctionalCommand(
                 () -> {},
                 () -> m_hood.setAngleMotionMagic(setpointDegrees),

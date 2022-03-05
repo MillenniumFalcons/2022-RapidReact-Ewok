@@ -37,7 +37,7 @@ public class ArcadeDrive extends CommandBase {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        double throttle = -m_throttle.getAsDouble() * driveMultiplier;
+        double throttle = m_throttle.getAsDouble() * driveMultiplier;
         double turn = m_turn.getAsDouble() * driveMultiplier;
         m_drivetrain.curvatureDrive(
                 m_accelerationLimiter.calculate(throttle * throttle * Math.signum(throttle)),

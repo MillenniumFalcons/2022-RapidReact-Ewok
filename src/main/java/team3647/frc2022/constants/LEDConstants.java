@@ -7,9 +7,10 @@ import com.ctre.phoenix.led.CANdleConfiguration;
 import com.ctre.phoenix.led.StrobeAnimation;
 
 public class LEDConstants {
-    public static int numofLED = 0;
-    public static double speed = 0.0;
-    public static int kCANdleId = 17;
+    public static final int numofLED = 0;
+    public static final double speed = 0.0;
+    public static final int kCANdleId = 17;
+    public static final double kBlinkSpeed = 0.1;
 
     public static CANdle kCANdle = new CANdle(kCANdleId);
 
@@ -18,7 +19,7 @@ public class LEDConstants {
         public static final Color BLACK = new Color(0, 0, 0);
         public static final Color RED = new Color(255, 0, 0);
         public static final Color ORANGE = new Color(255, 100, 0);
-        public static final Color YELLOW = new Color(235, 143, 52);
+        public static final Color YELLOW = new Color(235, 255, 0);
         public static final Color GREEN = new Color(0, 255, 0);
         public static final Color LIGHTBLUE = new Color(0, 255, 255);
         public static final Color BLUE = new Color(0, 255, 0);
@@ -36,16 +37,26 @@ public class LEDConstants {
         }
     }
 
-    public static Animation kBlinkWhite =
+    public static Animation kSolidWhite =
             new StrobeAnimation(Color.WHITE.red, Color.WHITE.green, Color.WHITE.blue, 255, 1, 511);
+    public static Animation kBlinkWhiteFast =
+            new StrobeAnimation(
+                    Color.WHITE.red, Color.WHITE.green, Color.WHITE.blue, 255, kBlinkSpeed, 511);
     public static Animation kBlinkYellow =
             new StrobeAnimation(
-                    Color.YELLOW.red, Color.YELLOW.green, Color.YELLOW.blue, 128, 0, 511);
+                    Color.YELLOW.red, Color.YELLOW.green, Color.YELLOW.blue, 128, kBlinkSpeed, 511);
+    public static Animation kSolidYellow =
+            new StrobeAnimation(
+                    Color.YELLOW.red, Color.YELLOW.green, Color.YELLOW.blue, 128, 1, 511);
     public static Animation kBlinkGreen =
-            new StrobeAnimation(Color.GREEN.red, Color.GREEN.green, Color.GREEN.blue, 128, 1, 511);
-
+            new StrobeAnimation(
+                    Color.GREEN.red, Color.GREEN.green, Color.GREEN.blue, 128, kBlinkSpeed, 511);
     public static Animation kBlinkRed =
-            new StrobeAnimation(Color.RED.red, Color.RED.green, Color.RED.blue, 128, 1, 511);
+            new StrobeAnimation(
+                    Color.RED.red, Color.RED.green, Color.RED.blue, 128, kBlinkSpeed, 511);
+    public static Animation kBlinkOrange =
+            new StrobeAnimation(
+                    Color.ORANGE.red, Color.ORANGE.green, Color.ORANGE.blue, 128, kBlinkSpeed, 511);
     public static CANdleConfiguration kCANdleConfig = new CANdleConfiguration();
 
     static {

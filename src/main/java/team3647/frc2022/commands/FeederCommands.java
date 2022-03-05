@@ -3,8 +3,7 @@ package team3647.frc2022.commands;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.RunCommand;
-import java.util.function.BooleanSupplier;
+import java.util.function.DoubleSupplier;
 import team3647.frc2022.subsystems.Ballstopper;
 import team3647.frc2022.subsystems.ColumnBottom;
 import team3647.frc2022.subsystems.ColumnTop;
@@ -27,16 +26,16 @@ public class FeederCommands {
         this.ballstopper = ballstopper;
     }
 
-    public Command getRunColmnBottomInwards() {
+    public Command runColumnBottom(DoubleSupplier surfaceSpeed) {
         return new FunctionalCommand(
                 () -> {},
-                () -> columnBottom.setOpenloop(0.3),
+                () -> columnBottom.setSurfaceVelocity(surfaceSpeed.getAsDouble()),
                 interrupted -> columnBottom.setOpenloop(0),
                 () -> false,
                 columnBottom);
     }
 
-    public Command getRunColmnBottomOutwards() {
+    public Command runColumnBottomOut() {
         return new FunctionalCommand(
                 () -> {},
                 () -> columnBottom.setOpenloop(-0.3),
@@ -45,46 +44,24 @@ public class FeederCommands {
                 columnBottom);
     }
 
-    public Command getExtendBallstopper() {
+    public Command extendStopper() {
         return new InstantCommand(ballstopper::extend);
     }
 
-    public Command getRetractBallstopper() {
+    public Command retractStopper() {
         return new InstantCommand(ballstopper::retract);
     }
 
-    public Command getRunVerticalRollers() {
+    public Command runVerticalRollers(DoubleSupplier surfaceSpeed) {
         return new FunctionalCommand(
                 () -> {},
-                () -> verticalRollers.setOpenloop(0.4),
+                () -> verticalRollers.setSurfaceVelocity(surfaceSpeed.getAsDouble()),
                 interrupted -> verticalRollers.setOpenloop(0),
                 () -> false,
                 verticalRollers);
     }
 
-    public Command getFeedInwardsUntil(BooleanSupplier interruptOn) {
-        return getRunColmnBottomInwards()
-                .alongWith(getRunVerticalRollers())
-                .withInterrupt(interruptOn);
-    }
-
-    public Command getFeedOutwardsUntil(BooleanSupplier interruptOn) {
-        return getRunColmnBottomOutwards()
-                .alongWith(getRunVerticalRollers())
-                .withInterrupt(interruptOn);
-    }
-
-    public Command getFeedInwards() {
-        return getRunColmnBottomInwards().alongWith(getRunVerticalRollers());
-    }
-
-    public Command getBottomCheckFeed(BooleanSupplier topSensor, BooleanSupplier middleSensor) {
-        return new FeederSensoredBalls(columnBottom, topSensor, middleSensor);
-    }
-
-    public Command getEndSequence() {
-        return new RunCommand(columnTop::end, columnTop)
-                .alongWith(new RunCommand(columnBottom::end, columnBottom))
-                .alongWith(new RunCommand(verticalRollers::end, verticalRollers));
+    public Command feedIn(DoubleSupplier columnSpeed, DoubleSupplier verticalSpeed) {
+        return runColumnBottom(columnSpeed).alongWith(runVerticalRollers(verticalSpeed));
     }
 }

@@ -12,7 +12,7 @@ public final class ColumnTopConstants {
     public static final TalonFXInvertType kMasterInverted = TalonFXInvertType.Clockwise;
     public static final TalonFXConfiguration kMasterConfig = new TalonFXConfiguration();
     public static final double kS = 0.89015;
-    public static final double kV = 1.1;
+    public static final double kV = 1;
     public static final double kA = 0.026327;
     public static final SimpleMotorFeedforward kFeedForward =
             new SimpleMotorFeedforward(kS, kV, kA);
@@ -34,7 +34,7 @@ public final class ColumnTopConstants {
             new DigitalInput(GlobalConstants.ColumnTopIds.kTopSensorPin);
 
     static {
-        kMasterConfig.slot0.kP = 0.014327;
+        kMasterConfig.slot0.kP = 0.1;
         kMasterConfig.slot0.kI = 0;
         kMasterConfig.slot0.kD = 0;
         kMasterConfig.slot0.kF = 0;

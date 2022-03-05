@@ -10,9 +10,9 @@ public final class VerticalRollersConstants {
     public static final TalonFXInvertType kMasterInverted =
             TalonFXInvertType.Clockwise; // Counerclockwise comp
     public static final TalonFXConfiguration kMasterConfig = new TalonFXConfiguration();
-    public static final double kS = 0;
-    public static final double kV = 0;
-    public static final double kA = 0;
+    public static final double kS = 0.7;
+    public static final double kV = 0.6;
+    public static final double kA = 0.001;
     public static final SimpleMotorFeedforward kFeedForward =
             new SimpleMotorFeedforward(kS, kV, kA);
 

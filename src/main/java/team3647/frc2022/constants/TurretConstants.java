@@ -19,8 +19,8 @@ public class TurretConstants {
     public static final double kGearboxReduction = 16 / 60.0 * 16 / 150.0;
     public static final double kFalconPositionToDegrees = kGearboxReduction / 2048.0 * 360;
     public static final double kFalconVelocityToDegpS = kFalconPositionToDegrees * 10;
-    public static final double kMaxDegree = 315;
-    public static final double kMinDegree = -45;
+    public static final double kMaxDegree = 135;
+    public static final double kMinDegree = -180;
     public static final double kPosThersholdDeg = 1.0;
     public static final boolean kCurrentLimitingEnable = true;
 
@@ -41,7 +41,7 @@ public class TurretConstants {
     public static final double kNominalVoltage = 11;
 
     public static final Translation2d kRobotToTurretFixed =
-            new Translation2d(Units.inchesToMeters(-7), 0);
+            new Translation2d(Units.inchesToMeters(7), 0);
     public static final Translation2d kTurretToCamTranslationMeters =
             new Translation2d(Units.inchesToMeters(7), 0);
     public static final Pose2d kTurretToCamFixed =
@@ -49,7 +49,7 @@ public class TurretConstants {
 
     public static final SimpleMotorFeedforward kFeedForwards =
             new SimpleMotorFeedforward(kS, kV, kA);
-    public static final double kStartingAngle = 90;
+    public static final double kStartingAngle = -90;
 
     static {
         kMasterConfig.slot0.kP = 0.3;

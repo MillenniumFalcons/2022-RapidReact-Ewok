@@ -14,11 +14,11 @@ public class FlywheelCommands {
         this.m_flywheel = flywheel;
     }
 
-    public Command getGoVelocity(double surfaceVelMpS) {
-        return getGoVariableVelocity(() -> surfaceVelMpS);
+    public Command constantVelocity(double surfaceVelMpS) {
+        return variableVelocity(() -> surfaceVelMpS);
     }
 
-    public Command getGoVariableVelocity(DoubleSupplier surfaceVelMpSFunction) {
+    public Command variableVelocity(DoubleSupplier surfaceVelMpSFunction) {
         return new FunctionalCommand(
                 () -> {},
                 () -> m_flywheel.setSurfaceSpeed(surfaceVelMpSFunction.getAsDouble()),
@@ -40,7 +40,7 @@ public class FlywheelCommands {
      * @param surfaceVelMpSFunction
      * @return
      */
-    public Command getVariableAccelerateFlywheel(DoubleSupplier surfaceVelMpSFunction) {
+    public Command accelerate(DoubleSupplier surfaceVelMpSFunction) {
         return new FunctionalCommand(
                 () -> {},
                 () -> m_flywheel.setSurfaceSpeed(surfaceVelMpSFunction.getAsDouble()),
@@ -49,7 +49,7 @@ public class FlywheelCommands {
                 m_flywheel);
     }
 
-    public Command stopFlywheel() {
+    public Command stop() {
         return new RunCommand(() -> m_flywheel.setOpenloop(0));
     }
 }

@@ -41,9 +41,9 @@ public class Turret extends TalonFXSubsystem {
 
         double currentPosition = getPosition(); // returns [-45,315]
         angle -= 360.0 * Math.round(angle / 360.0); // angles in [-180, 180]
-        if (angle < minAngle) {
-            angle += 360;
-        }
+        // if (angle < minAngle) {
+        //     angle += 360;
+        // }
         // double targetPosition = angle;
         // boolean targetInOverlap =
         //         (angle >= minAngle + 360 && angle <= 180)
