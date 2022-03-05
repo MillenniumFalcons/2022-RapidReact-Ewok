@@ -18,7 +18,7 @@ public class ClimberCommands {
         this.climber = climber;
     }
 
-    public Command getClimberToLength(double lengthMeters) {
+    public Command climberToLength(double lengthMeters) {
         return new FunctionalCommand(
                 () -> {},
                 // Execute
@@ -53,19 +53,19 @@ public class ClimberCommands {
         }
     }
 
-    public Command getClimberDeploy() {
+    public Command deploy() {
         return new InstantCommand(climber::setAngled)
                 .andThen(new PrintCommand("Deploying Climber"))
                 .andThen(new WaitCommand(0.1))
-                .andThen(getClimberToLength(ClimberConstants.kLengthJustOverLowBar))
+                .andThen(climberToLength(ClimberConstants.kLengthJustOverLowBar))
                 .andThen(climber::setStraight);
     }
 
-    public Command getClimberToNextRung() {
+    public Command toNextRung() {
         return new ClimberEightInchesUp()
                 .andThen(climber::setAngled)
                 .andThen(new WaitCommand(0.1))
-                .andThen(getClimberToLength(ClimberConstants.kMaxLengthAngled));
+                .andThen(climberToLength(ClimberConstants.kMaxLengthAngled));
         // .andThen(climber::setStraight);
     }
 
@@ -77,7 +77,7 @@ public class ClimberCommands {
         return new InstantCommand(climber::setStraight);
     }
 
-    public Command getClimberOpenloop(DoubleSupplier percentout) {
+    public Command openLoopControl(DoubleSupplier percentout) {
         return new FunctionalCommand(
                 () -> {},
                 () -> climber.setOpenloop(percentout.getAsDouble()),

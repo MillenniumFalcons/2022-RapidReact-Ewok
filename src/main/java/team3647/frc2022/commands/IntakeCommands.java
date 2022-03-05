@@ -3,7 +3,6 @@ package team3647.frc2022.commands;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.RunCommand;
 import java.util.function.DoubleSupplier;
 import team3647.frc2022.subsystems.Intake;
 
@@ -14,18 +13,18 @@ public class IntakeCommands {
         this.intake = intake;
     }
 
-    public Command getDeployIntake() {
+    public Command deploy() {
         return new InstantCommand(intake::extend);
     }
 
-    public Command getRetractIntake() {
+    public Command retract() {
         return new InstantCommand(intake::retract);
     }
 
-    public Command getRunIntakeOpenloop(DoubleSupplier percentOut) {
+    public Command runOpenLoop(double percentOut) {
         return new FunctionalCommand(
                 () -> {},
-                () -> intake.setOpenloop(percentOut.getAsDouble()),
+                () -> intake.setOpenloop(percentOut),
                 interrupted -> {
                     intake.setOpenloop(0);
                     intake.retract();
@@ -34,7 +33,18 @@ public class IntakeCommands {
                 intake);
     }
 
-    public Command getRunIntakeClosedloop(DoubleSupplier surfaceVel) {
+    public Command openLoopAndStop(double percentOut) {
+        return new FunctionalCommand(
+                () -> {},
+                () -> intake.setOpenloop(percentOut),
+                interrupted -> {
+                    intake.setOpenloop(0);
+                },
+                () -> false,
+                intake);
+    }
+
+    public Command runClosedLoop(DoubleSupplier surfaceVel) {
         return new FunctionalCommand(
                 () -> {},
                 () -> intake.setSurfaceVelocity(surfaceVel.getAsDouble()),
@@ -46,11 +56,7 @@ public class IntakeCommands {
                 intake);
     }
 
-    public Command getIntakeSequnce(Command intakingCommand) {
-        return getDeployIntake().andThen(intakingCommand);
-    }
-
-    public Command getEndSequence() {
-        return getRetractIntake().andThen(new RunCommand(intake::end, intake));
+    public Command deployAndIntakeWith(Command intakingCommand) {
+        return deploy().andThen(intakingCommand);
     }
 }

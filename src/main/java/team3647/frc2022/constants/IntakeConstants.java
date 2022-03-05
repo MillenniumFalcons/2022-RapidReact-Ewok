@@ -28,7 +28,7 @@ public final class IntakeConstants {
             10 * kWheelDiameterMeters / GlobalConstants.kFalconTicksPerRotation;
 
     static {
-        kMasterConfig.slot0.kP = 0;
+        kMasterConfig.slot0.kP = 0.1;
         kMasterConfig.slot0.kI = 0;
         kMasterConfig.slot0.kD = 0;
         kMasterConfig.slot0.kF = 0;

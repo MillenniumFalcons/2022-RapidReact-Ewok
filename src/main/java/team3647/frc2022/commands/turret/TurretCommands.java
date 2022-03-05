@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import java.util.Set;
 import java.util.function.DoubleSupplier;
+import team3647.frc2022.constants.TurretConstants;
 import team3647.frc2022.subsystems.Turret;
 
 public class TurretCommands {
@@ -15,11 +16,11 @@ public class TurretCommands {
         this.m_turret = m_turret;
     }
 
-    public Command getTurretManual(DoubleSupplier output) {
+    public Command manualControl(DoubleSupplier output) {
         return new RunCommand(() -> m_turret.setOpenloop(output.getAsDouble()), m_turret);
     }
 
-    public Command getTurretMotionMagic(double angle) {
+    public Command motionMagic(double angle) {
         return new FunctionalCommand(
                 () -> {},
                 () -> m_turret.setAngleMotionMagic(angle),
@@ -30,7 +31,7 @@ public class TurretCommands {
 
     public Command holdPositionAtCall() {
         return new Command() {
-            double degreeAtStart = 90;
+            double degreeAtStart = TurretConstants.kStartingAngle;
 
             @Override
             public void initialize() {
