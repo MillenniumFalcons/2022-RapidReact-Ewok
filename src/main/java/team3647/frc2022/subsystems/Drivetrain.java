@@ -270,11 +270,11 @@ public final class Drivetrain implements PeriodicSubsystem {
         return periodicIO.rightMasterVelocity;
     }
 
-    public double getLeftDemand() {
+    public double getLeftVelocity() {
         return periodicIO.wheelSpeeds.leftMetersPerSecond;
     }
 
-    public double getRightDemand() {
+    public double getRightVelocity() {
         return periodicIO.wheelSpeeds.rightMetersPerSecond;
     }
 

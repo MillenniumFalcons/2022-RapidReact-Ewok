@@ -183,8 +183,6 @@ public class RobotContainer {
         m_printer.addDouble("Left Climber", m_pivotClimber::getLeftPosition);
         m_printer.addDouble("Right Climber", m_pivotClimber::getRightPosition);
         m_printer.addBoolean("Right stick", () -> mainController.rightJoyStickPress.get());
-        m_printer.addDouble("Right Demand", m_drivetrain::getRightDemand);
-        m_printer.addDouble("Left Demand", m_drivetrain::getLeftDemand);
         m_printer.addDouble("x position", m_drivetrain::getDrivetrainXMeters);
         m_printer.addDouble("y position", m_drivetrain::getDrivetrainYMeters);
 
