@@ -357,6 +357,7 @@ public class RobotContainer {
                     TurretConstants.kMaxDegree,
                     TurretConstants.kMinDegree,
                     TurretConstants.kStartingAngle,
+                    TurretConstants.kTurretProfile,
                     TurretConstants.kFeedForwards);
 
     final StatusLED m_statusLED = new StatusLED(LEDConstants.kCANdle);

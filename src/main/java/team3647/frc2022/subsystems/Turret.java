@@ -4,6 +4,8 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.wpilibj.Timer;
 import team3647.lib.TalonFXSubsystem;
 
 public class Turret extends TalonFXSubsystem {
@@ -12,8 +14,11 @@ public class Turret extends TalonFXSubsystem {
     private final double minAngle;
     private final SimpleMotorFeedforward ff;
     private final double kS;
-    private boolean firstMotionMagicCall = true;
-    private final TalonFX master;
+    private final TrapezoidProfile.Constraints profileContraints;
+    private TrapezoidProfile profile;
+    private double prevAngle;
+    private double prevVelocity;
+    private double startTime;
 
     public Turret(
             TalonFX master,
@@ -25,57 +30,48 @@ public class Turret extends TalonFXSubsystem {
             double maxAngle,
             double minAngle,
             double startingAngle,
+            TrapezoidProfile.Constraints profileConstraints,
             SimpleMotorFeedforward ff) {
         super(master, velocityConversion, positionConversion, nominalVoltage, kDt);
-        this.master = master;
         setStatusFramesThatDontMatter(master, kLongStatusTimeMS, kTimeoutMS);
         this.maxAngle = maxAngle;
         this.minAngle = minAngle;
         this.ff = ff;
         this.kS = kS;
+        this.profileContraints = profileConstraints;
+        profile = new TrapezoidProfile(profileConstraints, new TrapezoidProfile.State());
         setEncoder(startingAngle);
+        prevAngle = startingAngle;
+        prevVelocity = 0;
+        startTime = Timer.getFPGATimestamp();
     }
 
     /** @param angle in degree, [-180,180] */
     public void setAngle(double angle, double velocity) {
-
-        double currentPosition = getPosition(); // returns [-45,315]
         angle -= 360.0 * Math.round(angle / 360.0); // angles in [-180, 180]
-        // if (angle < minAngle) {
-        //     angle += 360;
-        // }
-        // double targetPosition = angle;
-        // boolean targetInOverlap =
-        //         (angle >= minAngle + 360 && angle <= 180)
-        //                 || (angle <= maxAngle - 360 && angle >= -180);
-
-        // /*Convert target angle to pick the shortest rotate direction if target angle lies in
-        // [160,180] or [-180,-160]*/
-        // if (targetInOverlap) {
-
-        //     if (targetPosition > currentPosition) {
-        //         /*For example, target angle is 170 while current angle is -200, make target -190
-        //         instead */
-        //         if (targetPosition > currentPosition + 180) {
-        //             targetPosition -= 360;
-        //         }
-        //     } else {
-        //         /*For example, target angle is -170 while current angle is 90, make target 190
-        //         insteadd */
-        //         if (targetPosition < currentPosition - 180) {
-        //             targetPosition += 360;
-        //         }
-        //     }
-        // }
-
-        // Multiply the static friction volts by -1 if our target position is less than current
-        // position; if we need to move backwards, the volts needs to be negative
-        double ffVolts = ff.calculate(velocity);
-        if (ffVolts == 0) {
-            ffVolts = kS * Math.signum(angle - currentPosition);
+        if (angle < minAngle) {
+            angle += 360;
+        } else if (angle > maxAngle) {
+            angle -= 360;
         }
 
-        setPosition(MathUtil.clamp(angle, minAngle, maxAngle), ffVolts);
+        if (angle != prevAngle || Math.abs(prevVelocity - velocity) > 0.001) {
+            profile =
+                    new TrapezoidProfile(
+                            this.profileContraints,
+                            new TrapezoidProfile.State(getPosition(), getVelocity()),
+                            new TrapezoidProfile.State(angle, velocity));
+            startTime = Timer.getFPGATimestamp();
+        }
+        var state = profile.calculate(Timer.getFPGATimestamp() - startTime);
+        // Multiply the static friction volts by -1 if our target position is less than current
+        // position; if we need to move backwards, the volts needs to be negative
+        double ffVolts = ff.calculate(state.velocity);
+        if (Math.abs(ffVolts) < 0.000001) {
+            ffVolts = kS * Math.signum(state.position - getPosition());
+        }
+
+        setPosition(state.position, ffVolts);
     }
 
     public void setAngleMotionMagic(double angle) {
