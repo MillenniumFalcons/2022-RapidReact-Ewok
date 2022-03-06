@@ -27,6 +27,12 @@ public class AutoConstants {
                     Rotation2d.fromDegrees(90));
     public static final Translation2d bottomLeftBall2 =
             new Translation2d(Units.inchesToMeters(197.593), Units.inchesToMeters(73.11));
+
+    public static final Pose2d bottomLeftBall2At45Right =
+            new Pose2d(bottomLeftBall2, new Rotation2d(Units.degreesToRadians(-45)));
+    public static final Pose2d bottomLeftBall2At45Left =
+            new Pose2d(bottomLeftBall2, new Rotation2d(Units.degreesToRadians(45)));
+
     public static final Pose2d bottomLeftBall3 =
             new Pose2d(
                     Units.inchesToMeters(40),

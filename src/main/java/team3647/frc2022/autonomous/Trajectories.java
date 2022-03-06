@@ -1,12 +1,10 @@
 package team3647.frc2022.autonomous;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
-import edu.wpi.first.math.util.Units;
 import java.util.List;
 import team3647.frc2022.constants.DrivetrainConstants;
 
@@ -53,13 +51,11 @@ public class Trajectories {
     private static final Pose2d path2Start = path1End;
     private static final Pose2d path2End = path1Start;
     private static final Pose2d path3Start = path2End;
-    private static final Pose2d path3End =
-            new Pose2d(AutoConstants.bottomLeftBall2, new Rotation2d(Units.degreesToRadians(-45)));
+    private static final Pose2d path3End = AutoConstants.bottomLeftBall2At45Right;
     private static final Pose2d path4Start = path3End;
     private static final Pose2d path4End = AutoConstants.bottomLeftBall3;
     private static final Pose2d path5Start = path4End;
-    private static final Pose2d path5End =
-            new Pose2d(AutoConstants.bottomLeftBall2, new Rotation2d(Units.degreesToRadians(45)));
+    private static final Pose2d path5End = AutoConstants.bottomLeftBall2At45Left;
     // 5 ball
     public static Trajectory tarmacToBottomLeftBall1 =
             TrajectoryGenerator.generateTrajectory(
