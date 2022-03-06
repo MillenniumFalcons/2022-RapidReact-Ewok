@@ -36,7 +36,7 @@ public final class DrivetrainConstants {
                     new MatBuilder<>(Nat.N3(), Nat.N1()).fill(0.02, 0.02, 0.01),
                     new MatBuilder<>(Nat.N3(), Nat.N1()).fill(0.1, 0.1, 0.01));
 
-    public static final double kNominalVoltage = 12;
+    public static final double kNominalVoltage = 11;
     public static final double kStallCurrent = 35;
     public static final double kMaxCurrent = 60;
 
@@ -54,8 +54,8 @@ public final class DrivetrainConstants {
     public static final double kTrackWidth = 0.75;
     public static final DifferentialDriveKinematics kDriveKinematics =
             new DifferentialDriveKinematics(kTrackWidth);
-    public static final double kMaxSpeedMetersPerSecond = 2;
-    public static final double kMaxAccelerationMetersPerSecondSquared = 2;
+    public static final double kMaxSpeedMetersPerSecond = 4;
+    public static final double kMaxAccelerationMetersPerSecondSquared = 8;
 
     public static final double kGearboxReduction = 10 / 42.0 * 24 / 40.;
 

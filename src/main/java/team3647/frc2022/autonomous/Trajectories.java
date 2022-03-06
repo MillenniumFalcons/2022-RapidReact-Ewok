@@ -1,6 +1,5 @@
 package team3647.frc2022.autonomous;
 
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
@@ -15,18 +14,25 @@ import team3647.frc2022.constants.DrivetrainConstants;
 public class Trajectories {
     private static final DifferentialDriveVoltageConstraint autoVoltageConstraint =
             new DifferentialDriveVoltageConstraint(
-                    new SimpleMotorFeedforward(
-                            DrivetrainConstants.kS, DrivetrainConstants.kV, DrivetrainConstants.kA),
+                    DrivetrainConstants.kFeedforward,
                     DrivetrainConstants.kDriveKinematics,
                     DrivetrainConstants.kNominalVoltage);
 
     private static final TrajectoryConfig forwardTrajectoryConfigSlow =
+            new TrajectoryConfig(
+                            DrivetrainConstants.kMaxSpeedMetersPerSecond / 2.0,
+                            DrivetrainConstants.kMaxAccelerationMetersPerSecondSquared / 2.0)
+                    .setKinematics(DrivetrainConstants.kDriveKinematics)
+                    .addConstraint(autoVoltageConstraint)
+                    .setReversed(false);
+    private static final TrajectoryConfig forwardTrajectoryConfig =
             new TrajectoryConfig(
                             DrivetrainConstants.kMaxSpeedMetersPerSecond,
                             DrivetrainConstants.kMaxAccelerationMetersPerSecondSquared)
                     .setKinematics(DrivetrainConstants.kDriveKinematics)
                     .addConstraint(autoVoltageConstraint)
                     .setReversed(false);
+
     private static final TrajectoryConfig reverseTrajectoryConfig =
             new TrajectoryConfig(
                             DrivetrainConstants.kMaxSpeedMetersPerSecond,
@@ -36,49 +42,40 @@ public class Trajectories {
                     .setReversed(true);
     private static final TrajectoryConfig reverseTrajectoryConfigSlow =
             new TrajectoryConfig(
-                            DrivetrainConstants.kMaxSpeedMetersPerSecond,
-                            AutoConstants.slowBoiAutoAccel)
+                            DrivetrainConstants.kMaxSpeedMetersPerSecond / 2.0,
+                            DrivetrainConstants.kMaxAccelerationMetersPerSecondSquared / 2.0)
                     .setKinematics(DrivetrainConstants.kDriveKinematics)
                     .addConstraint(autoVoltageConstraint)
                     .setReversed(true);
 
+    private static final Pose2d path1Start = AutoConstants.positionOnTarmacParallel;
+    private static final Pose2d path1End = AutoConstants.bottomLeftBall1;
+    private static final Pose2d path2Start = path1End;
+    private static final Pose2d path2End = path1Start;
+    private static final Pose2d path3Start = path2End;
+    private static final Pose2d path3End =
+            new Pose2d(AutoConstants.bottomLeftBall2, new Rotation2d(Units.degreesToRadians(-45)));
+    private static final Pose2d path4Start = path3End;
+    private static final Pose2d path4End = AutoConstants.bottomLeftBall3;
+    private static final Pose2d path5Start = path4End;
+    private static final Pose2d path5End =
+            new Pose2d(AutoConstants.bottomLeftBall2, new Rotation2d(Units.degreesToRadians(45)));
     // 5 ball
     public static Trajectory tarmacToBottomLeftBall1 =
             TrajectoryGenerator.generateTrajectory(
-                    AutoConstants.positionOnTarmacParallel,
-                    List.of(),
-                    AutoConstants.bottomLeftBall1,
-                    forwardTrajectoryConfigSlow);
+                    path1Start, List.of(), path1End, forwardTrajectoryConfigSlow);
     public static Trajectory bottomLeftBall1ToTarmac =
             TrajectoryGenerator.generateTrajectory(
-                    AutoConstants.bottomLeftBall1,
-                    List.of(),
-                    AutoConstants.positionOnTarmacParallel,
-                    reverseTrajectoryConfigSlow);
+                    path2Start, List.of(), path2End, reverseTrajectoryConfigSlow);
     public static Trajectory tarmacToBall2 =
             TrajectoryGenerator.generateTrajectory(
-                    AutoConstants.positionOnTarmacParallel,
-                    List.of(),
-                    new Pose2d(
-                            AutoConstants.bottomLeftBall2,
-                            new Rotation2d(Units.degreesToRadians(-45))),
-                    forwardTrajectoryConfigSlow);
+                    path3Start, List.of(), path3End, forwardTrajectoryConfigSlow);
     public static Trajectory ball2ToLoad2 =
             TrajectoryGenerator.generateTrajectory(
-                    new Pose2d(
-                            AutoConstants.bottomLeftBall2,
-                            new Rotation2d(Units.degreesToRadians(0))),
-                    List.of(),
-                    AutoConstants.bottomLeftBall3,
-                    forwardTrajectoryConfigSlow);
+                    path4Start, List.of(), path4End, forwardTrajectoryConfigSlow);
     public static Trajectory load2ToShoot =
             TrajectoryGenerator.generateTrajectory(
-                    AutoConstants.bottomLeftBall3,
-                    List.of(),
-                    new Pose2d(
-                            AutoConstants.bottomLeftBall2,
-                            new Rotation2d(Units.degreesToRadians(45))),
-                    reverseTrajectoryConfigSlow);
+                    path5Start, List.of(), path5End, reverseTrajectoryConfigSlow);
 
     // 2 ball
     public static Trajectory upperTarmacToUpperBall1 =
