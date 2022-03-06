@@ -10,6 +10,7 @@ public interface IVisionCamera {
         public double captureTimestamp = 0.0;
         public double[] xCorners;
         public double[] yCorners;
+        public boolean validEntry = false;
     }
 
     public static class LEDMode extends NamedInt {

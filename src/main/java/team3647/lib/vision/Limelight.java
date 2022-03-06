@@ -19,11 +19,12 @@ public class Limelight implements IVisionCamera {
     private final double extraLatencySec;
     private final String ip;
     private final CamConstants kCamConstants;
+    private boolean validEntry = false;
 
     private double[] xCorners;
     private double[] yCorners;
     private double captureTimestamp = 0.0;
-    private VisionPipeline currentPipeline;
+    private VisionPipeline currentPipeline = new VisionPipeline(0, 960, 720);
 
     public enum Data {
         VALID_TARGET("tv"),
@@ -52,7 +53,7 @@ public class Limelight implements IVisionCamera {
         this.ip = ip;
         this.extraLatencySec = extraLatencySec;
         this.kCamConstants = camConstants;
-        table.getEntry(Data.RAW_CORNERS.str)
+        table.getEntry(Data.LATNECY_MS.str)
                 .addListener(this::processNTEvent, EntryListenerFlags.kUpdate);
     }
 
@@ -60,10 +61,18 @@ public class Limelight implements IVisionCamera {
         inputs.xCorners = xCorners;
         inputs.yCorners = yCorners;
         inputs.captureTimestamp = captureTimestamp;
+        inputs.validEntry = validEntry;
     }
 
     private void processNTEvent(EntryNotification notification) {
         double[] latestRawCorners = getDoubleArray(Data.RAW_CORNERS);
+        if (latestRawCorners == emptyDoubleArray) {
+            return;
+        }
+        validEntry = getDouble(Data.VALID_TARGET) == 1.0;
+        if (!validEntry) {
+            return;
+        }
         double timestamp =
                 Timer.getFPGATimestamp() - getDouble(Data.LATNECY_MS) / 1000.0 - extraLatencySec;
         synchronized (Limelight.this) {
@@ -102,7 +111,7 @@ public class Limelight implements IVisionCamera {
     }
 
     private double getDouble(Data key) {
-        return table.getEntry(key.str).getDouble(22);
+        return table.getEntry(key.str).getDouble(0.0);
     }
 
     public String toString() {

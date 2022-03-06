@@ -22,6 +22,7 @@ public class PhotonVisionCamera implements IVisionCamera {
     private double[] xCorners;
     private double[] yCorners;
     private double captureTimestamp = 0.0;
+
     private VisionPipeline currentPipeline = new VisionPipeline(0, 960, 720);
 
     public PhotonVisionCamera(String name, double extraLatencySec, CamConstants constants) {
@@ -38,6 +39,7 @@ public class PhotonVisionCamera implements IVisionCamera {
         inputs.xCorners = xCorners;
         inputs.yCorners = yCorners;
         inputs.captureTimestamp = captureTimestamp;
+        inputs.validEntry = true;
     }
 
     private void processNTEvent(EntryNotification notification) {

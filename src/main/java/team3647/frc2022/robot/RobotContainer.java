@@ -35,8 +35,8 @@ import team3647.lib.GroupPrinter;
 import team3647.lib.inputs.Joysticks;
 import team3647.lib.tracking.FlightDeck;
 import team3647.lib.tracking.RobotTracker;
+import team3647.lib.vision.Limelight;
 import team3647.lib.vision.MultiTargetTracker;
-import team3647.lib.vision.PhotonVisionCamera;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -375,7 +375,7 @@ public class RobotContainer {
 
     final VisionController m_visionController =
             new VisionController(
-                    new PhotonVisionCamera("gloworm", 0.06, VisionConstants.limelightConstants),
+                    new Limelight("10.36.47.15", 0.06, VisionConstants.limelightConstants),
                     VisionConstants.kCenterGoalTargetConstants,
                     m_flightDeck::addVisionObservation);
     final Superstructure m_superstructure =
