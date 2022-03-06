@@ -7,22 +7,15 @@ import java.util.function.DoubleSupplier;
 import team3647.frc2022.subsystems.Ballstopper;
 import team3647.frc2022.subsystems.ColumnBottom;
 import team3647.frc2022.subsystems.ColumnTop;
-import team3647.frc2022.subsystems.VerticalRollers;
 
 public class FeederCommands {
     private final ColumnBottom columnBottom;
     private final ColumnTop columnTop;
-    private final VerticalRollers verticalRollers;
     private final Ballstopper ballstopper;
 
-    public FeederCommands(
-            ColumnBottom columnBottom,
-            ColumnTop columnTop,
-            VerticalRollers verticalRollers,
-            Ballstopper ballstopper) {
+    public FeederCommands(ColumnBottom columnBottom, ColumnTop columnTop, Ballstopper ballstopper) {
         this.columnBottom = columnBottom;
         this.columnTop = columnTop;
-        this.verticalRollers = verticalRollers;
         this.ballstopper = ballstopper;
     }
 
@@ -45,23 +38,23 @@ public class FeederCommands {
     }
 
     public Command extendStopper() {
-        return new InstantCommand(ballstopper::extend);
+        return new InstantCommand(ballstopper::extend, ballstopper);
     }
 
     public Command retractStopper() {
         return new InstantCommand(ballstopper::retract);
     }
 
-    public Command runVerticalRollers(DoubleSupplier surfaceSpeed) {
-        return new FunctionalCommand(
-                () -> {},
-                () -> verticalRollers.setSurfaceVelocity(surfaceSpeed.getAsDouble()),
-                interrupted -> verticalRollers.setOpenloop(0),
-                () -> false,
-                verticalRollers);
-    }
+    // public Command runVerticalRollers(DoubleSupplier surfaceSpeed) {
+    //     return new FunctionalCommand(
+    //             () -> {},
+    //             () -> verticalRollers.setSurfaceVelocity(surfaceSpeed.getAsDouble()),
+    //             interrupted -> verticalRollers.setOpenloop(0),
+    //             () -> false,
+    //             verticalRollers);
+    // }
 
     public Command feedIn(DoubleSupplier columnSpeed, DoubleSupplier verticalSpeed) {
-        return runColumnBottom(columnSpeed).alongWith(runVerticalRollers(verticalSpeed));
+        return runColumnBottom(columnSpeed);
     }
 }

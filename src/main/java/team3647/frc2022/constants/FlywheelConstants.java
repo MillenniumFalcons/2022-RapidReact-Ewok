@@ -20,9 +20,9 @@ public final class FlywheelConstants {
     public static final double kMaxCurrent = 100;
     public static final double kMaxCurrentDurationSec = 1;
 
-    public static final double kS = 0.15; // 0.78509;
-    public static final double kV = 0.18; // 0.184;
-    public static final double kA = 0.052202;
+    public static final double kS = 0.23; // 0.78509;
+    public static final double kV = 0.23; // 0.184;
+    public static final double kA = 0.28;
     public static final SimpleMotorFeedforward kFeedForward =
             new SimpleMotorFeedforward(kS, kV, kA);
     public static final double kNominalVoltage = 10;
@@ -53,12 +53,57 @@ public final class FlywheelConstants {
         {Units.feetToMeters(14) + GlobalConstants.centerOffsetMeters, 22}
     };
 
+    public static final double[][] kVoltageMap = {
+        {2.21, 1},
+        {5, 1.27},
+        {6, 1.45},
+        {7, 1.55},
+        {8, 1.7},
+        {9, 1.85},
+        {10, 2.13},
+        {11, 2.3},
+        {12, 2.5},
+        {13, 2.7},
+        {14, 2.85},
+        {15, 3.09},
+        {16, 3.25},
+        {17, 3.45},
+        {18, 3.68},
+        {19, 3.85},
+        {20, 4},
+        {21, 4.25},
+        {22, 4.45},
+        {23, 4.65},
+        {24, 4.8},
+        {25, 4.95},
+        {26, 5.13},
+        {27, 5.3},
+        {28, 5.47},
+        {29, 5.7},
+        {30, 5.87},
+        {31, 6.1},
+        {32, 6.2},
+        {33, 6.37},
+        {34, 6.54},
+        {35, 6.71},
+        {36, 6.87},
+        {37, 7},
+        {38, 7.17},
+        {39, 7.34},
+        {40, 7.51},
+        {41, 7.68}
+    };
+    public static final double kBatterVelocity = 18;
+    public static final double kLowGoalVelocity = 7;
+
     public static InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble>
             kFlywheelAutoAimMap = new InterpolatingTreeMap<>();
-    public static double constantVelocityMpS = 5;
+    public static InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble> kFlywheelVoltage =
+            new InterpolatingTreeMap<>();
+    public static double constantVelocityMpS = kLowGoalVelocity;
 
     static {
-        kMasterConfig.slot0.kP = 1;
+        kMasterConfig.slot0.kP = 0.5;
         kMasterConfig.slot0.kI = 0;
         kMasterConfig.slot0.kD = 0;
         kMasterConfig.slot0.kF = 0;
@@ -71,10 +116,17 @@ public final class FlywheelConstants {
         kMasterConfig.supplyCurrLimit.triggerThresholdTime = kMaxCurrentDurationSec;
         kMaster.configAllSettings(kMasterConfig, GlobalConstants.kTimeoutMS);
         kFollower.configAllSettings(kMasterConfig, GlobalConstants.kTimeoutMS);
+        kMaster.enableVoltageCompensation(true);
+        kFollower.enableVoltageCompensation(true);
         kMaster.setInverted(kMasterInverted);
 
         for (double[] pair : kFlywheelMap) {
             kFlywheelAutoAimMap.put(
+                    new InterpolatingDouble(pair[0]), new InterpolatingDouble(pair[1]));
+        }
+
+        for (double[] pair : kVoltageMap) {
+            kFlywheelVoltage.put(
                     new InterpolatingDouble(pair[0]), new InterpolatingDouble(pair[1]));
         }
     }
@@ -83,6 +135,11 @@ public final class FlywheelConstants {
         InterpolatingDouble d = kFlywheelAutoAimMap.getInterpolated(new InterpolatingDouble(range));
 
         return d == null ? 6000 : MathUtil.clamp(d.value, 14, 35);
+    }
+
+    public static double getFlywheelVoltage(double velocity) {
+        InterpolatingDouble d = kFlywheelVoltage.getInterpolated(new InterpolatingDouble(velocity));
+        return d == null ? kFeedForward.calculate(velocity) : d.value;
     }
 
     private FlywheelConstants() {}

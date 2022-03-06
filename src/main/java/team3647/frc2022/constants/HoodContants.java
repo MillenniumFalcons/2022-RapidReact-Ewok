@@ -39,6 +39,7 @@ public class HoodContants {
     public static final double kNominalVoltage = 11;
 
     public static final double[][] kHoodMap = {
+        {Units.feetToMeters(0) + GlobalConstants.centerOffsetMeters, 16},
         {Units.feetToMeters(2) + GlobalConstants.centerOffsetMeters, 18},
         {Units.feetToMeters(4) + GlobalConstants.centerOffsetMeters, 22.5},
         // {Units.feetToMeters(8) + GlobalConstants.centerOffsetMeters, 27.97},
@@ -57,6 +58,8 @@ public class HoodContants {
 
     public static final InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble>
             kHoodAutoAimMap = new InterpolatingTreeMap<>();
+    public static final double kBatterAngle = 15.6;
+    public static final double kLowGoalAngle = 31;
 
     static {
         kMasterConfig.slot0.kP = 0.21;

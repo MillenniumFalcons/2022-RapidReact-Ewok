@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import team3647.lib.TalonFXSubsystem;
 
 public class ColumnTop extends TalonFXSubsystem {
+
     private final DigitalInput topBanner;
     private final SimpleMotorFeedforward ff;
 

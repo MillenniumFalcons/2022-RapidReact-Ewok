@@ -21,7 +21,7 @@ public final class ClimberConstants {
     public static final double kNominalVoltage = 12;
     public static final double kVoltageToHoldRobot = 5;
 
-    public static final double kGearboxReduction = 10 / 40.0 * 24 / 40.0 * 24 / 72.0;
+    public static final double kGearboxReduction = 12 / 40.0 * 24 / 40.0 * 24 / 72.0;
     public static final double kOutputRotationDiameter = Units.inchesToMeters(1.25);
     public static final double kOutputRotationMeters =
             kOutputRotationDiameter * Math.PI * kGearboxReduction;
@@ -29,7 +29,7 @@ public final class ClimberConstants {
             kOutputRotationMeters / GlobalConstants.kFalconTicksPerRotation;
     public static final double kNativeVelToMpS =
             10 * kOutputRotationMeters / GlobalConstants.kFalconTicksPerRotation;
-    public static final double kMaxVelocity = Units.inchesToMeters(16);
+    public static final double kMaxVelocity = Units.inchesToMeters(18);
     public static final double kMaxAcceleration = Units.inchesToMeters(40);
 
     public static final double kRevSoftLimit = 0;

@@ -5,8 +5,12 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ScheduleCommand;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import team3647.frc2022.commands.ClimberCommands;
 import team3647.frc2022.commands.ColumnTopCommands;
@@ -16,12 +20,14 @@ import team3647.frc2022.commands.HoodCommands;
 import team3647.frc2022.commands.IntakeCommands;
 import team3647.frc2022.commands.turret.AimTurret;
 import team3647.frc2022.commands.turret.TurretCommands;
+import team3647.frc2022.constants.ColumnTopConstants;
 import team3647.frc2022.constants.FlywheelConstants;
 import team3647.frc2022.constants.HoodContants;
 import team3647.frc2022.constants.LEDConstants;
 import team3647.frc2022.states.ClimberState;
 import team3647.frc2022.states.RobotState;
 import team3647.frc2022.states.ShooterState;
+import team3647.frc2022.states.TurretState;
 import team3647.lib.tracking.FlightDeck;
 import team3647.lib.vision.AimingParameters;
 
@@ -37,7 +43,6 @@ public class Superstructure {
             FlightDeck deck,
             PivotClimber m_climber,
             ColumnBottom m_columnBottom,
-            VerticalRollers m_verticalRollers,
             ColumnTop m_columnTop,
             Intake m_intake,
             Turret m_turret,
@@ -48,7 +53,6 @@ public class Superstructure {
         this.deck = deck;
         this.m_climber = m_climber;
         this.m_columnBottom = m_columnBottom;
-        this.m_verticalRollers = m_verticalRollers;
         this.m_columnTop = m_columnTop;
         this.m_intake = m_intake;
         this.m_turret = m_turret;
@@ -61,73 +65,85 @@ public class Superstructure {
         hoodCommands = new HoodCommands(m_hood);
         climberCommands = new ClimberCommands(m_climber);
         columnTopCommands = new ColumnTopCommands(m_columnTop);
-        feederCommands =
-                new FeederCommands(m_columnBottom, m_columnTop, m_verticalRollers, m_ballstopper);
+        feederCommands = new FeederCommands(m_columnBottom, m_columnTop, m_ballstopper);
         intakeCommands = new IntakeCommands(m_intake);
         turretCommands = new TurretCommands(m_turret);
         isClimbing = new Trigger(this::isClimbing);
         hasTargetTrigger = new Trigger(this::hasTarget);
-        readyToShootTrigger = new Trigger(this::getFlywheelReady);
+        flywheelOnlyReady = new Trigger(() -> getFlywheelReady(this::getAimedFlywheelSurfaceVel));
         newTargetTrigger = new Trigger(this::hasNewTarget);
         isShooting = new Trigger(this::isShooting);
-
-        hasTargetTrigger
-                .negate()
-                .whenActive(() -> m_statusLED.setAnimation(LEDConstants.kBlinkRed), m_statusLED);
-        hasTargetTrigger
-                .and(newTargetTrigger)
-                .and(readyToShootTrigger)
-                .and(isClimbing.negate())
-                .whenActive(() -> m_statusLED.setAnimation(LEDConstants.kBlinkGreen), m_statusLED);
-        hasTargetTrigger
-                .and(newTargetTrigger)
-                .and(isClimbing.negate())
-                .and(readyToShootTrigger.negate())
-                .whenActive(() -> m_statusLED.setAnimation(LEDConstants.kSolidWhite), m_statusLED);
-        hasTargetTrigger
-                .and(isClimbing.negate())
-                .and(newTargetTrigger.negate())
-                .and(readyToShootTrigger.negate())
-                .whenActive(() -> m_statusLED.setAnimation(LEDConstants.kBlinkYellow), m_statusLED);
-        isClimbing.whenActive(
-                () -> m_statusLED.setAnimation(LEDConstants.kSolidYellow), m_statusLED);
+        isAiming = new Trigger(this::isAiming);
+        fullyReadyToShoot = new Trigger(this::getReadyToAutoShoot);
     }
 
-    public Command accelerateAndShoot() {
+    public Command autoAccelerateAndShoot() {
+        return accelerateAndShoot(
+                this::getAimedFlywheelSurfaceVel,
+                this::getAimedKickerVelocity,
+                this::getReadyToAutoShoot);
+    }
+
+    public Command batterAccelerateAndShoot() {
+        return new WaitUntilCommand(() -> Math.abs(m_turret.getAngle() + 180) < 1)
+                .andThen(
+                        accelerateAndShoot(
+                                () -> FlywheelConstants.kBatterVelocity,
+                                () -> ColumnTopConstants.kBatterVelocity,
+                                this::getReadyToBatter));
+    }
+
+    public Command lowAccelerateAndShoot() {
+        return new WaitUntilCommand(() -> Math.abs(m_turret.getAngle() - 0) < 1)
+                .andThen(
+                        accelerateAndShoot(
+                                () -> FlywheelConstants.kLowGoalVelocity,
+                                () -> ColumnTopConstants.kLowGoalVelocity,
+                                this::getReadyToLowGoal));
+    }
+
+    public Command accelerateAndShoot(
+            DoubleSupplier flywhelVelocity,
+            DoubleSupplier kickerVelocity,
+            BooleanSupplier readyToShoot) {
         return new InstantCommand(() -> currentState.shooterState = ShooterState.SHOOT)
                 .alongWith(
-                        flywheelCommands.variableVelocity(this::getAimedFlywheelSurfaceVel),
+                        flywheelCommands.variableVelocity(flywhelVelocity),
                         columnTopCommands
                                 .getRunOutwards()
                                 .withTimeout(0.2)
-                                .andThen(
-                                        columnTopCommands.getGoVariableVelocity(
-                                                this::getAimedKickerVelocity)),
+                                .andThen(columnTopCommands.getGoVariableVelocity(kickerVelocity)),
                         feederCommands
                                 .runColumnBottomOut()
                                 .withTimeout(0.2)
                                 .andThen(
-                                        waitForShooter(),
+                                        new WaitUntilCommand(readyToShoot),
                                         feederCommands.retractStopper(),
-                                        feederCommands
-                                                .feedIn(() -> 2.5, () -> 2.5)
-                                                .withInterrupt(this::getNotReadyToShoot),
+                                        waitUntilAndTimeout(() -> !readyToShoot.getAsBoolean(), 0.5)
+                                                .deadlineWith(
+                                                        feederCommands.feedIn(
+                                                                () -> 2.5, () -> 2.5)),
                                         feederCommands.extendStopper(),
-                                        waitForShooter(),
+                                        new WaitUntilCommand(readyToShoot),
                                         feederCommands.retractStopper(),
-                                        feederCommands
-                                                .feedIn(() -> 2.5, () -> 2.5)
-                                                .withInterrupt(this::getNotReadyToShoot),
+                                        waitUntilAndTimeout(() -> !readyToShoot.getAsBoolean(), 0.5)
+                                                .deadlineWith(
+                                                        feederCommands.feedIn(
+                                                                () -> 2.5, () -> 2.5)),
                                         feederCommands.extendStopper()));
     }
 
     public Command autoClimbSequnce() {
         return new ConditionalCommand(
                         climberCommands.toNextRung(),
-                        new InstantCommand(() -> currentState.climberState = ClimberState.CLIMB)
+                        new InstantCommand(
+                                        () -> {
+                                            currentState.climberState = ClimberState.CLIMB;
+                                            currentState.turretState = TurretState.HOLD_POSITION;
+                                        })
                                 .andThen(
                                         turretCommands
-                                                .motionMagic(180)
+                                                .motionMagic(0)
                                                 .andThen(climberCommands.deploy())),
                         this::isClimbing)
                 .alongWith(new ScheduleCommand(flywheelCommands.stop()));
@@ -157,10 +173,12 @@ public class Superstructure {
     public Command aimTurret() {
         return new ConditionalCommand(
                 new InstantCommand(),
-                new AimTurret(
-                        m_turret,
-                        this::getAimingParameters,
-                        deck.getTracker()::getMeasuredVelocity),
+                new InstantCommand(() -> this.currentState.turretState = TurretState.AIM)
+                        .andThen(
+                                new AimTurret(
+                                        m_turret,
+                                        this::getAimingParameters,
+                                        deck.getTracker()::getMeasuredVelocity)),
                 this::isClimbing);
     }
 
@@ -169,10 +187,6 @@ public class Superstructure {
                 climberCommands.openLoopControl(percentOut),
                 new InstantCommand(),
                 this::isClimbing);
-    }
-
-    public Command waitForShooter() {
-        return new WaitUntilCommand(this::getReadyToShoot);
     }
 
     public Command deployAndRunIntake(DoubleSupplier surfaceVelocity) {
@@ -191,6 +205,27 @@ public class Superstructure {
                 .andThen(feederCommands.feedIn(surfaceVelocity, surfaceVelocity));
     }
 
+    public Command waitUntilAndTimeout(BooleanSupplier interrupt, double timeoutSec) {
+        Timer m_timer = new Timer();
+        return new Command() {
+            @Override
+            public void initialize() {
+                m_timer.reset();
+                m_timer.start();
+            }
+
+            @Override
+            public boolean isFinished() {
+                return m_timer.hasElapsed(timeoutSec) && interrupt.getAsBoolean();
+            }
+
+            @Override
+            public Set<Subsystem> getRequirements() {
+                return new HashSet<>();
+            }
+        };
+    }
+
     public AimingParameters getAimingParameters() {
         return aimingParameters;
     }
@@ -201,13 +236,11 @@ public class Superstructure {
             flywheelVelocity = FlywheelConstants.getFlywheelRPM(aimingParameters.getRangeMeters());
             kickerVelocity = flywheelVelocity * 0.5;
             hoodAngle = HoodContants.getHoodAngle(aimingParameters.getRangeMeters());
-            System.out.println(
-                    (Timer.getFPGATimestamp() - aimingParameters.getLastSeenTimestamp()) < 5);
         }
     }
 
     public boolean isClimbing() {
-        return RobotState.CLIMB.equals(currentState);
+        return currentState.climberState == ClimberState.CLIMB;
     }
 
     public boolean hasTarget() {
@@ -220,6 +253,9 @@ public class Superstructure {
 
     public boolean hasNewTarget() {
         var aimingParams = getAimingParameters();
+        if (aimingParams == null) {
+            return false;
+        }
         return (Timer.getFPGATimestamp() - aimingParams.getLastSeenTimestamp()) < 5;
     }
 
@@ -230,20 +266,38 @@ public class Superstructure {
         return aimingParameters.getRangeMeters();
     }
 
-    public boolean getReadyToShoot() {
-        return Math.abs(m_flywheel.getVelocity() - getAimedFlywheelSurfaceVel()) < 0.1
-                && Math.abs(m_columnTop.getVelocity() - getAimedKickerVelocity()) < 0.5
-                && Math.abs(m_hood.getAngle() - getAimedHoodAngle()) < 0.1
+    public boolean getReadyToShoot(
+            DoubleSupplier flywheel, DoubleSupplier kicker, DoubleSupplier hood) {
+        return getFlywheelReady(flywheel)
+                && Math.abs(m_columnTop.getVelocity() - kicker.getAsDouble()) < 0.5
+                && Math.abs(m_hood.getAngle() - hood.getAsDouble()) < 0.1
                 && Math.abs(m_flywheel.getVelocity()) > 5
                 && Math.abs(m_columnTop.getVelocity()) > 2;
     }
 
-    public boolean getFlywheelReady() {
-        return Math.abs(m_flywheel.getVelocity() - getAimedFlywheelSurfaceVel()) < 0.1;
+    public boolean getReadyToLowGoal() {
+        return getReadyToShoot(
+                () -> FlywheelConstants.kLowGoalVelocity,
+                () -> ColumnTopConstants.kLowGoalVelocity,
+                () -> HoodContants.kLowGoalAngle);
     }
 
-    public boolean getNotReadyToShoot() {
-        return !getReadyToShoot();
+    public boolean getReadyToBatter() {
+        return getReadyToShoot(
+                () -> FlywheelConstants.kBatterVelocity,
+                () -> ColumnTopConstants.kBatterVelocity,
+                () -> HoodContants.kBatterAngle);
+    }
+
+    public boolean getReadyToAutoShoot() {
+        return getReadyToShoot(
+                this::getAimedFlywheelSurfaceVel,
+                this::getAimedKickerVelocity,
+                this::getAimedHoodAngle);
+    }
+
+    public boolean getFlywheelReady(DoubleSupplier expectedVelocity) {
+        return Math.abs(m_flywheel.getVelocity() - expectedVelocity.getAsDouble()) < 0.1;
     }
 
     public double getAimedFlywheelSurfaceVel() {
@@ -262,14 +316,100 @@ public class Superstructure {
         return currentState.shooterState == ShooterState.SHOOT;
     }
 
+    public boolean isAiming() {
+        return currentState.turretState == TurretState.AIM;
+    }
+
     public double getIntakeSurfaceVel() {
         return 0.0;
+    }
+
+    public void configLEDTriggers() {
+        var newTargetShooting =
+                hasTargetTrigger
+                        .and(isClimbing.negate())
+                        .and(newTargetTrigger)
+                        .and(fullyReadyToShoot)
+                        .and(flywheelOnlyReady)
+                        .and(isAiming);
+        var newTargetReady =
+                hasTargetTrigger
+                        .and(isClimbing.negate())
+                        .and(newTargetTrigger)
+                        .and(fullyReadyToShoot.negate())
+                        .and(flywheelOnlyReady)
+                        .and(isAiming);
+        var newTargetNotReady =
+                hasTargetTrigger
+                        .and(isClimbing.negate())
+                        .and(newTargetTrigger)
+                        .and(fullyReadyToShoot.negate())
+                        .and(flywheelOnlyReady.negate())
+                        .and(isAiming.negate());
+        var newTargetNotReadyAiming =
+                hasTargetTrigger
+                        .and(isClimbing.negate())
+                        .and(newTargetTrigger)
+                        .and(fullyReadyToShoot.negate())
+                        .and(flywheelOnlyReady.negate())
+                        .and(isAiming);
+
+        var oldTargetShooting =
+                hasTargetTrigger
+                        .and(isClimbing.negate())
+                        .and(newTargetTrigger.negate())
+                        .and(fullyReadyToShoot)
+                        .and(flywheelOnlyReady)
+                        .and(isAiming);
+        var oldTargetReady =
+                hasTargetTrigger
+                        .and(isClimbing.negate())
+                        .and(newTargetTrigger.negate())
+                        .and(fullyReadyToShoot.negate())
+                        .and(flywheelOnlyReady)
+                        .and(isAiming);
+        var oldTargetNotReadyAiming =
+                hasTargetTrigger
+                        .and(isClimbing.negate())
+                        .and(newTargetTrigger.negate())
+                        .and(fullyReadyToShoot.negate())
+                        .and(flywheelOnlyReady.negate())
+                        .and(isAiming);
+        var oldTargetNotReady =
+                hasTargetTrigger
+                        .and(isClimbing.negate())
+                        .and(newTargetTrigger.negate())
+                        .and(fullyReadyToShoot.negate())
+                        .and(flywheelOnlyReady.negate())
+                        .and(isAiming.negate());
+        hasTargetTrigger
+                .negate()
+                .whenActive(() -> m_statusLED.setAnimation(LEDConstants.kBlinkRed), m_statusLED);
+
+        newTargetNotReady.whenActive(
+                () -> m_statusLED.setAnimation(LEDConstants.kSolidWhite), m_statusLED);
+        newTargetNotReadyAiming.whenActive(
+                () -> m_statusLED.setAnimation(LEDConstants.kBlinkWhiteFast), m_statusLED);
+        newTargetReady.whenActive(
+                () -> m_statusLED.setAnimation(LEDConstants.kBlinkGreen), m_statusLED);
+        newTargetShooting.whenActive(
+                () -> m_statusLED.setAnimation(LEDConstants.kSolidkGreen), m_statusLED);
+
+        oldTargetNotReady.whenActive(
+                () -> m_statusLED.setAnimation(LEDConstants.kSolidYellow), m_statusLED);
+        oldTargetNotReadyAiming.whenActive(
+                () -> m_statusLED.setAnimation(LEDConstants.kBlinkYellow), m_statusLED);
+        oldTargetReady.whenActive(
+                () -> m_statusLED.setAnimation(LEDConstants.kBlinkOrange), m_statusLED);
+        oldTargetShooting.whenActive(
+                () -> m_statusLED.setAnimation(LEDConstants.kSolidOrange), m_statusLED);
+
+        isClimbing.whenActive(() -> m_statusLED.setAnimation(LEDConstants.kSolidPink), m_statusLED);
     }
 
     private final FlightDeck deck;
     private final PivotClimber m_climber;
     private final ColumnBottom m_columnBottom;
-    private final VerticalRollers m_verticalRollers;
     private final ColumnTop m_columnTop;
     private final Intake m_intake;
     private final Turret m_turret;
@@ -286,9 +426,11 @@ public class Superstructure {
     public final FeederCommands feederCommands;
     public final IntakeCommands intakeCommands;
 
-    public final Trigger readyToShootTrigger;
+    public final Trigger flywheelOnlyReady;
     public final Trigger newTargetTrigger;
     public final Trigger hasTargetTrigger;
     public final Trigger isShooting;
     public final Trigger isClimbing;
+    public final Trigger fullyReadyToShoot;
+    public final Trigger isAiming;
 }

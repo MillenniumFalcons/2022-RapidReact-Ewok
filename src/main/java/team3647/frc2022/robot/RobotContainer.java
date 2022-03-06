@@ -17,6 +17,7 @@ import team3647.frc2022.autonomous.AutoConstants;
 import team3647.frc2022.commands.ArcadeDrive;
 import team3647.frc2022.constants.*;
 import team3647.frc2022.states.ShooterState;
+import team3647.frc2022.states.TurretState;
 import team3647.frc2022.subsystems.Ballstopper;
 import team3647.frc2022.subsystems.ClimberArm;
 import team3647.frc2022.subsystems.ColumnBottom;
@@ -29,7 +30,6 @@ import team3647.frc2022.subsystems.PivotClimber;
 import team3647.frc2022.subsystems.StatusLED;
 import team3647.frc2022.subsystems.Superstructure;
 import team3647.frc2022.subsystems.Turret;
-import team3647.frc2022.subsystems.VerticalRollers;
 import team3647.frc2022.subsystems.vision.VisionController;
 import team3647.lib.GroupPrinter;
 import team3647.lib.inputs.Joysticks;
@@ -54,7 +54,6 @@ public class RobotContainer {
                 m_printer,
                 m_columnTop,
                 m_columnBottom,
-                m_verticalRollers,
                 m_intake,
                 m_flywheel,
                 m_pivotClimber,
@@ -78,6 +77,7 @@ public class RobotContainer {
         m_drivetrain.setOdometry(
                 AutoConstants.startingStraight, AutoConstants.startingStraight.getRotation());
         runningAutoSequence = autoCommands.getStraightTurn();
+        m_ballstopper.extend();
     }
 
     private void configureDefaultCommands() {
@@ -89,6 +89,8 @@ public class RobotContainer {
                         () -> mainController.rightJoyStickPress.get()));
         m_hood.setDefaultCommand(
                 m_superstructure.hoodCommands.autoAdjustAngle(m_superstructure::getAimedHoodAngle));
+        m_ballstopper.setDefaultCommand(
+                m_superstructure.feederCommands.extendStopper().perpetually());
         m_flywheel.setDefaultCommand(
                 new InstantCommand(
                                 () ->
@@ -97,41 +99,66 @@ public class RobotContainer {
                         .andThen(
                                 m_superstructure.flywheelCommands.waitToSpinDownThenHold(
                                         FlywheelConstants.constantVelocityMpS)));
-        m_turret.setDefaultCommand(m_superstructure.turretCommands.holdPositionAtCall());
+        m_turret.setDefaultCommand(
+                new InstantCommand(
+                                () ->
+                                        m_superstructure.currentState.turretState =
+                                                TurretState.HOLD_POSITION)
+                        .andThen(m_superstructure.turretCommands.holdPositionAtCall()));
         m_pivotClimber.setDefaultCommand(new RunCommand(m_pivotClimber::end, m_pivotClimber));
         m_intake.setDefaultCommand(
                 m_superstructure
                         .intakeCommands
                         .openLoopAndStop(0.3)
-                        .withTimeout(1)
-                        .andThen(new RunCommand(() -> m_intake.setOpenloop(0), m_intake)));
+                        .withTimeout(0.5)
+                        .andThen(
+                                new RunCommand(
+                                        () -> m_intake.setOpenloop(coController.getLeftStickY()),
+                                        m_intake)));
         m_columnBottom.setDefaultCommand(
                 m_superstructure
                         .feederCommands
                         .feedIn(() -> 2.5, () -> 2.5)
-                        .withTimeout(1)
+                        .withTimeout(0.5)
                         .andThen(
                                 new RunCommand(
                                         () -> {
-                                            m_columnBottom.setOpenloop(0);
-                                            m_verticalRollers.setOpenloop(0);
+                                            m_columnBottom.setOpenloop(
+                                                    coController.getLeftStickY());
                                         },
-                                        m_columnBottom,
-                                        m_verticalRollers)));
+                                        m_columnBottom)));
     }
 
     private void configureButtonBindings() {
-        mainController.rightTrigger.whileActiveOnce(m_superstructure.accelerateAndShoot());
-        mainController.rightTrigger.whileActiveOnce(m_superstructure.aimTurret());
-        mainController.rightTrigger.whileActiveOnce(
-                m_superstructure.intakeCommands.runOpenLoop(.6).withTimeout(0.5));
+        mainController.leftTrigger.whileActiveOnce(
+                m_superstructure.flywheelCommands.variableVelocity(this::getShooterSpeed));
+        mainController
+                .rightTrigger
+                .whileActiveOnce(m_superstructure.autoAccelerateAndShoot())
+                .whileActiveOnce(m_superstructure.aimTurret())
+                .whileActiveOnce(m_superstructure.intakeCommands.runOpenLoop(.6).withTimeout(0.5));
 
-        // mainController.buttonY.whileActiveOnce(new InstantCommand()); // Batter shot spinup
-        mainController.buttonY.whileActiveOnce(m_superstructure.turretCommands.motionMagic(0));
-
+        mainController
+                .buttonA
+                .whileActiveOnce(m_superstructure.batterAccelerateAndShoot())
+                .whileActiveOnce(m_superstructure.turretCommands.motionMagic(-180).perpetually())
+                .whileActiveOnce(
+                        m_superstructure
+                                .hoodCommands
+                                .motionMagic(HoodContants.kBatterAngle)
+                                .perpetually());
+        mainController
+                .buttonY
+                .whileActiveOnce(m_superstructure.lowAccelerateAndShoot())
+                .whileActiveOnce(m_superstructure.turretCommands.motionMagic(0).perpetually())
+                .whileActiveOnce(
+                        m_superstructure
+                                .hoodCommands
+                                .motionMagic(HoodContants.kLowGoalAngle)
+                                .perpetually());
         mainController.buttonX.whenPressed(m_superstructure.autoClimbSequnce());
         mainController.leftBumper.whenHeld(m_superstructure.climberManualControl(() -> 0.5));
-        mainController.rightBumper.whenHeld(m_superstructure.climberManualControl(() -> -0.5));
+        mainController.rightBumper.whenHeld(m_superstructure.climberManualControl(() -> -0.6));
         mainController.dPadUp.whenHeld(m_superstructure.retractClimberIfClimbing());
         mainController.dPadDown.whenHeld(m_superstructure.extendClimberIfClimbing());
 
@@ -170,7 +197,7 @@ public class RobotContainer {
         m_printer.addDouble("Shooter velocity", m_flywheel::getVelocity);
         m_printer.addDouble("Needed velocity", m_superstructure::getAimedFlywheelSurfaceVel);
         m_printer.addDouble("kicker Needed velocity", m_superstructure::getAimedKickerVelocity);
-        m_printer.addBoolean("Ready to Shoot", m_superstructure::getReadyToShoot);
+        m_printer.addBoolean("Ready to Shoot", m_superstructure::getReadyToAutoShoot);
         m_printer.addDouble("Kicker Velocity", m_columnTop::getVelocity);
         m_printer.addDouble("Shooter current", m_flywheel::getMasterCurrent);
         m_printer.addDouble("Kicker current", m_columnTop::getMasterCurrent);
@@ -213,7 +240,7 @@ public class RobotContainer {
     public double calculateIntakeSurfaceSpeed() {
         double leftVel = Math.abs(m_drivetrain.getLeftVelocity());
         double rightVel = Math.abs(m_drivetrain.getRightVelocity());
-        double max = Math.max(leftVel, rightVel) * 1.5;
+        double max = Math.max(leftVel, rightVel) * 2;
         return max < 3 ? 3 : max;
     }
 
@@ -271,15 +298,6 @@ public class RobotContainer {
                     ColumnBottomConstants.kFeedForward);
 
     final Ballstopper m_ballstopper = new Ballstopper(ColumnBottomConstants.kBallstopperPiston);
-
-    final VerticalRollers m_verticalRollers =
-            new VerticalRollers(
-                    VerticalRollersConstants.kVerticalRollersMotor,
-                    VerticalRollersConstants.kNativeVelToSurfaceMpS,
-                    VerticalRollersConstants.kPosConverstion,
-                    VerticalRollersConstants.kNominalVoltage,
-                    GlobalConstants.kDt,
-                    VerticalRollersConstants.kFeedForward);
 
     final ColumnTop m_columnTop =
             new ColumnTop(
@@ -365,7 +383,6 @@ public class RobotContainer {
                     m_flightDeck,
                     m_pivotClimber,
                     m_columnBottom,
-                    m_verticalRollers,
                     m_columnTop,
                     m_intake,
                     m_turret,

@@ -33,6 +33,9 @@ public final class ColumnTopConstants {
     public static final DigitalInput kTopBanner =
             new DigitalInput(GlobalConstants.ColumnTopIds.kTopSensorPin);
 
+    public static final double kBatterVelocity = 5;
+    public static final double kLowGoalVelocity = 3;
+
     static {
         kMasterConfig.slot0.kP = 0.1;
         kMasterConfig.slot0.kI = 0;
