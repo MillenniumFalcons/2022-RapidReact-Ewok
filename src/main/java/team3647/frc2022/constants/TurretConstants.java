@@ -28,8 +28,8 @@ public class TurretConstants {
     public static final double kV = 0.0157;
     public static final double kA = 0.000324;
 
-    public static final double kMaxVelocityDegPs = 90;
-    public static final double kMaxAccelerationDegPss = 90;
+    public static final double kMaxVelocityDegPs = 180;
+    public static final double kMaxAccelerationDegPss = 180;
     public static final double kMaxVelocityTicks = kMaxVelocityDegPs / kFalconVelocityToDegpS;
     public static final double kMaxAccelerationTicks =
             kMaxAccelerationDegPss / kFalconVelocityToDegpS;
