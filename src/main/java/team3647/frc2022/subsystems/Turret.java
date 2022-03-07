@@ -54,22 +54,25 @@ public class Turret extends TalonFXSubsystem {
         } else if (angle > maxAngle) {
             angle -= 360;
         }
+        profile =
+                new TrapezoidProfile(
+                        this.profileContraints,
+                        new TrapezoidProfile.State(getPosition(), getVelocity()),
+                        new TrapezoidProfile.State(angle, velocity));
 
         if (angle != prevAngle || Math.abs(prevVelocity - velocity) > 0.001) {
-            profile =
-                    new TrapezoidProfile(
-                            this.profileContraints,
-                            new TrapezoidProfile.State(getPosition(), getVelocity()),
-                            new TrapezoidProfile.State(angle, velocity));
             startTime = Timer.getFPGATimestamp();
         }
-        var state = profile.calculate(Timer.getFPGATimestamp() - startTime);
+        var state = profile.calculate(0.02);
         // Multiply the static friction volts by -1 if our target position is less than current
         // position; if we need to move backwards, the volts needs to be negative
         double ffVolts = ff.calculate(state.velocity);
-        if (Math.abs(ffVolts) < 0.000001) {
-            ffVolts = kS * Math.signum(state.position - getPosition());
-        }
+        // if (Math.abs(ffVolts) < 0.000001) {
+        //     ffVolts = kS * Math.signum(state.position - getPosition());
+        // }
+
+        System.out.println("Position: " + state.position);
+        System.out.println("Velocity: " + state.velocity);
 
         setPosition(state.position, ffVolts);
     }

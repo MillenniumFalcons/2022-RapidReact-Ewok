@@ -113,7 +113,10 @@ public class RobotContainer {
                         .withTimeout(0.5)
                         .andThen(
                                 new RunCommand(
-                                        () -> m_intake.setOpenloop(coController.getLeftStickY()),
+                                        () -> {
+                                            var leftY = coController.getLeftStickY();
+                                            m_intake.setOpenloop(leftY * leftY * leftY);
+                                        },
                                         m_intake)));
         m_columnBottom.setDefaultCommand(
                 m_superstructure
@@ -123,8 +126,8 @@ public class RobotContainer {
                         .andThen(
                                 new RunCommand(
                                         () -> {
-                                            m_columnBottom.setOpenloop(
-                                                    coController.getLeftStickY());
+                                            var leftY = coController.getLeftStickY();
+                                            m_columnBottom.setOpenloop(leftY * leftY * leftY);
                                         },
                                         m_columnBottom)));
     }
@@ -139,7 +142,7 @@ public class RobotContainer {
                 .whileActiveOnce(m_superstructure.intakeCommands.runOpenLoop(.6).withTimeout(0.5));
 
         mainController
-                .buttonA
+                .buttonY
                 .whileActiveOnce(m_superstructure.batterAccelerateAndShoot())
                 .whileActiveOnce(m_superstructure.turretCommands.motionMagic(-180).perpetually())
                 .whileActiveOnce(
@@ -148,7 +151,7 @@ public class RobotContainer {
                                 .motionMagic(HoodContants.kBatterAngle)
                                 .perpetually());
         mainController
-                .buttonY
+                .buttonA
                 .whileActiveOnce(m_superstructure.lowAccelerateAndShoot())
                 .whileActiveOnce(m_superstructure.turretCommands.motionMagic(0).perpetually())
                 .whileActiveOnce(

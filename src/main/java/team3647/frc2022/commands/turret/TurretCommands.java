@@ -23,7 +23,7 @@ public class TurretCommands {
     public Command motionMagic(double angle) {
         return new FunctionalCommand(
                 () -> {},
-                () -> m_turret.setAngleMotionMagic(angle),
+                () -> m_turret.setAngle(angle, 0),
                 interrupted -> {},
                 () -> Math.abs(m_turret.getAngle() - angle) < 1,
                 m_turret);

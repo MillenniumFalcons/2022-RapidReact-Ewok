@@ -121,15 +121,13 @@ public class Superstructure {
                                         feederCommands.retractStopper(),
                                         waitUntilAndTimeout(() -> !readyToShoot.getAsBoolean(), 0.5)
                                                 .deadlineWith(
-                                                        feederCommands.feedIn(
-                                                                () -> 2.5, () -> 2.5)),
+                                                        feederCommands.feedIn(() -> 1.5, () -> 1)),
                                         feederCommands.extendStopper(),
-                                        new WaitUntilCommand(readyToShoot),
+                                        waitUntilAndTimeout(readyToShoot, 0.4),
                                         feederCommands.retractStopper(),
-                                        waitUntilAndTimeout(() -> !readyToShoot.getAsBoolean(), 0.5)
+                                        waitUntilAndTimeout(() -> !readyToShoot.getAsBoolean(), 2)
                                                 .deadlineWith(
-                                                        feederCommands.feedIn(
-                                                                () -> 2.5, () -> 2.5)),
+                                                        feederCommands.feedIn(() -> 4, () -> 1)),
                                         feederCommands.extendStopper()));
     }
 

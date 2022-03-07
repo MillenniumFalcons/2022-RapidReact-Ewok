@@ -59,19 +59,19 @@ public class Trajectories {
     // 5 ball
     public static Trajectory tarmacToBottomLeftBall1 =
             TrajectoryGenerator.generateTrajectory(
-                    path1Start, List.of(), path1End, forwardTrajectoryConfigSlow);
+                    path1Start, List.of(), path1End, reverseTrajectoryConfigSlow);
     public static Trajectory bottomLeftBall1ToTarmac =
             TrajectoryGenerator.generateTrajectory(
-                    path2Start, List.of(), path2End, reverseTrajectoryConfigSlow);
+                    path2Start, List.of(), path2End, forwardTrajectoryConfigSlow);
     public static Trajectory tarmacToBall2 =
             TrajectoryGenerator.generateTrajectory(
-                    path3Start, List.of(), path3End, forwardTrajectoryConfigSlow);
+                    path3Start, List.of(), path3End, reverseTrajectoryConfigSlow);
     public static Trajectory ball2ToLoad2 =
             TrajectoryGenerator.generateTrajectory(
-                    path4Start, List.of(), path4End, forwardTrajectoryConfigSlow);
+                    path4Start, List.of(), path4End, reverseTrajectoryConfigSlow);
     public static Trajectory load2ToShoot =
             TrajectoryGenerator.generateTrajectory(
-                    path5Start, List.of(), path5End, reverseTrajectoryConfigSlow);
+                    path5Start, List.of(), path5End, forwardTrajectoryConfig);
 
     // 2 ball
     public static Trajectory upperTarmacToUpperBall1 =

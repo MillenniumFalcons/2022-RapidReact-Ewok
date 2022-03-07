@@ -25,15 +25,16 @@ public class TurretConstants {
     public static final double kPosThersholdDeg = 1.0;
     public static final boolean kCurrentLimitingEnable = true;
 
-    public static final TrapezoidProfile.Constraints kTurretProfile =
-            new TrapezoidProfile.Constraints(kMaxDegree, kMinDegree);
-
     public static final double kS = 0.513;
     public static final double kV = 0.0157;
     public static final double kA = 0.000324;
 
-    public static final double kMaxVelocityDegPs = 180;
-    public static final double kMaxAccelerationDegPss = 180;
+    public static final double kMaxVelocityDegPs = 45;
+    public static final double kMaxAccelerationDegPss = 45;
+
+    public static final TrapezoidProfile.Constraints kTurretProfile =
+            new TrapezoidProfile.Constraints(kMaxVelocityDegPs, kMaxAccelerationDegPss);
+
     public static final double kMaxVelocityTicks = kMaxVelocityDegPs / kFalconVelocityToDegpS;
     public static final double kMaxAccelerationTicks =
             kMaxAccelerationDegPss / kFalconVelocityToDegpS;

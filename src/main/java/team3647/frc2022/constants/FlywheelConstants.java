@@ -38,19 +38,19 @@ public final class FlywheelConstants {
 
     public static final double[][] kFlywheelMap = {
         {Units.feetToMeters(2) + GlobalConstants.centerOffsetMeters, 14},
-        {Units.feetToMeters(4) + GlobalConstants.centerOffsetMeters, 16},
+        {Units.feetToMeters(4) + GlobalConstants.centerOffsetMeters, 14.5},
         // {Units.feetToMeters(8) + GlobalConstants.centerOffsetMeters, 17},
         // {Units.feetToMeters(12) + GlobalConstants.centerOffsetMeters, 20.5},
         // {Units.feetToMeters(14) + GlobalConstants.centerOffsetMeters, 22.5},
         // {Units.feetToMeters(16) + GlobalConstants.centerOffsetMeters, 24.3}
-
-        {Units.feetToMeters(8) + GlobalConstants.centerOffsetMeters, 17.5},
-        {Units.feetToMeters(9) + GlobalConstants.centerOffsetMeters, 18},
-        {Units.feetToMeters(10) + GlobalConstants.centerOffsetMeters, 19},
-        {Units.feetToMeters(11) + GlobalConstants.centerOffsetMeters, 20},
-        {Units.feetToMeters(12) + GlobalConstants.centerOffsetMeters, 20},
-        {Units.feetToMeters(13) + GlobalConstants.centerOffsetMeters, 21},
-        {Units.feetToMeters(14) + GlobalConstants.centerOffsetMeters, 22}
+        {Units.feetToMeters(6.1667) + GlobalConstants.centerOffsetMeters, 15.5},
+        {Units.feetToMeters(8) + GlobalConstants.centerOffsetMeters, 16.5},
+        {Units.feetToMeters(9) + GlobalConstants.centerOffsetMeters, 18.5},
+        {Units.feetToMeters(10) + GlobalConstants.centerOffsetMeters, 20},
+        {Units.feetToMeters(11) + GlobalConstants.centerOffsetMeters, 21},
+        {Units.feetToMeters(12) + GlobalConstants.centerOffsetMeters, 22},
+        {Units.feetToMeters(13) + GlobalConstants.centerOffsetMeters, 23},
+        {Units.feetToMeters(14) + GlobalConstants.centerOffsetMeters, 24}
     };
 
     public static final double[][] kVoltageMap = {
@@ -134,7 +134,7 @@ public final class FlywheelConstants {
     public static double getFlywheelRPM(double range) {
         InterpolatingDouble d = kFlywheelAutoAimMap.getInterpolated(new InterpolatingDouble(range));
 
-        return d == null ? 6000 : MathUtil.clamp(d.value, 14, 35);
+        return d == null ? 20 : MathUtil.clamp(d.value, 14, 35);
     }
 
     public static double getFlywheelVoltage(double velocity) {
