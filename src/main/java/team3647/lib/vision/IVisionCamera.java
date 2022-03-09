@@ -1,6 +1,7 @@
 package team3647.lib.vision;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import java.util.List;
 import java.util.Objects;
 import team3647.lib.utils.NamedInt;
 
@@ -8,8 +9,7 @@ public interface IVisionCamera {
 
     public static class VisionInputs {
         public double captureTimestamp = 0.0;
-        public double[] xCorners;
-        public double[] yCorners;
+        public List<VisionPoint> corners;
         public boolean validEntry = false;
     }
 
