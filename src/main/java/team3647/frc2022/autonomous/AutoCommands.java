@@ -2,6 +2,7 @@ package team3647.frc2022.autonomous;
 
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import team3647.frc2022.subsystems.Drivetrain;
 
 public class AutoCommands {
@@ -27,35 +28,17 @@ public class AutoCommands {
         ramseteCommands = new RamseteCommands(drivetrain, driveKinematics);
     }
 
-    /*public Command getLowFive() {
+    public Command getLowFive() {
         return ramseteCommands
                 .getTarmacToBottomLeftBall1()
-                .deadlineWith(intakeFromGround)
                 .andThen(
-                        ramseteCommands
-                                .getBottomLeftBall1ToTarmac()
-                                .deadlineWith(accelerateFlywheel))
-                .andThen(autoShoot)
-                .andThen(
-                        ramseteCommands
-                                .getTarmacToBall2()
-                                .deadlineWith(intakeFromGround, accelerateFlywheel))
-                .andThen(autoShoot)
-                .andThen(ramseteCommands.getBall2ToLoad2().deadlineWith(intakeFromGround))
-                .andThen(ramseteCommands.getLoad2ToShoot().deadlineWith(accelerateFlywheel))
-                .andThen(autoShoot)
-                .alongWith(aimTurretHood);
-    }*/
-
-    public Command getLowFive() {
-        return ramseteCommands.getTarmacToBottomLeftBall1()
-        /*.andThen(ramseteCommands.getBottomLeftBall1ToTarmac(),
-        new WaitCommand(1),
-                ramseteCommands.getTarmacToBall2(),
-                new WaitCommand(1),
-                ramseteCommands.getBall2ToLoad2(),
-                new WaitCommand(1),
-                ramseteCommands.getLoad2ToShoot()*/ ;
+                        ramseteCommands.getBottomLeftBall1ToTarmac(),
+                        new WaitCommand(2),
+                        ramseteCommands.getTarmacToBall2(),
+                        new WaitCommand(1),
+                        ramseteCommands.getBall2ToLoad2(),
+                        new WaitCommand(2),
+                        ramseteCommands.getLoad2ToShoot());
     }
 
     public Command getHighTwo() {

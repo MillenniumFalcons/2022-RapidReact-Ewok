@@ -56,6 +56,7 @@ public class VisionController implements PeriodicSubsystem {
             return;
         }
         List<Translation2d> camToTargetTranslations = new LinkedList<>();
+        System.out.println("Translation #: " + camToTargetTranslations.size());
         // accessing the arrays as if they are 2d linear (c 2d arrays)
 
         periodicIO.inputs.corners.stream()

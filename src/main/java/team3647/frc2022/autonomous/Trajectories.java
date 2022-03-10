@@ -18,7 +18,7 @@ public class Trajectories {
 
     private static final TrajectoryConfig forwardTrajectoryConfigSlow =
             new TrajectoryConfig(
-                            DrivetrainConstants.kMaxSpeedMetersPerSecond / 2.0,
+                            DrivetrainConstants.kMaxSpeedMetersPerSecondSlow,
                             DrivetrainConstants.kMaxAccelerationMetersPerSecondSquared / 2.0)
                     .setKinematics(DrivetrainConstants.kDriveKinematics)
                     .addConstraint(autoVoltageConstraint)
@@ -40,7 +40,7 @@ public class Trajectories {
                     .setReversed(true);
     private static final TrajectoryConfig reverseTrajectoryConfigSlow =
             new TrajectoryConfig(
-                            DrivetrainConstants.kMaxSpeedMetersPerSecond / 2.0,
+                            DrivetrainConstants.kMaxSpeedMetersPerSecondSlow - 0.5,
                             DrivetrainConstants.kMaxAccelerationMetersPerSecondSquared / 2.0)
                     .setKinematics(DrivetrainConstants.kDriveKinematics)
                     .addConstraint(autoVoltageConstraint)
@@ -51,24 +51,24 @@ public class Trajectories {
     private static final Pose2d path2Start = path1End;
     private static final Pose2d path2End = path1Start;
     private static final Pose2d path3Start = path2End;
-    private static final Pose2d path3End = AutoConstants.bottomLeftBall2At45Right;
+    private static final Pose2d path3End = AutoConstants.bottomLeftBall2At20Left;
     private static final Pose2d path4Start = path3End;
-    private static final Pose2d path4End = AutoConstants.bottomLeftBall3;
+    private static final Pose2d path4End = AutoConstants.bottomLeftBall3At32;
     private static final Pose2d path5Start = path4End;
-    private static final Pose2d path5End = AutoConstants.bottomLeftBall2At45Left;
+    private static final Pose2d path5End = AutoConstants.bottomLeftBall2At20Left;
     // 5 ball
     public static Trajectory tarmacToBottomLeftBall1 =
             TrajectoryGenerator.generateTrajectory(
-                    path1Start, List.of(), path1End, reverseTrajectoryConfigSlow);
+                    path1Start, List.of(), path1End, reverseTrajectoryConfig);
     public static Trajectory bottomLeftBall1ToTarmac =
             TrajectoryGenerator.generateTrajectory(
-                    path2Start, List.of(), path2End, forwardTrajectoryConfigSlow);
+                    path2Start, List.of(), path2End, forwardTrajectoryConfig);
     public static Trajectory tarmacToBall2 =
             TrajectoryGenerator.generateTrajectory(
                     path3Start, List.of(), path3End, reverseTrajectoryConfigSlow);
     public static Trajectory ball2ToLoad2 =
             TrajectoryGenerator.generateTrajectory(
-                    path4Start, List.of(), path4End, reverseTrajectoryConfigSlow);
+                    path4Start, List.of(), path4End, reverseTrajectoryConfig);
     public static Trajectory load2ToShoot =
             TrajectoryGenerator.generateTrajectory(
                     path5Start, List.of(), path5End, forwardTrajectoryConfig);

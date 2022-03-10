@@ -36,7 +36,7 @@ public final class DrivetrainConstants {
                     new MatBuilder<>(Nat.N3(), Nat.N1()).fill(0.02, 0.02, 0.01),
                     new MatBuilder<>(Nat.N3(), Nat.N1()).fill(0.1, 0.1, 0.01));
 
-    public static final double kNominalVoltage = 11;
+    public static final double kNominalVoltage = 10;
     public static final double kStallCurrent = 35;
     public static final double kMaxCurrent = 60;
 
@@ -54,8 +54,9 @@ public final class DrivetrainConstants {
     public static final double kTrackWidth = 0.75;
     public static final DifferentialDriveKinematics kDriveKinematics =
             new DifferentialDriveKinematics(kTrackWidth);
-    public static final double kMaxSpeedMetersPerSecond = 4;
-    public static final double kMaxAccelerationMetersPerSecondSquared = 8;
+    public static final double kMaxSpeedMetersPerSecondSlow = 2;
+    public static final double kMaxSpeedMetersPerSecond = 3;
+    public static final double kMaxAccelerationMetersPerSecondSquared = 3.5;
 
     public static final double kGearboxReduction = 10 / 42.0 * 24 / 40.;
 
@@ -70,14 +71,14 @@ public final class DrivetrainConstants {
             kWheelRotationToMeters / GlobalConstants.kFalconTicksPerRotation;
 
     static {
-        kLeftMasterConfig.slot0.kP = 0.000001;
+        kLeftMasterConfig.slot0.kP = 1;
         kLeftMasterConfig.slot0.kI = 0;
         kLeftMasterConfig.slot0.kD = 0;
 
         kLeftMasterConfig.supplyCurrLimit.enable = true;
         kLeftMasterConfig.supplyCurrLimit.currentLimit = kStallCurrent;
         kLeftMasterConfig.supplyCurrLimit.triggerThresholdCurrent = kMaxCurrent;
-        kLeftMasterConfig.voltageCompSaturation = 12.0;
+        kLeftMasterConfig.voltageCompSaturation = kNominalVoltage;
 
         kLeftMasterConfig.slot0.kP = 0.000001;
         kRightMasterConfig.slot0.kI = 0;
@@ -86,7 +87,7 @@ public final class DrivetrainConstants {
         kRightMasterConfig.supplyCurrLimit.enable = true;
         kRightMasterConfig.supplyCurrLimit.currentLimit = kStallCurrent;
         kRightMasterConfig.supplyCurrLimit.triggerThresholdCurrent = kMaxCurrent;
-        kRightMasterConfig.voltageCompSaturation = 12.0;
+        kRightMasterConfig.voltageCompSaturation = kNominalVoltage;
 
         kLeftMaster.configAllSettings(kLeftMasterConfig, GlobalConstants.kTimeoutMS);
         kRightMaster.configAllSettings(kRightMasterConfig, GlobalConstants.kTimeoutMS);
@@ -94,6 +95,10 @@ public final class DrivetrainConstants {
         kRightSlave.follow(kRightMaster);
         kRightMaster.setInverted(TalonFXInvertType.Clockwise);
         kRightSlave.setInverted(InvertType.FollowMaster);
+        kLeftMaster.enableVoltageCompensation(true);
+        kLeftSlave.enableVoltageCompensation(true);
+        kRightMaster.enableVoltageCompensation(true);
+        kRightSlave.enableVoltageCompensation(true);
     }
 
     private DrivetrainConstants() {}

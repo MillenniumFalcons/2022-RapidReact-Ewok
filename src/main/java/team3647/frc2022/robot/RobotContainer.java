@@ -4,6 +4,7 @@
 
 package team3647.frc2022.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -17,7 +18,6 @@ import team3647.frc2022.autonomous.AutoConstants;
 import team3647.frc2022.commands.ArcadeDrive;
 import team3647.frc2022.constants.*;
 import team3647.frc2022.states.ShooterState;
-import team3647.frc2022.states.TurretState;
 import team3647.frc2022.subsystems.Ballstopper;
 import team3647.frc2022.subsystems.ClimberArm;
 import team3647.frc2022.subsystems.ColumnBottom;
@@ -75,7 +75,8 @@ public class RobotContainer {
         runningAutoSequence = autoCommands.getOneTraj();*/
 
         m_drivetrain.setOdometry(
-                AutoConstants.startingStraight, AutoConstants.startingStraight.getRotation());
+                AutoConstants.positionOnTarmacParallel,
+                AutoConstants.positionOnTarmacParallel.getRotation());
         runningAutoSequence = autoCommands.getStraightTurn();
         m_ballstopper.extend();
     }
@@ -99,12 +100,15 @@ public class RobotContainer {
                         .andThen(
                                 m_superstructure.flywheelCommands.waitToSpinDownThenHold(
                                         FlywheelConstants.constantVelocityMpS)));
+        // m_turret.setDefaultCommand(
+        //         new InstantCommand(
+        //                         () ->
+        //                                 m_superstructure.currentState.turretState =
+        //                                         TurretState.HOLD_POSITION)
+        //                 .andThen(m_superstructure.turretCommands.holdPositionAtCall()));
         m_turret.setDefaultCommand(
-                new InstantCommand(
-                                () ->
-                                        m_superstructure.currentState.turretState =
-                                                TurretState.HOLD_POSITION)
-                        .andThen(m_superstructure.turretCommands.holdPositionAtCall()));
+                new RunCommand(
+                        () -> m_turret.setOpenloop(coController.getRightStickX()), m_turret));
         m_pivotClimber.setDefaultCommand(new RunCommand(m_pivotClimber::end, m_pivotClimber));
         m_intake.setDefaultCommand(
                 m_superstructure
@@ -207,16 +211,18 @@ public class RobotContainer {
         m_printer.addDouble("Hood Position", m_hood::getPosition);
         m_printer.addDouble("Turret Angle", m_turret::getAngle);
         m_printer.addDouble("Turret Pos", m_turret::getPosition);
-        m_printer.addBoolean("Top sensor", m_columnTop::getTopBannerValue);
-        m_printer.addBoolean("mid sensor", m_columnBottom::getMiddleBannerValue);
-        m_printer.addBoolean("low sensor", m_columnBottom::getBottomBannerValue);
         m_printer.addDouble("Left Climber", m_pivotClimber::getLeftPosition);
         m_printer.addDouble("Right Climber", m_pivotClimber::getRightPosition);
         m_printer.addBoolean("Right stick", () -> mainController.rightJoyStickPress.get());
-        m_printer.addDouble("x position", m_drivetrain::getDrivetrainXMeters);
-        m_printer.addDouble("y position", m_drivetrain::getDrivetrainYMeters);
-
-        // m_printer.addPose("Vision Pose", this::getVisionPose);
+        m_printer.addPose(
+                "Vision Pose",
+                () -> {
+                    var aimingParams = m_superstructure.getAimingParameters();
+                    if (aimingParams == null) {
+                        return new Pose2d();
+                    }
+                    return aimingParams.getFieldToGoal();
+                });
         m_printer.addPose("Drivetrain Pose", m_drivetrain::getPose);
         SmartDashboard.putNumber("Shooter Speed", 0.0);
         SmartDashboard.putNumber("Hood angle", 16.0);
@@ -229,7 +235,7 @@ public class RobotContainer {
      */
     public Command getAutonomousCommand() {
         // An ExampleCommand will run in autonomous
-        return null;
+        return autoCommands.getLowFive();
     }
 
     public double getShooterSpeed() {
