@@ -111,41 +111,25 @@ public class RobotContainer {
                         () -> m_turret.setOpenloop(coController.getRightStickX()), m_turret));
         m_pivotClimber.setDefaultCommand(new RunCommand(m_pivotClimber::end, m_pivotClimber));
         m_intake.setDefaultCommand(
-                m_superstructure
-                        .intakeCommands
-                        .openLoopAndStop(0.3)
-                        .withTimeout(0.5)
-                        .andThen(
-                                new RunCommand(
-                                        () -> {
-                                            var leftY = coController.getLeftStickY();
-                                            m_intake.setOpenloop(leftY * leftY * leftY);
-                                        },
-                                        m_intake)));
+                m_superstructure.intakeInThenManual(coController::getLeftStickY));
         m_columnBottom.setDefaultCommand(
-                m_superstructure
-                        .feederCommands
-                        .feedIn(() -> 2.5, () -> 2.5)
-                        .withTimeout(0.5)
-                        .andThen(
-                                new RunCommand(
-                                        () -> {
-                                            var leftY = coController.getLeftStickY();
-                                            m_columnBottom.setOpenloop(leftY * leftY * leftY);
-                                        },
-                                        m_columnBottom)));
+                m_superstructure.feederInThenManual(coController::getLeftStickY));
     }
 
     private void configureButtonBindings() {
-        mainController.leftTrigger.whileActiveOnce(
-                m_superstructure.flywheelCommands.variableVelocity(this::getShooterSpeed));
         mainController
                 .rightTrigger
                 .whileActiveOnce(m_superstructure.autoAccelerateAndShoot())
                 .whileActiveOnce(m_superstructure.aimTurret())
                 .whileActiveOnce(m_superstructure.intakeCommands.runOpenLoop(.6).withTimeout(0.5));
 
-        mainController
+        mainController.buttonX.whenPressed(m_superstructure.autoClimbSequnce());
+        mainController.leftBumper.whenHeld(m_superstructure.climberManualControl(() -> 0.5));
+        mainController.rightBumper.whenHeld(m_superstructure.climberManualControl(() -> -0.6));
+        mainController.dPadUp.whenHeld(m_superstructure.retractClimberIfClimbing());
+        mainController.dPadDown.whenHeld(m_superstructure.extendClimberIfClimbing());
+
+        coController
                 .buttonY
                 .whileActiveOnce(m_superstructure.batterAccelerateAndShoot())
                 .whileActiveOnce(m_superstructure.turretCommands.motionMagic(-180).perpetually())
@@ -154,7 +138,7 @@ public class RobotContainer {
                                 .hoodCommands
                                 .motionMagic(HoodContants.kBatterAngle)
                                 .perpetually());
-        mainController
+        coController
                 .buttonA
                 .whileActiveOnce(m_superstructure.lowAccelerateAndShoot())
                 .whileActiveOnce(m_superstructure.turretCommands.motionMagic(0).perpetually())
@@ -163,32 +147,6 @@ public class RobotContainer {
                                 .hoodCommands
                                 .motionMagic(HoodContants.kLowGoalAngle)
                                 .perpetually());
-        mainController.buttonX.whenPressed(m_superstructure.autoClimbSequnce());
-        mainController.leftBumper.whenHeld(m_superstructure.climberManualControl(() -> 0.5));
-        mainController.rightBumper.whenHeld(m_superstructure.climberManualControl(() -> -0.6));
-        mainController.dPadUp.whenHeld(m_superstructure.retractClimberIfClimbing());
-        mainController.dPadDown.whenHeld(m_superstructure.extendClimberIfClimbing());
-
-        coController
-                .buttonA
-                .and(m_superstructure.isShooting.negate())
-                .whileActiveOnce(
-                        m_superstructure.spinupUpToDistance(
-                                GlobalConstants.kDistanceFarToGoalCenter));
-        coController
-                .buttonB
-                .and(m_superstructure.isShooting.negate())
-                .whileActiveOnce(
-                        m_superstructure.spinupUpToDistance(
-                                GlobalConstants.kDistanceTarmacToGoalCenter));
-        coController
-                .buttonY
-                .and(m_superstructure.isShooting.negate())
-                .whileActiveOnce(
-                        m_superstructure
-                                .turretCommands
-                                .motionMagic(0)
-                                .alongWith(m_superstructure.batterSpinup()));
 
         coController.leftBumper.whileActiveOnce(m_superstructure.aimTurret());
 
@@ -204,7 +162,7 @@ public class RobotContainer {
         m_printer.addDouble("Shooter velocity", m_flywheel::getVelocity);
         m_printer.addDouble("Needed velocity", m_superstructure::getAimedFlywheelSurfaceVel);
         m_printer.addDouble("kicker Needed velocity", m_superstructure::getAimedKickerVelocity);
-        m_printer.addBoolean("Ready to Shoot", m_superstructure::getReadyToAutoShoot);
+        m_printer.addBoolean("Ready to Shoot", m_superstructure::readyToAutoShoot);
         m_printer.addDouble("Kicker Velocity", m_columnTop::getVelocity);
         m_printer.addDouble("Shooter current", m_flywheel::getMasterCurrent);
         m_printer.addDouble("Kicker current", m_columnTop::getMasterCurrent);
@@ -399,7 +357,8 @@ public class RobotContainer {
                     m_hood,
                     m_flywheel,
                     m_ballstopper,
-                    m_statusLED);
+                    m_statusLED,
+                    m_drivetrain::isStopped);
     private final Command runningAutoSequence;
     /*private final AutoCommands autoCommands =
     new AutoCommands(

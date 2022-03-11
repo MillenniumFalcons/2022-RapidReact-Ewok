@@ -296,6 +296,14 @@ public final class Drivetrain implements PeriodicSubsystem {
         rightMaster.setSelectedSensorPosition(0);
     }
 
+    public boolean isStopped(double threshold) {
+        return Math.abs(getRightVelocity()) < threshold && Math.abs(getLeftVelocity()) < threshold;
+    }
+
+    public boolean isStopped() {
+        return isStopped(0.1);
+    }
+
     @Override
     public String getName() {
         return "Drivetrain";
