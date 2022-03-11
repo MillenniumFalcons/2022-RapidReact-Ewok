@@ -82,6 +82,6 @@ public class HoodContants {
     public static double getHoodAngle(double range) {
         InterpolatingDouble d = kHoodAutoAimMap.getInterpolated(new InterpolatingDouble(range));
 
-        return d == null ? 16 : MathUtil.clamp(d.value, 15, 40);
+        return d == null ? 16 : MathUtil.clamp(d.value, kMinDegree, kMaxDegree);
     }
 }

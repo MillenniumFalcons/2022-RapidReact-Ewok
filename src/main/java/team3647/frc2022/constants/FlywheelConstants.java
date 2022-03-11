@@ -77,7 +77,7 @@ public final class FlywheelConstants {
     public static double getFlywheelRPM(double range) {
         InterpolatingDouble d = kFlywheelAutoAimMap.getInterpolated(new InterpolatingDouble(range));
 
-        return d == null ? 6000 : MathUtil.clamp(d.value, 7, 35);
+        return d == null ? 12 : MathUtil.clamp(d.value, 7, 35);
     }
 
     private FlywheelConstants() {}
