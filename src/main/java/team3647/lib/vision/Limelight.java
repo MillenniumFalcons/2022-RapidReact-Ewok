@@ -6,6 +6,8 @@ import edu.wpi.first.networktables.EntryNotification;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Timer;
+import java.util.LinkedList;
+import java.util.List;
 import team3647.lib.utils.NamedInt;
 import team3647.lib.vision.IVisionCamera.CamMode;
 import team3647.lib.vision.IVisionCamera.LEDMode;
@@ -21,8 +23,7 @@ public class Limelight implements IVisionCamera {
     private final CamConstants kCamConstants;
     private boolean validEntry = false;
 
-    private double[] xCorners;
-    private double[] yCorners;
+    private List<VisionPoint> corners;
     private double captureTimestamp = 0.0;
     private VisionPipeline currentPipeline = new VisionPipeline(0, 960, 720);
 
@@ -58,8 +59,7 @@ public class Limelight implements IVisionCamera {
     }
 
     public synchronized void writeToInputs(VisionInputs inputs) {
-        inputs.xCorners = xCorners;
-        inputs.yCorners = yCorners;
+        inputs.corners = this.corners;
         inputs.captureTimestamp = captureTimestamp;
         inputs.validEntry = validEntry;
     }
@@ -77,11 +77,9 @@ public class Limelight implements IVisionCamera {
                 Timer.getFPGATimestamp() - getDouble(Data.LATNECY_MS) / 1000.0 - extraLatencySec;
         synchronized (Limelight.this) {
             captureTimestamp = timestamp;
-            xCorners = new double[latestRawCorners.length / 2];
-            yCorners = new double[latestRawCorners.length / 2];
+            corners = new LinkedList<>();
             for (int i = 0; i < latestRawCorners.length - 1; i += 2) {
-                xCorners[i / 2] = latestRawCorners[i];
-                yCorners[i / 2] = latestRawCorners[i + 1];
+                corners.add(new VisionPoint(latestRawCorners[i], latestRawCorners[i + 1]));
             }
         }
     }

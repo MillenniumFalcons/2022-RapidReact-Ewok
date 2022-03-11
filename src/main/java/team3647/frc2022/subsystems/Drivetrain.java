@@ -204,13 +204,15 @@ public final class Drivetrain implements PeriodicSubsystem {
             end();
             return;
         }
+        SmartDashboard.putNumber(
+                "Right: Actual - Requested", getRightVelocity() - wheelSpeeds.rightMetersPerSecond);
+        SmartDashboard.putNumber(
+                "Left: Actual - Requested", getLeftVelocity() - wheelSpeeds.leftMetersPerSecond);
         periodicIO.controlMode = ControlMode.Velocity;
         periodicIO.leftFeedForward = feedforward.calculate(wheelSpeeds.leftMetersPerSecond);
         periodicIO.rightFeedForward = feedforward.calculate(wheelSpeeds.rightMetersPerSecond);
         periodicIO.leftOutput = wheelSpeeds.leftMetersPerSecond / velocityConversion;
         periodicIO.rightOutput = wheelSpeeds.rightMetersPerSecond / velocityConversion;
-        periodicIO.leftMasterVelocity = leftMaster.getSelectedSensorVelocity();
-        periodicIO.rightMasterVelocity = rightMaster.getSelectedSensorVelocity();
     }
 
     public void setOpenloop(double leftOut, double rightOut) {

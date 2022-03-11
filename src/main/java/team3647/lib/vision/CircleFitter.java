@@ -60,6 +60,10 @@ public class CircleFitter {
 
     public static double calcResidual(
             double radius, Translation2d center, Iterable<Translation2d> points) {
-        return 0.0;
+        double residual = 0.0;
+        for (var point : points) {
+            residual += Math.pow(point.getDistance(center) - radius, 2);
+        }
+        return residual;
     }
 }

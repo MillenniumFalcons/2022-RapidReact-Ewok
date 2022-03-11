@@ -19,8 +19,7 @@ public class PhotonVisionCamera implements IVisionCamera {
     private final double extraLatencySec;
     private final CamConstants kCamConstants;
 
-    private double[] xCorners;
-    private double[] yCorners;
+    private List<VisionPoint> corners;
     private double captureTimestamp = 0.0;
 
     private VisionPipeline currentPipeline = new VisionPipeline(0, 960, 720);
@@ -36,8 +35,7 @@ public class PhotonVisionCamera implements IVisionCamera {
 
     @Override
     public synchronized void writeToInputs(VisionInputs inputs) {
-        inputs.xCorners = xCorners;
-        inputs.yCorners = yCorners;
+        inputs.corners = corners;
         inputs.captureTimestamp = captureTimestamp;
         inputs.validEntry = true;
     }
@@ -46,18 +44,14 @@ public class PhotonVisionCamera implements IVisionCamera {
         PhotonPipelineResult result = camera.getLatestResult();
         double timestamp =
                 Timer.getFPGATimestamp() - result.getLatencyMillis() / 1000.0 - extraLatencySec;
-        List<Double> xCornersList = new LinkedList<>();
-        List<Double> yCornersList = new LinkedList<>();
+        List<TargetCorner> latestCorners = new LinkedList<>();
         for (PhotonTrackedTarget target : result.getTargets()) {
-            for (TargetCorner corner : target.getCorners()) {
-                xCornersList.add(corner.x);
-                yCornersList.add(corner.y);
-            }
+            target.getCorners().forEach(latestCorners::add);
         }
         synchronized (PhotonVisionCamera.this) {
             captureTimestamp = timestamp;
-            xCorners = xCornersList.stream().mapToDouble(Double::doubleValue).toArray();
-            yCorners = yCornersList.stream().mapToDouble(Double::doubleValue).toArray();
+            corners = new LinkedList<>();
+            latestCorners.forEach(point -> corners.add(new VisionPoint(point.x, point.y)));
         }
     }
 

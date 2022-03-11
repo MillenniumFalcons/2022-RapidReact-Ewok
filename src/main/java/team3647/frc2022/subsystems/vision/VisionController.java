@@ -5,6 +5,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.BiConsumer;
 import team3647.lib.PeriodicSubsystem;
 import team3647.lib.vision.CircleFitter;
@@ -23,6 +24,7 @@ public class VisionController implements PeriodicSubsystem {
     private static final Rotation2d PiOver2 = new Rotation2d(Math.PI / 2.0);
     private static final double kCircleFitPrecision = 0.01;
     private static final double kNetworklatency = 0.06;
+    private final double targetAverageHeightMeters;
 
     private static final class PeriodicIO {
         public final VisionInputs inputs = new VisionInputs();
@@ -37,6 +39,9 @@ public class VisionController implements PeriodicSubsystem {
         this.targetConstants = targetConstants;
         this.translationConsumer = translationConsumer;
         this.periodicIO = new PeriodicIO();
+        targetAverageHeightMeters =
+                (targetConstants.kTopTargetHeightMeters + targetConstants.kBottomTargetHeightMeters)
+                        / 2.0;
     }
 
     @Override
@@ -46,57 +51,18 @@ public class VisionController implements PeriodicSubsystem {
             return;
         }
         periodicIO.lastTimestamp = periodicIO.inputs.captureTimestamp;
-        int targetCount = periodicIO.inputs.xCorners.length / targetConstants.kPointsPerTarget;
+        int targetCount = periodicIO.inputs.corners.size() / targetConstants.kPointsPerTarget;
         if (targetCount < targetConstants.kMinTargetCount) {
             return;
         }
         List<Translation2d> camToTargetTranslations = new LinkedList<>();
+        System.out.println("Translation #: " + camToTargetTranslations.size());
         // accessing the arrays as if they are 2d linear (c 2d arrays)
-        for (int targetIndex = 0; targetIndex < targetCount; targetIndex++) {
-            List<VisionPoint> corners = new LinkedList<>();
-            double totalX = 0.0;
-            double totalY = 0.0;
-            for (int cornerIndex = 0;
-                    cornerIndex < targetConstants.kPointsPerTarget;
-                    cornerIndex++) {
-                int idx = targetIndex * targetCount + cornerIndex;
-                if (idx >= periodicIO.inputs.xCorners.length
-                        || idx >= periodicIO.inputs.yCorners.length) {
-                    continue;
-                }
-                double xPixel = periodicIO.inputs.xCorners[idx];
-                double yPixels = periodicIO.inputs.yCorners[idx];
-                corners.add(new VisionPoint(xPixel, yPixels));
-                totalX += xPixel;
-                totalY += yPixels;
-            }
-            VisionPoint targetAvg =
-                    new VisionPoint(
-                            totalX / targetConstants.kPointsPerTarget,
-                            totalY / targetConstants.kPointsPerTarget);
-            // Makes the top corners first in the array
-            corners = sortCorners(corners, targetAvg);
-            int i;
-            // top corners
-            for (i = 0; i < corners.size(); i++) {
-                // uses the top target height for the first 2 elements, and the bottom target height
-                // for the last two elements;
-                double targetHeight =
-                        i < 2
-                                ? targetConstants.kTopTargetHeightMeters
-                                : targetConstants.kBottomTargetHeightMeters;
-                Translation2d camToTarget =
-                        solveTranslationToTarget(
-                                corners.get(i),
-                                targetHeight,
-                                camera.getConstants(),
-                                camera.getPipeline());
-                if (camToTarget != null) {
-                    camToTargetTranslations.add(camToTarget);
-                }
-            }
-        }
 
+        periodicIO.inputs.corners.stream()
+                .map(this::getTranslationDefault)
+                .filter(Objects::nonNull)
+                .forEach(camToTargetTranslations::add);
         if (camToTargetTranslations.size()
                 < targetConstants.kMinTargetCount * targetConstants.kPointsPerTarget) {
             return;
@@ -108,12 +74,21 @@ public class VisionController implements PeriodicSubsystem {
                         camToTargetTranslations,
                         kCircleFitPrecision);
         SmartDashboard.putNumber(
-                "Angle to circle", new Rotation2d(fitCircle.getX(), fitCircle.getY()).getDegrees());
-        SmartDashboard.putNumber("distance to circle", fitCircle.getNorm());
+                "Degrees to circle",
+                new Rotation2d(fitCircle.getX(), fitCircle.getY()).getDegrees());
+        SmartDashboard.putNumber("Meters to circle", fitCircle.getNorm());
         synchronized (translationConsumer) {
             translationConsumer.accept(
                     periodicIO.inputs.captureTimestamp - kNetworklatency, fitCircle);
         }
+    }
+
+    private Translation2d getTranslationDefault(VisionPoint corner) {
+        return solveTranslationToTarget(
+                corner,
+                this.targetAverageHeightMeters,
+                this.camera.getConstants(),
+                this.camera.getPipeline());
     }
 
     /**
