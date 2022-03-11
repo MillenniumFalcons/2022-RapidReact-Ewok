@@ -4,7 +4,6 @@ import com.ctre.phoenix.motorcontrol.FollowerType;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
-import team3647.frc2022.constants.FlywheelConstants;
 import team3647.lib.TalonFXSubsystem;
 
 public class Flywheel extends TalonFXSubsystem {
@@ -27,7 +26,7 @@ public class Flywheel extends TalonFXSubsystem {
 
     /** @param vel velocity in m/s, positive is outside (to shoot) */
     public void setSurfaceSpeed(double vel) {
-        setVelocity(vel, FlywheelConstants.getFlywheelVoltage(vel));
+        setVelocity(vel, ff.calculate(vel));
     }
 
     @Override

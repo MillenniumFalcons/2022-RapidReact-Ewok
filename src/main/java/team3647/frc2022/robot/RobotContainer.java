@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -194,6 +195,13 @@ public class RobotContainer {
                         m_superstructure.deployAndRunIntake(this::calculateIntakeSurfaceSpeed))
                 .and(m_superstructure.isShooting.negate())
                 .whileActiveOnce(m_superstructure.runFeeder(this::calculateIntakeSurfaceSpeed));
+        coController.dPadDown.whenHeld(
+                new FunctionalCommand(
+                        () -> {},
+                        () -> m_flywheel.setSurfaceSpeed(getShooterSpeed()),
+                        interrupted -> {},
+                        () -> false,
+                        m_flywheel));
     }
 
     private void configureSmartDashboardLogging() {
