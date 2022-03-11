@@ -13,18 +13,19 @@ public class HoodContants {
 
     public static final TalonFX kHoodMotor = new LazyTalonFX(GlobalConstants.HoodIds.kMotorId);
     public static final TalonFXInvertType kHoodMotorInvert = TalonFXInvertType.Clockwise;
-
     public static final TalonFXConfiguration kMasterConfig = new TalonFXConfiguration();
-    public static final double kGearboxReduction = 16 / 48.0 * 24 / 460.0;
+    public static final double kGearboxReduction = 10.0 / 50 * 28.0 / 472;
     public static final double kFalconPositionToDegrees = kGearboxReduction / 2048.0 * 360;
     public static final double kFalconVelocityToDegpS = kFalconPositionToDegrees * 10;
-    public static final double kMaxDegree = 33;
+    public static final double kMaxDegree = 40;
     public static final double kMinDegree = 15;
+    public static final double kBatterAngle = 15;
+    public static final double kLowGoalAngle = 40;
     public static final double kPosThersholdDeg = 0.5;
-    public static final boolean kCurrentLimitingEnable = true;
-    public static final double kS = 0.73693;
-    public static final double kV = 0.014462;
-    public static final double kA = 0.00069253;
+    public static final boolean kCurrentLimitingEnable = false;
+    public static final double kS = 0.6; // 0.85317;
+    public static final double kV = 0.0026; // 0.00043578;
+    public static final double kA = 0;
 
     public static final double kMaxVelocityDegPs = 36;
     public static final double kMaxAccelerationDegPss = 36;
@@ -39,32 +40,23 @@ public class HoodContants {
     public static final double kNominalVoltage = 11;
 
     public static final double[][] kHoodMap = {
-        {Units.feetToMeters(0) + GlobalConstants.centerOffsetMeters, 16},
-        {Units.feetToMeters(2) + GlobalConstants.centerOffsetMeters, 18},
-        {Units.feetToMeters(4) + GlobalConstants.centerOffsetMeters, 29},
-        {Units.feetToMeters(6) + GlobalConstants.centerOffsetMeters, 31},
-        // {Units.feetToMeters(8) + GlobalConstants.centerOffsetMeters, 27.97},
-        // {Units.feetToMeters(12) + GlobalConstants.centerOffsetMeters, 31.97},
-        // {Units.feetToMeters(14) + GlobalConstants.centerOffsetMeters, 32},
-        // {Units.feetToMeters(16) + GlobalConstants.centerOffsetMeters, 31.97}
-        {Units.feetToMeters(8) + GlobalConstants.centerOffsetMeters, 31},
-        {Units.feetToMeters(9) + GlobalConstants.centerOffsetMeters, 32.5},
-        {Units.feetToMeters(10) + GlobalConstants.centerOffsetMeters, 32.5},
-        {Units.feetToMeters(11) + GlobalConstants.centerOffsetMeters, 32.5},
-        {Units.feetToMeters(12) + GlobalConstants.centerOffsetMeters, 32.5},
-        {Units.feetToMeters(13) + GlobalConstants.centerOffsetMeters, 32.5},
-        {Units.feetToMeters(14) + GlobalConstants.centerOffsetMeters, 3.52}
+        {Units.feetToMeters(2) + GlobalConstants.centerOffsetMeters, 15},
+        {Units.feetToMeters(6) + GlobalConstants.centerOffsetMeters, 19},
+        {Units.feetToMeters(10) + GlobalConstants.centerOffsetMeters, 25},
+        {Units.feetToMeters(14) + GlobalConstants.centerOffsetMeters, 33},
+        {Units.feetToMeters(18) + GlobalConstants.centerOffsetMeters, 36},
+        {Units.feetToMeters(22) + GlobalConstants.centerOffsetMeters, 38}
     };
 
     public static final InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble>
             kHoodAutoAimMap = new InterpolatingTreeMap<>();
-    public static final double kBatterAngle = 15.6;
-    public static final double kLowGoalAngle = 31;
 
     static {
-        kMasterConfig.slot0.kP = 0.21;
+        kMasterConfig.slot0.kP = 0.7;
         kMasterConfig.slot0.kI = 0;
-        kMasterConfig.slot0.kD = 0.2025;
+        kMasterConfig.slot0.kD = 5.8; // 0.45;
+        kMasterConfig.slot0.allowableClosedloopError = 35; // 29;
+
         // kMasterConfig.slot0.integralZone = 1000;
         kMasterConfig.slot0.kF = kV / kNominalVoltage * kFalconVelocityToDegpS * 1023;
 
@@ -90,6 +82,6 @@ public class HoodContants {
     public static double getHoodAngle(double range) {
         InterpolatingDouble d = kHoodAutoAimMap.getInterpolated(new InterpolatingDouble(range));
 
-        return d == null ? 16 : MathUtil.clamp(d.value, 15, 33);
+        return d == null ? 16 : MathUtil.clamp(d.value, 15, 40);
     }
 }
