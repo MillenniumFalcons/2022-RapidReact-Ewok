@@ -26,6 +26,7 @@ public class RepeatCommand implements Command {
         if (this.repeatCommand.isFinished()) {
             this.repeatCommand.end(false);
             this.repeatCommand.initialize();
+            System.out.println("RUN");
         }
     }
 

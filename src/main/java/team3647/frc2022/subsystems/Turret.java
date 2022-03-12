@@ -44,6 +44,7 @@ public class Turret extends TalonFXSubsystem {
         prevAngle = startingAngle;
         prevVelocity = 0;
         startTime = Timer.getFPGATimestamp();
+        setToBrake();
     }
 
     /** @param angle in degree, [-180,180] */
@@ -71,8 +72,8 @@ public class Turret extends TalonFXSubsystem {
         //     ffVolts = kS * Math.signum(state.position - getPosition());
         // }
 
-        System.out.println("Position: " + state.position);
-        System.out.println("Velocity: " + state.velocity);
+        // System.out.println("Position: " + state.position);
+        // System.out.println("Velocity: " + state.velocity);
 
         setPosition(state.position, ffVolts);
     }

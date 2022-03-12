@@ -4,6 +4,7 @@ import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.util.Units;
 import team3647.lib.drivers.LazyTalonFX;
 import team3647.lib.team254.util.InterpolatingDouble;
@@ -15,6 +16,7 @@ public class HoodContants {
     public static final TalonFXInvertType kHoodMotorInvert = TalonFXInvertType.Clockwise;
     public static final TalonFXConfiguration kMasterConfig = new TalonFXConfiguration();
     public static final double kGearboxReduction = 10.0 / 50 * 28.0 / 472;
+    // 280 / 23600 = 28 / 2360 = 7/590
     public static final double kFalconPositionToDegrees = kGearboxReduction / 2048.0 * 360;
     public static final double kFalconVelocityToDegpS = kFalconPositionToDegrees * 10;
     public static final double kMaxDegree = 40;
@@ -23,9 +25,11 @@ public class HoodContants {
     public static final double kLowGoalAngle = 40;
     public static final double kPosThersholdDeg = 0.5;
     public static final boolean kCurrentLimitingEnable = false;
-    public static final double kS = 0.6; // 0.85317;
-    public static final double kV = 0.0026; // 0.00043578;
-    public static final double kA = 0;
+    public static final double kS = 0.451; // 0.85317;
+    public static final double kV = 0.03; // 0.00043578;
+    public static final double kA = 0.0008;
+    public static final double kCos = 0;
+    public static final ArmFeedforward kArmFeedforward = new ArmFeedforward(kS, kCos, kV);
 
     public static final double kMaxVelocityDegPs = 36;
     public static final double kMaxAccelerationDegPss = 36;
@@ -40,24 +44,29 @@ public class HoodContants {
     public static final double kNominalVoltage = 11;
 
     public static final double[][] kHoodMap = {
-        {Units.feetToMeters(2) + GlobalConstants.centerOffsetMeters, 15},
-        {Units.feetToMeters(6) + GlobalConstants.centerOffsetMeters, 19},
-        {Units.feetToMeters(10) + GlobalConstants.centerOffsetMeters, 25},
-        {Units.feetToMeters(14) + GlobalConstants.centerOffsetMeters, 33},
-        {Units.feetToMeters(18) + GlobalConstants.centerOffsetMeters, 36},
-        {Units.feetToMeters(22) + GlobalConstants.centerOffsetMeters, 38}
+        {Units.feetToMeters(2) + GlobalConstants.kCenterOffsetMeters, 15},
+        {Units.feetToMeters(4) + GlobalConstants.kCenterOffsetMeters, 17},
+        {Units.feetToMeters(6) + GlobalConstants.kCenterOffsetMeters, 19},
+        {Units.feetToMeters(8) + GlobalConstants.kCenterOffsetMeters, 23},
+        {Units.feetToMeters(10) + GlobalConstants.kCenterOffsetMeters, 25},
+        {Units.feetToMeters(12) + GlobalConstants.kCenterOffsetMeters, 30},
+        {Units.feetToMeters(14) + GlobalConstants.kCenterOffsetMeters, 35},
+        {Units.feetToMeters(16) + GlobalConstants.kCenterOffsetMeters, 36},
+        {Units.feetToMeters(18) + GlobalConstants.kCenterOffsetMeters, 37},
+        {Units.feetToMeters(20) + GlobalConstants.kCenterOffsetMeters, 37.5},
+        {Units.feetToMeters(22) + GlobalConstants.kCenterOffsetMeters, 39},
+        {Units.feetToMeters(24) + GlobalConstants.kCenterOffsetMeters, 39},
     };
 
     public static final InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble>
             kHoodAutoAimMap = new InterpolatingTreeMap<>();
 
     static {
-        kMasterConfig.slot0.kP = 0.7;
+        kMasterConfig.slot0.kP = 0.12;
         kMasterConfig.slot0.kI = 0;
-        kMasterConfig.slot0.kD = 5.8; // 0.45;
-        kMasterConfig.slot0.allowableClosedloopError = 35; // 29;
+        kMasterConfig.slot0.kD = 1; // 0.45;
+        // kMasterConfig.slot0.allowableClosedloopError = 35; // 29;
 
-        // kMasterConfig.slot0.integralZone = 1000;
         kMasterConfig.slot0.kF = kV / kNominalVoltage * kFalconVelocityToDegpS * 1023;
 
         kMasterConfig.voltageCompSaturation = kNominalVoltage;
@@ -73,6 +82,7 @@ public class HoodContants {
 
         kHoodMotor.configAllSettings(kMasterConfig, GlobalConstants.kTimeoutMS);
         kHoodMotor.setInverted(kHoodMotorInvert);
+        kHoodMotor.enableVoltageCompensation(true);
 
         for (double[] pair : kHoodMap) {
             kHoodAutoAimMap.put(new InterpolatingDouble(pair[0]), new InterpolatingDouble(pair[1]));
@@ -82,6 +92,6 @@ public class HoodContants {
     public static double getHoodAngle(double range) {
         InterpolatingDouble d = kHoodAutoAimMap.getInterpolated(new InterpolatingDouble(range));
 
-        return d == null ? 16 : MathUtil.clamp(d.value, kMinDegree, kMaxDegree);
+        return d == null ? 19 : MathUtil.clamp(d.value, kMinDegree, kMaxDegree);
     }
 }

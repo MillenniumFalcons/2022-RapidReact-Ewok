@@ -5,6 +5,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.List;
 import team3647.lib.vision.AimingParameters;
 import team3647.lib.vision.MultiTargetTracker;
@@ -41,8 +42,17 @@ public class FlightDeck {
         // targetTracker.update(timestamp, List.of(new Pose2d(5.5, 5.5, new Rotation2d())));
     }
 
+    public Pose2d getFieldToCamera(Transform2d turretToCam) {
+        var ftt = robotTracker.getFieldToTurret(Timer.getFPGATimestamp());
+        if (ftt == null) {
+            return null;
+        }
+        return ftt.transformBy(turretToCam);
+    }
+
     private synchronized AimingParameters getAimingParameters(int lastTargetId) {
         List<TrackedTarget> targets = targetTracker.getTrackedTargets();
+        SmartDashboard.putNumber("Number of targets", targets.size());
         if (targets.isEmpty()) {
             return null;
         }

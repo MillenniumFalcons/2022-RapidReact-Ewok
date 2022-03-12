@@ -5,7 +5,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandGroupBase;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -130,7 +129,7 @@ public class Superstructure {
                         .withTimeout(0.1)
                         .andThen(
                                 new WaitUntilCommand(drivetrainStopped),
-                                RepeatCommand.sequence(
+                                CommandGroupBase.sequence(
                                         new WaitUntilCommand(readyToShoot),
                                         feederCommands.retractStopper(),
                                         // Shoot (The second command stops when the first
@@ -138,7 +137,14 @@ public class Superstructure {
                                         new WaitUntilCommand(ballWentThrough)
                                                 .deadlineWith(feederCommands.feedIn(() -> 1.5)),
                                         feederCommands.extendStopper(),
-                                        new WaitCommand(delayBetweenShots))));
+                                        new WaitCommand(delayBetweenShots),
+                                        new WaitUntilCommand(readyToShoot),
+                                        feederCommands.retractStopper(),
+                                        // Shoot (The second command stops when the first
+                                        // command ends)
+                                        new WaitUntilCommand(ballWentThrough)
+                                                .deadlineWith(feederCommands.feedIn(() -> 1.5)),
+                                        feederCommands.extendStopper())));
     }
 
     public Command autoClimbSequnce() {
@@ -281,26 +287,25 @@ public class Superstructure {
 
     public boolean ballWentThrough(
             DoubleSupplier flywheel, DoubleSupplier kicker, double threshold) {
-        return m_flywheel.getVelocity() + threshold < flywheel.getAsDouble()
-                && m_columnTop.getVelocity() + threshold < kicker.getAsDouble();
+        return m_flywheel.getVelocity() + threshold < flywheel.getAsDouble();
     }
 
     public boolean lowBallWentThrough() {
         return ballWentThrough(
                 () -> FlywheelConstants.kLowGoalVelocity,
                 () -> ColumnTopConstants.kLowGoalVelocity,
-                1);
+                0.1);
     }
 
     public boolean batterBallWentThrough() {
         return ballWentThrough(
                 () -> FlywheelConstants.kBatterVelocity,
                 () -> ColumnTopConstants.kBatterVelocity,
-                1);
+                .1);
     }
 
     public boolean autoShootBallWentThrough() {
-        return ballWentThrough(this::getAimedFlywheelSurfaceVel, this::getAimedKickerVelocity, 3);
+        return ballWentThrough(this::getAimedFlywheelSurfaceVel, this::getAimedKickerVelocity, 1);
     }
 
     public boolean getFlywheelReady(DoubleSupplier expectedVelocity) {

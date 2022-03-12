@@ -52,18 +52,18 @@ public class VisionController implements PeriodicSubsystem {
         }
 
         periodicIO.lastTimestamp = periodicIO.inputs.captureTimestamp;
-
+        SmartDashboard.putNumber("SKEW", periodicIO.inputs.skew);
+        SmartDashboard.putNumber("TX", periodicIO.inputs.angleToVisionCenter);
         // Rejects if the target group is too skewed (we noticed this messes up the aiming)
-        if (periodicIO.inputs.skew < -20) {
-            return;
-        }
+        // if (periodicIO.inputs.skew > 8 && periodicIO.inputs.skew < 75) {
+        //     return;
+        // }
 
         int targetCount = periodicIO.inputs.corners.size() / targetConstants.kPointsPerTarget;
         if (targetCount < targetConstants.kMinTargetCount) {
             return;
         }
         List<Translation2d> camToTargetTranslations = new LinkedList<>();
-        System.out.println("Translation #: " + camToTargetTranslations.size());
         // accessing the arrays as if they are 2d linear (c 2d arrays)
 
         periodicIO.inputs.corners.stream()
@@ -91,8 +91,7 @@ public class VisionController implements PeriodicSubsystem {
         SmartDashboard.putNumber("Degrees to circle", angleToCenterCircle.getDegrees());
         SmartDashboard.putNumber("Meters to circle", fitCircle.getNorm());
         synchronized (translationConsumer) {
-            translationConsumer.accept(
-                    periodicIO.inputs.captureTimestamp - kNetworklatency, fitCircle);
+            translationConsumer.accept(periodicIO.inputs.captureTimestamp, fitCircle);
         }
     }
 

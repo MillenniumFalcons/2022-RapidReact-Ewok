@@ -1,6 +1,7 @@
 package team3647.lib.vision;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -17,9 +18,11 @@ public class MultiTargetTracker {
                     tracked.removeOldObservations();
                 } else {
                     foundCorrespondingTarget = tracked.attemptUpdate(timestamp, target);
+                    SmartDashboard.putBoolean("Found Target To update", foundCorrespondingTarget);
                 }
             }
             if (!foundCorrespondingTarget) {
+                System.out.println("Found new target");
                 trackedTargets.add(new TrackedTarget(timestamp, nextId++, target));
             }
         }

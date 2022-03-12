@@ -6,6 +6,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
@@ -25,9 +26,9 @@ public class TurretConstants {
     public static final double kPosThersholdDeg = 1.0;
     public static final boolean kCurrentLimitingEnable = true;
 
-    public static final double kS = 0.513;
-    public static final double kV = 0.0157;
-    public static final double kA = 0.000324;
+    public static final double kS = 0.5;
+    public static final double kV = 0.011614;
+    public static final double kA = 0.005;
 
     public static final double kMaxVelocityDegPs = 45;
     public static final double kMaxAccelerationDegPss = 45;
@@ -51,6 +52,9 @@ public class TurretConstants {
             new Translation2d(Units.inchesToMeters(7), 0);
     public static final Pose2d kTurretToCamFixed =
             new Pose2d(kTurretToCamTranslationMeters, new Rotation2d());
+
+    public static final Transform2d kTurretToCamFixedTransform =
+            new Transform2d(kTurretToCamTranslationMeters, new Rotation2d());
 
     public static final SimpleMotorFeedforward kFeedForwards =
             new SimpleMotorFeedforward(kS, kV, kA);

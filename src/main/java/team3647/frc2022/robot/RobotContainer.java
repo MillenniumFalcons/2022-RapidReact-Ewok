@@ -7,10 +7,10 @@ package team3647.frc2022.robot;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -98,9 +98,7 @@ public class RobotContainer {
                                 () ->
                                         m_superstructure.currentState.shooterState =
                                                 ShooterState.IDLE)
-                        .andThen(
-                                m_superstructure.flywheelCommands.waitToSpinDownThenHold(
-                                        FlywheelConstants.constantVelocityMpS)));
+                        .andThen(m_superstructure.flywheelCommands.waitToSpinDownThenHold(0)));
         // m_turret.setDefaultCommand(
         //         new InstantCommand(
         //                         () ->
@@ -118,6 +116,8 @@ public class RobotContainer {
     }
 
     private void configureButtonBindings() {
+        mainController.leftTrigger.whileActiveContinuous(
+                m_superstructure.flywheelCommands.variableVelocity(this::getShooterSpeed));
         mainController
                 .rightTrigger
                 .whileActiveOnce(m_superstructure.autoAccelerateAndShoot())
@@ -157,13 +157,8 @@ public class RobotContainer {
                         m_superstructure.deployAndRunIntake(this::calculateIntakeSurfaceSpeed))
                 .and(m_superstructure.isShooting.negate())
                 .whileActiveOnce(m_superstructure.runFeeder(this::calculateIntakeSurfaceSpeed));
-        coController.dPadDown.whenHeld(
-                new FunctionalCommand(
-                        () -> {},
-                        () -> m_flywheel.setSurfaceSpeed(getShooterSpeed()),
-                        interrupted -> {},
-                        () -> false,
-                        m_flywheel));
+        coController.dPadDown.whileActiveOnce(
+                m_superstructure.hoodCommands.autoAdjustAngle(this::getHoodDegree));
     }
 
     private void configureSmartDashboardLogging() {
@@ -188,6 +183,27 @@ public class RobotContainer {
                         return new Pose2d();
                     }
                     return aimingParams.getFieldToGoal();
+                });
+        m_printer.addPose(
+                "Turret Pose",
+                () -> {
+                    var turretPose =
+                            m_flightDeck.getTracker().getFieldToTurret(Timer.getFPGATimestamp());
+                    if (turretPose == null) {
+                        return new Pose2d();
+                    }
+                    return turretPose;
+                });
+        m_printer.addPose(
+                "Camera Pose",
+                () -> {
+                    var camPose =
+                            m_flightDeck.getFieldToCamera(
+                                    TurretConstants.kTurretToCamFixedTransform);
+                    if (camPose == null) {
+                        return new Pose2d();
+                    }
+                    return camPose;
                 });
         m_printer.addPose("Drivetrain Pose", m_drivetrain::getPose);
         SmartDashboard.putNumber("Shooter Speed", 0.0);
@@ -316,6 +332,7 @@ public class RobotContainer {
                     HoodContants.kFalconPositionToDegrees,
                     HoodContants.kNominalVoltage,
                     HoodContants.kS,
+                    HoodContants.kCos,
                     GlobalConstants.kDt,
                     HoodContants.kMinDegree,
                     HoodContants.kMaxDegree,

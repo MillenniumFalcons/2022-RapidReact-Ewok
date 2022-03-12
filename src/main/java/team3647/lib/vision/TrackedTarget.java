@@ -34,9 +34,11 @@ public class TrackedTarget {
             observedPositions.put(timestamp, newObserved);
             smoothedPosition = isAlive() ? smoothPosition() : null;
             return true;
+        } else {
+            removeOldObservations();
+            smoothedPosition = isAlive() ? smoothPosition() : null;
+            return false;
         }
-        smoothedPosition = isAlive() ? smoothPosition() : null;
-        return false;
     }
 
     public boolean isAlive() {
