@@ -199,13 +199,40 @@ public class RobotContainer {
                         m_superstructure.deployAndRunIntake(this::calculateIntakeSurfaceSpeed))
                 .and(m_superstructure.isShooting.negate())
                 .whileActiveOnce(m_superstructure.runFeeder(this::calculateIntakeSurfaceSpeed));
-        coController.dPadDown.whenHeld(
+
+        coController.dPadUp.whenPressed(
                 new FunctionalCommand(
                         () -> {},
-                        () -> m_flywheel.setSurfaceSpeed(getShooterSpeed()),
+                        () -> m_hood.setAngleMotionMagic(getHoodDegree()),
                         interrupted -> {},
                         () -> false,
-                        m_flywheel));
+                        m_hood));
+
+        coController.dPadDown.whenHeld(
+                new InstantCommand(m_ballstopper::retract)
+                        .andThen(
+                                new FunctionalCommand(
+                                                () -> {},
+                                                () -> m_flywheel.setSurfaceSpeed(getShooterSpeed()),
+                                                interrupted -> {},
+                                                () -> false,
+                                                m_flywheel)
+                                        .alongWith(
+                                                new FunctionalCommand(
+                                                        () -> {},
+                                                        () ->
+                                                                m_columnTop.setSurfaceVelocity(
+                                                                        getShooterSpeed() * 0.6),
+                                                        interrupted -> {},
+                                                        () -> false,
+                                                        m_columnTop))
+                                        .alongWith(
+                                                new FunctionalCommand(
+                                                        () -> {},
+                                                        () -> m_columnBottom.setOpenloop(0.4),
+                                                        interrupted -> {},
+                                                        () -> false,
+                                                        m_columnBottom))));
     }
 
     private void configureSmartDashboardLogging() {
@@ -233,7 +260,7 @@ public class RobotContainer {
                 });
         m_printer.addPose("Drivetrain Pose", m_drivetrain::getPose);
         SmartDashboard.putNumber("Shooter Speed", 0.0);
-        SmartDashboard.putNumber("Hood angle", 16.0);
+        SmartDashboard.putNumber("Hood angle", 15.0);
     }
 
     /**

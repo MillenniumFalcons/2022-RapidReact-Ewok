@@ -20,9 +20,9 @@ public final class FlywheelConstants {
     public static final double kMaxCurrent = 100;
     public static final double kMaxCurrentDurationSec = 1;
 
-    public static final double kS = 0.537; // 0.57; // 0.74;
-    public static final double kV = 0.25086; // 0.2;
-    public static final double kA = 0.11684; // 0;
+    public static final double kS = 0.272; // 0.73953; // 0.537;
+    public static final double kV = 0.25243; // 0.25086;
+    public static final double kA = 0; // 0.11684;
     public static final SimpleMotorFeedforward kFeedForward =
             new SimpleMotorFeedforward(kS, kV, kA);
     public static final double kNominalVoltage = 10;
@@ -53,9 +53,9 @@ public final class FlywheelConstants {
     public static double constantVelocityMpS = 5;
 
     static {
-        kMasterConfig.slot0.kP = 0.14; // 0.17;
+        kMasterConfig.slot0.kP = 0.14;
         kMasterConfig.slot0.kI = 0;
-        kMasterConfig.slot0.kD = 0.1; // 0.08;
+        kMasterConfig.slot0.kD = 0; // 0.08;
         kMasterConfig.slot0.kF = 0;
 
         kMasterConfig.voltageCompSaturation = kNominalVoltage;
@@ -65,7 +65,9 @@ public final class FlywheelConstants {
         kMasterConfig.supplyCurrLimit.triggerThresholdCurrent = kMaxCurrent;
         kMasterConfig.supplyCurrLimit.triggerThresholdTime = kMaxCurrentDurationSec;
         kMaster.configAllSettings(kMasterConfig, GlobalConstants.kTimeoutMS);
+        kMaster.enableVoltageCompensation(true);
         kFollower.configAllSettings(kMasterConfig, GlobalConstants.kTimeoutMS);
+        kFollower.enableVoltageCompensation(true);
         kMaster.setInverted(kMasterInverted);
 
         for (double[] pair : kFlywheelMap) {
