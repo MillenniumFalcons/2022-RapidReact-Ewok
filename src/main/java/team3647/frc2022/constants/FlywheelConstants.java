@@ -20,9 +20,9 @@ public final class FlywheelConstants {
     public static final double kMaxCurrent = 100;
     public static final double kMaxCurrentDurationSec = 1;
 
-    public static final double kS = 0.272; // 0.73953; // 0.537;
-    public static final double kV = 0.25243; // 0.25086;
-    public static final double kA = 0; // 0.11684;
+    public static final double kS = 0.272; // 0.57; // 0.74;
+    public static final double kV = 0.25086; // 0.2;
+    public static final double kA = 0.11684; // 0;
     public static final SimpleMotorFeedforward kFeedForward =
             new SimpleMotorFeedforward(kS, kV, kA);
     public static final double kNominalVoltage = 10;
@@ -40,12 +40,18 @@ public final class FlywheelConstants {
     public static final double kBatterVelocity = 8.5;
 
     public static final double[][] kFlywheelMap = {
-        {Units.feetToMeters(2) + GlobalConstants.centerOffsetMeters, 8.5},
-        {Units.feetToMeters(6) + GlobalConstants.centerOffsetMeters, 9.8},
-        {Units.feetToMeters(10) + GlobalConstants.centerOffsetMeters, 11},
-        {Units.feetToMeters(14) + GlobalConstants.centerOffsetMeters, 12},
-        {Units.feetToMeters(18) + GlobalConstants.centerOffsetMeters, 13},
-        {Units.feetToMeters(22) + GlobalConstants.centerOffsetMeters, 14.4},
+        {Units.feetToMeters(2) + GlobalConstants.kCenterOffsetMeters, 9.3},
+        {Units.feetToMeters(4) + GlobalConstants.kCenterOffsetMeters, 10.2},
+        {Units.feetToMeters(6) + GlobalConstants.kCenterOffsetMeters, 10.5},
+        {Units.feetToMeters(8) + GlobalConstants.kCenterOffsetMeters, 11.3},
+        {Units.feetToMeters(10) + GlobalConstants.kCenterOffsetMeters, 11.8},
+        {Units.feetToMeters(12) + GlobalConstants.kCenterOffsetMeters, 12},
+        {Units.feetToMeters(14) + GlobalConstants.kCenterOffsetMeters, 12.8},
+        {Units.feetToMeters(16) + GlobalConstants.kCenterOffsetMeters, 13.2},
+        {Units.feetToMeters(18) + GlobalConstants.kCenterOffsetMeters, 13.8},
+        {Units.feetToMeters(20) + GlobalConstants.kCenterOffsetMeters, 14.3},
+        {Units.feetToMeters(22) + GlobalConstants.kCenterOffsetMeters, 15.5},
+        {Units.feetToMeters(24) + GlobalConstants.kCenterOffsetMeters, 16.7},
     };
 
     public static InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble>
@@ -59,7 +65,6 @@ public final class FlywheelConstants {
         kMasterConfig.slot0.kF = 0;
 
         kMasterConfig.voltageCompSaturation = kNominalVoltage;
-        kMasterConfig.openloopRamp = 0;
         kMasterConfig.supplyCurrLimit.enable = kCurrentLimitingEnable;
         kMasterConfig.supplyCurrLimit.currentLimit = kStallCurrent;
         kMasterConfig.supplyCurrLimit.triggerThresholdCurrent = kMaxCurrent;
@@ -69,6 +74,8 @@ public final class FlywheelConstants {
         kFollower.configAllSettings(kMasterConfig, GlobalConstants.kTimeoutMS);
         kFollower.enableVoltageCompensation(true);
         kMaster.setInverted(kMasterInverted);
+        kMaster.enableVoltageCompensation(true);
+        kFollower.enableVoltageCompensation(true);
 
         for (double[] pair : kFlywheelMap) {
             kFlywheelAutoAimMap.put(
@@ -79,7 +86,7 @@ public final class FlywheelConstants {
     public static double getFlywheelRPM(double range) {
         InterpolatingDouble d = kFlywheelAutoAimMap.getInterpolated(new InterpolatingDouble(range));
 
-        return d == null ? 6000 : MathUtil.clamp(d.value, 7, 35);
+        return d == null ? 10.5 : MathUtil.clamp(d.value, 7, 35);
     }
 
     private FlywheelConstants() {}

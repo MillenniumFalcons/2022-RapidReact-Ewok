@@ -2,14 +2,14 @@ package team3647.frc2022.subsystems;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandGroupBase;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.ScheduleCommand;
-import edu.wpi.first.wpilibj2.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import team3647.frc2022.commands.ClimberCommands;
@@ -49,7 +49,8 @@ public class Superstructure {
             Hood m_hood,
             Flywheel m_flywheel,
             Ballstopper ballstopper,
-            StatusLED statusLEDs) {
+            StatusLED statusLEDs,
+            BooleanSupplier drivetrainStopped) {
         this.deck = deck;
         this.m_climber = m_climber;
         this.m_columnBottom = m_columnBottom;
@@ -60,6 +61,7 @@ public class Superstructure {
         this.m_flywheel = m_flywheel;
         this.m_ballstopper = ballstopper;
         this.m_statusLED = statusLEDs;
+        this.drivetrainStopped = drivetrainStopped;
 
         flywheelCommands = new FlywheelCommands(m_flywheel);
         hoodCommands = new HoodCommands(m_hood);
@@ -74,14 +76,16 @@ public class Superstructure {
         newTargetTrigger = new Trigger(this::hasNewTarget);
         isShooting = new Trigger(this::isShooting);
         isAiming = new Trigger(this::isAiming);
-        fullyReadyToShoot = new Trigger(this::getReadyToAutoShoot);
+        fullyReadyToShoot = new Trigger(this::readyToAutoShoot);
     }
 
     public Command autoAccelerateAndShoot() {
         return accelerateAndShoot(
                 this::getAimedFlywheelSurfaceVel,
                 this::getAimedKickerVelocity,
-                this::getReadyToAutoShoot);
+                this::readyToAutoShoot,
+                this::autoShootBallWentThrough,
+                0.7);
     }
 
     public Command batterAccelerateAndShoot() {
@@ -90,7 +94,9 @@ public class Superstructure {
                         accelerateAndShoot(
                                 () -> FlywheelConstants.kBatterVelocity,
                                 () -> ColumnTopConstants.kBatterVelocity,
-                                this::getReadyToBatter));
+                                this::readyToBatter,
+                                this::batterBallWentThrough,
+                                0.5));
     }
 
     public Command lowAccelerateAndShoot() {
@@ -99,63 +105,61 @@ public class Superstructure {
                         accelerateAndShoot(
                                 () -> FlywheelConstants.kLowGoalVelocity,
                                 () -> ColumnTopConstants.kLowGoalVelocity,
-                                this::getReadyToLowGoal));
+                                this::readyToLowGoal,
+                                this::lowBallWentThrough,
+                                0));
     }
 
     public Command accelerateAndShoot(
             DoubleSupplier flywhelVelocity,
             DoubleSupplier kickerVelocity,
-            BooleanSupplier readyToShoot) {
-        return new InstantCommand(() -> currentState.shooterState = ShooterState.SHOOT)
-                .alongWith(
-                        flywheelCommands.variableVelocity(flywhelVelocity),
-                        columnTopCommands
-                                .getRunOutwards()
-                                .withTimeout(0.2)
-                                .andThen(columnTopCommands.getGoVariableVelocity(kickerVelocity)),
-                        feederCommands
-                                .runColumnBottomOut()
-                                .withTimeout(0.2)
-                                .andThen(
+            BooleanSupplier readyToShoot,
+            BooleanSupplier ballWentThrough,
+            double delayBetweenShots) {
+
+        return CommandGroupBase.parallel(
+                new InstantCommand(() -> currentState.shooterState = ShooterState.SHOOT),
+                flywheelCommands.variableVelocity(flywhelVelocity),
+                columnTopCommands
+                        .getRunOutwards()
+                        .withTimeout(0.1)
+                        .andThen(columnTopCommands.getGoVariableVelocity(kickerVelocity)),
+                feederCommands
+                        .runColumnBottomOut()
+                        .withTimeout(0.1)
+                        .andThen(
+                                new WaitUntilCommand(drivetrainStopped),
+                                CommandGroupBase.sequence(
                                         new WaitUntilCommand(readyToShoot),
                                         feederCommands.retractStopper(),
-                                        waitUntilAndTimeout(() -> !readyToShoot.getAsBoolean(), 0.5)
-                                                .deadlineWith(
-                                                        feederCommands.feedIn(() -> 1.5, () -> 1)),
+                                        // Shoot (The second command stops when the first
+                                        // command ends)
+                                        new WaitUntilCommand(ballWentThrough)
+                                                .deadlineWith(feederCommands.feedIn(() -> 1.5)),
                                         feederCommands.extendStopper(),
-                                        waitUntilAndTimeout(readyToShoot, 0.4),
+                                        new WaitCommand(delayBetweenShots),
+                                        new WaitUntilCommand(readyToShoot),
                                         feederCommands.retractStopper(),
-                                        waitUntilAndTimeout(() -> !readyToShoot.getAsBoolean(), 2)
-                                                .deadlineWith(
-                                                        feederCommands.feedIn(() -> 4, () -> 1)),
-                                        feederCommands.extendStopper()));
+                                        // Shoot (The second command stops when the first
+                                        // command ends)
+                                        new WaitUntilCommand(ballWentThrough)
+                                                .deadlineWith(feederCommands.feedIn(() -> 1.5)),
+                                        feederCommands.extendStopper())));
     }
 
     public Command autoClimbSequnce() {
         return new ConditionalCommand(
                         climberCommands.toNextRung(),
-                        new InstantCommand(
+                        CommandGroupBase.sequence(
+                                new InstantCommand(
                                         () -> {
                                             currentState.climberState = ClimberState.CLIMB;
                                             currentState.turretState = TurretState.HOLD_POSITION;
-                                        })
-                                .andThen(
-                                        turretCommands
-                                                .motionMagic(0)
-                                                .andThen(climberCommands.deploy())),
+                                        }),
+                                turretCommands.motionMagic(0),
+                                climberCommands.deploy()),
                         this::isClimbing)
                 .alongWith(new ScheduleCommand(flywheelCommands.stop()));
-    }
-
-    public Command spinupUpToDistance(double maxDistance) {
-        return flywheelCommands.variableVelocity(
-                () ->
-                        FlywheelConstants.getFlywheelRPM(
-                                Math.min(getDistanceToTarget(), maxDistance)));
-    }
-
-    public Command batterSpinup() {
-        return flywheelCommands.variableVelocity(() -> 0.304);
     }
 
     public Command extendClimberIfClimbing() {
@@ -198,34 +202,33 @@ public class Superstructure {
     }
 
     public Command runFeeder(DoubleSupplier surfaceVelocity) {
+        return feederCommands.extendStopper().andThen(feederCommands.feedIn(surfaceVelocity));
+    }
+
+    public Command intakeInThenManual(DoubleSupplier manual) {
+        return intakeCommands
+                .openLoopAndStop(0.3)
+                .withTimeout(0.5)
+                .andThen(
+                        new RunCommand(
+                                () -> {
+                                    var leftY = manual.getAsDouble();
+                                    m_intake.setOpenloop(leftY * leftY * leftY);
+                                },
+                                m_intake));
+    }
+
+    public Command feederInThenManual(DoubleSupplier manual) {
         return feederCommands
-                .extendStopper()
-                .andThen(feederCommands.feedIn(surfaceVelocity, surfaceVelocity));
-    }
-
-    public Command waitUntilAndTimeout(BooleanSupplier interrupt, double timeoutSec) {
-        Timer m_timer = new Timer();
-        return new Command() {
-            @Override
-            public void initialize() {
-                m_timer.reset();
-                m_timer.start();
-            }
-
-            @Override
-            public boolean isFinished() {
-                return m_timer.hasElapsed(timeoutSec) && interrupt.getAsBoolean();
-            }
-
-            @Override
-            public Set<Subsystem> getRequirements() {
-                return new HashSet<>();
-            }
-        };
-    }
-
-    public AimingParameters getAimingParameters() {
-        return aimingParameters;
+                .feedIn(() -> 2.5)
+                .withTimeout(0.5)
+                .andThen(
+                        new RunCommand(
+                                () -> {
+                                    var leftY = manual.getAsDouble();
+                                    m_columnBottom.setOpenloop(leftY * leftY * leftY);
+                                },
+                                m_columnBottom));
     }
 
     public void periodic(double timestamp) {
@@ -235,18 +238,6 @@ public class Superstructure {
             kickerVelocity = flywheelVelocity * 0.5;
             hoodAngle = HoodContants.getHoodAngle(aimingParameters.getRangeMeters());
         }
-    }
-
-    public boolean isClimbing() {
-        return currentState.climberState == ClimberState.CLIMB;
-    }
-
-    public boolean hasTarget() {
-        return getAimingParameters() != null;
-    }
-
-    public RobotState getRobotState() {
-        return currentState;
     }
 
     public boolean hasNewTarget() {
@@ -264,7 +255,7 @@ public class Superstructure {
         return aimingParameters.getRangeMeters();
     }
 
-    public boolean getReadyToShoot(
+    public boolean readyToShoot(
             DoubleSupplier flywheel, DoubleSupplier kicker, DoubleSupplier hood) {
         return getFlywheelReady(flywheel)
                 && Math.abs(m_columnTop.getVelocity() - kicker.getAsDouble()) < 0.5
@@ -273,29 +264,56 @@ public class Superstructure {
                 && Math.abs(m_columnTop.getVelocity()) > 2;
     }
 
-    public boolean getReadyToLowGoal() {
-        return getReadyToShoot(
+    public boolean readyToLowGoal() {
+        return readyToShoot(
                 () -> FlywheelConstants.kLowGoalVelocity,
                 () -> ColumnTopConstants.kLowGoalVelocity,
                 () -> HoodContants.kLowGoalAngle);
     }
 
-    public boolean getReadyToBatter() {
-        return getReadyToShoot(
+    public boolean readyToBatter() {
+        return readyToShoot(
                 () -> FlywheelConstants.kBatterVelocity,
                 () -> ColumnTopConstants.kBatterVelocity,
                 () -> HoodContants.kBatterAngle);
     }
 
-    public boolean getReadyToAutoShoot() {
-        return getReadyToShoot(
+    public boolean readyToAutoShoot() {
+        return readyToShoot(
                 this::getAimedFlywheelSurfaceVel,
                 this::getAimedKickerVelocity,
                 this::getAimedHoodAngle);
     }
 
+    public boolean ballWentThrough(
+            DoubleSupplier flywheel, DoubleSupplier kicker, double threshold) {
+        return m_flywheel.getVelocity() + threshold < flywheel.getAsDouble();
+    }
+
+    public boolean lowBallWentThrough() {
+        return ballWentThrough(
+                () -> FlywheelConstants.kLowGoalVelocity,
+                () -> ColumnTopConstants.kLowGoalVelocity,
+                0.1);
+    }
+
+    public boolean batterBallWentThrough() {
+        return ballWentThrough(
+                () -> FlywheelConstants.kBatterVelocity,
+                () -> ColumnTopConstants.kBatterVelocity,
+                .1);
+    }
+
+    public boolean autoShootBallWentThrough() {
+        return ballWentThrough(this::getAimedFlywheelSurfaceVel, this::getAimedKickerVelocity, 1);
+    }
+
     public boolean getFlywheelReady(DoubleSupplier expectedVelocity) {
         return Math.abs(m_flywheel.getVelocity() - expectedVelocity.getAsDouble()) < 0.1;
+    }
+
+    public AimingParameters getAimingParameters() {
+        return aimingParameters;
     }
 
     public double getAimedFlywheelSurfaceVel() {
@@ -310,6 +328,10 @@ public class Superstructure {
         return hoodAngle;
     }
 
+    public RobotState getRobotState() {
+        return currentState;
+    }
+
     public boolean isShooting() {
         return currentState.shooterState == ShooterState.SHOOT;
     }
@@ -318,8 +340,12 @@ public class Superstructure {
         return currentState.turretState == TurretState.AIM;
     }
 
-    public double getIntakeSurfaceVel() {
-        return 0.0;
+    public boolean isClimbing() {
+        return currentState.climberState == ClimberState.CLIMB;
+    }
+
+    public boolean hasTarget() {
+        return getAimingParameters() != null;
     }
 
     public void configLEDTriggers() {
@@ -415,6 +441,7 @@ public class Superstructure {
     private final Flywheel m_flywheel;
     private final Ballstopper m_ballstopper;
     private final StatusLED m_statusLED;
+    private final BooleanSupplier drivetrainStopped;
 
     public final FlywheelCommands flywheelCommands;
     public final HoodCommands hoodCommands;

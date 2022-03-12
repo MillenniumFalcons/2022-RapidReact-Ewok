@@ -50,13 +50,20 @@ public class VisionController implements PeriodicSubsystem {
         if (periodicIO.lastTimestamp == periodicIO.inputs.captureTimestamp) {
             return;
         }
+
         periodicIO.lastTimestamp = periodicIO.inputs.captureTimestamp;
+        SmartDashboard.putNumber("SKEW", periodicIO.inputs.skew);
+        SmartDashboard.putNumber("TX", periodicIO.inputs.angleToVisionCenter);
+        // Rejects if the target group is too skewed (we noticed this messes up the aiming)
+        // if (periodicIO.inputs.skew > 8 && periodicIO.inputs.skew < 75) {
+        //     return;
+        // }
+
         int targetCount = periodicIO.inputs.corners.size() / targetConstants.kPointsPerTarget;
         if (targetCount < targetConstants.kMinTargetCount) {
             return;
         }
         List<Translation2d> camToTargetTranslations = new LinkedList<>();
-        System.out.println("Translation #: " + camToTargetTranslations.size());
         // accessing the arrays as if they are 2d linear (c 2d arrays)
 
         periodicIO.inputs.corners.stream()
@@ -73,13 +80,18 @@ public class VisionController implements PeriodicSubsystem {
                         targetConstants.kTargetDiameterMeters / 2.0,
                         camToTargetTranslations,
                         kCircleFitPrecision);
-        SmartDashboard.putNumber(
-                "Degrees to circle",
-                new Rotation2d(fitCircle.getX(), fitCircle.getY()).getDegrees());
+        var angleToCenterCircle = new Rotation2d(fitCircle.getX(), fitCircle.getY());
+
+        // The difference between angle to center of circle, and angle to center of vision tape
+        // group should be at most 10*
+        if (Math.abs(angleToCenterCircle.getDegrees() - periodicIO.inputs.angleToVisionCenter)
+                > 10) {
+            return;
+        }
+        SmartDashboard.putNumber("Degrees to circle", angleToCenterCircle.getDegrees());
         SmartDashboard.putNumber("Meters to circle", fitCircle.getNorm());
         synchronized (translationConsumer) {
-            translationConsumer.accept(
-                    periodicIO.inputs.captureTimestamp - kNetworklatency, fitCircle);
+            translationConsumer.accept(periodicIO.inputs.captureTimestamp, fitCircle);
         }
     }
 
@@ -163,14 +175,15 @@ public class VisionController implements PeriodicSubsystem {
         // This plane is the XZ plane, so the y component of the translation is actually Z
         double z = xzPlaneTranslation.getY();
 
-        double heightDiff = targetHeightMeters - camConstants.kCameraHeightMeters;
-        if (z < 0.0 != heightDiff < 0.0) {
-            return null;
+        double heightDiff = camConstants.kCameraHeightMeters - targetHeightMeters;
+        if ((z < 0.0) == (heightDiff > 0.0)) {
+            double scale = heightDiff / -z;
+            double range = Math.hypot(x, y) * scale;
+            Rotation2d angleToTarget = new Rotation2d(x, y);
+            return new Translation2d(
+                    range * angleToTarget.getCos(), range * angleToTarget.getSin());
         }
-        double scale = heightDiff / z;
-        double range = Math.hypot(x, y) * scale;
-        Rotation2d angleToTarget = new Rotation2d(x, y);
-        return new Translation2d(range, angleToTarget);
+        return null;
         // return new Translation2d(range * angleToTarget.getCos(), range * angleToTarget.getSin());
     }
 

@@ -8,10 +8,10 @@ import java.util.TreeMap;
 
 /** 254 GoalTrack class */
 public class TrackedTarget {
-    private static final double kCamFrameRate = 90;
+    private static final double kCamFrameRate = 22;
     private static final double kMaxTrackedTargetAge = 2.5; // seconds
-    private static final double kMaxTracedTargetSmoothingTime = 0.5;
-    private static final double kMaxTrackerDistance = 9.0;
+    private static final double kMaxTracedTargetSmoothingTime = 1;
+    private static final double kMaxTrackerDistance = 0.20;
 
     public final int id;
     private final TreeMap<Double, Pose2d> observedPositions = new TreeMap<>();
@@ -34,9 +34,11 @@ public class TrackedTarget {
             observedPositions.put(timestamp, newObserved);
             smoothedPosition = isAlive() ? smoothPosition() : null;
             return true;
+        } else {
+            removeOldObservations();
+            smoothedPosition = isAlive() ? smoothPosition() : null;
+            return false;
         }
-        smoothedPosition = isAlive() ? smoothPosition() : null;
-        return false;
     }
 
     public boolean isAlive() {

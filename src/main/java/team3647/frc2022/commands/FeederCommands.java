@@ -45,16 +45,7 @@ public class FeederCommands {
         return new InstantCommand(ballstopper::retract);
     }
 
-    // public Command runVerticalRollers(DoubleSupplier surfaceSpeed) {
-    //     return new FunctionalCommand(
-    //             () -> {},
-    //             () -> verticalRollers.setSurfaceVelocity(surfaceSpeed.getAsDouble()),
-    //             interrupted -> verticalRollers.setOpenloop(0),
-    //             () -> false,
-    //             verticalRollers);
-    // }
-
-    public Command feedIn(DoubleSupplier columnSpeed, DoubleSupplier verticalSpeed) {
+    public Command feedIn(DoubleSupplier columnSpeed) {
         return runColumnBottom(columnSpeed);
     }
 }

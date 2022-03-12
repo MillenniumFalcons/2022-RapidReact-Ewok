@@ -9,6 +9,7 @@ public class Hood extends TalonFXSubsystem {
     private final double maxPosDeg;
     private final double posThresholdDeg;
     private final double kS;
+    private final double kCos;
 
     public Hood(
             TalonFX master,
@@ -16,6 +17,7 @@ public class Hood extends TalonFXSubsystem {
             double positionConversion,
             double nominalVoltage,
             double kS,
+            double kCos,
             double kDt,
             double minPosDeg,
             double maxPosDeg,
@@ -25,15 +27,19 @@ public class Hood extends TalonFXSubsystem {
         this.maxPosDeg = maxPosDeg;
         this.posThresholdDeg = posThresholdDeg;
         this.kS = kS;
+        this.kCos = kCos;
         setStatusFramesThatDontMatter(master, kLongStatusTimeMS, kTimeoutMS);
         resetEncoder();
+        setToBrake();
     }
 
     public void setAngleMotionMagic(double angle) {
-        double multiplier = Math.signum(angle - getAngle()) * 0.575;
+        double multiplier = Math.signum(angle - getAngle());
+        double gravityVoltage = Math.cos(Math.toRadians(angle - minPosDeg)) * kCos;
+
         super.setPositionMotionMagic(
                 MathUtil.clamp(angle, minPosDeg + posThresholdDeg, maxPosDeg - posThresholdDeg),
-                kS * multiplier);
+                kS * multiplier + gravityVoltage);
     }
 
     public void setAngle(double angle) {

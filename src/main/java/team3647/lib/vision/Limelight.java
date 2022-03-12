@@ -22,6 +22,8 @@ public class Limelight implements IVisionCamera {
     private final String ip;
     private final CamConstants kCamConstants;
     private boolean validEntry = false;
+    private double skew = 0.0;
+    private double tx = 0.0;
 
     private List<VisionPoint> corners;
     private double captureTimestamp = 0.0;
@@ -62,6 +64,8 @@ public class Limelight implements IVisionCamera {
         inputs.corners = this.corners;
         inputs.captureTimestamp = captureTimestamp;
         inputs.validEntry = validEntry;
+        inputs.skew = this.skew;
+        inputs.angleToVisionCenter = -tx;
     }
 
     private void processNTEvent(EntryNotification notification) {
@@ -73,10 +77,11 @@ public class Limelight implements IVisionCamera {
         if (!validEntry) {
             return;
         }
-        double timestamp =
-                Timer.getFPGATimestamp() - getDouble(Data.LATNECY_MS) / 1000.0 - extraLatencySec;
+        skew = getDouble(Data.SKEW);
+        tx = getDouble(Data.X);
+        double timestamp = Timer.getFPGATimestamp() - getDouble(Data.LATNECY_MS) / 1000.0 - 0.011;
         synchronized (Limelight.this) {
-            captureTimestamp = timestamp;
+            captureTimestamp = timestamp - 0.011;
             corners = new LinkedList<>();
             for (int i = 0; i < latestRawCorners.length - 1; i += 2) {
                 corners.add(new VisionPoint(latestRawCorners[i], latestRawCorners[i + 1]));

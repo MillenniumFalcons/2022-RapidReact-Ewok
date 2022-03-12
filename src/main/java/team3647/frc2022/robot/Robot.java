@@ -28,15 +28,15 @@ public class Robot extends TimedRobot {
         super(.02);
         addPeriodic(
                 m_robotContainer.m_drivetrain::readPeriodicInputs,
-                kTwentyMSLoopTime,
+                kTenMSLoopTime,
                 .004); // 2.5MS offset
         addPeriodic(
                 m_robotContainer.m_turret::readPeriodicInputs,
-                kTwentyMSLoopTime,
+                kTenMSLoopTime,
                 .01); // 5.0 MS offset
         addPeriodic(
                 m_robotContainer.m_flightDeck.getTracker()::update,
-                kTwentyMSLoopTime,
+                kTenMSLoopTime,
                 .016); // 7.5 MS offset
         addPeriodic(
                 () -> m_robotContainer.m_superstructure.periodic(Timer.getFPGATimestamp()),
