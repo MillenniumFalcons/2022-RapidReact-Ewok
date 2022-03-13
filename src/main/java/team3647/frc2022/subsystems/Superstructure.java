@@ -85,7 +85,7 @@ public class Superstructure {
                 this::getAimedKickerVelocity,
                 this::readyToAutoShoot,
                 this::autoShootBallWentThrough,
-                0.7);
+                0.2);
     }
 
     public Command batterAccelerateAndShoot() {
@@ -107,7 +107,7 @@ public class Superstructure {
                                 () -> ColumnTopConstants.kLowGoalVelocity,
                                 this::readyToLowGoal,
                                 this::lowBallWentThrough,
-                                0));
+                                0.1));
     }
 
     public Command accelerateAndShoot(

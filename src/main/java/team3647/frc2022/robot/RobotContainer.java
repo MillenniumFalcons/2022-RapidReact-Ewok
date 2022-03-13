@@ -143,6 +143,7 @@ public class RobotContainer {
                 .buttonA
                 .whileActiveOnce(m_superstructure.lowAccelerateAndShoot())
                 .whileActiveOnce(m_superstructure.turretCommands.motionMagic(0).perpetually())
+                .whileActiveOnce(m_superstructure.intakeCommands.runOpenLoop(.6).withTimeout(0.5))
                 .whileActiveOnce(
                         m_superstructure
                                 .hoodCommands

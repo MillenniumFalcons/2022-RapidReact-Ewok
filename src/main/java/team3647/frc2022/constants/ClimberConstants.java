@@ -35,9 +35,9 @@ public final class ClimberConstants {
     public static final double kRevSoftLimit = 0;
     public static final double kFwdSoftLimit = 1000000; // Native units
 
-    public static final double kLengthJustOverLowBar = Units.inchesToMeters(25);
-    public static final double kMaxLengthAngled = Units.inchesToMeters(30);
-    public static final double kMaxLengthStraight = Units.inchesToMeters(27);
+    public static final double kLengthJustOverLowBar = Units.inchesToMeters(29);
+    public static final double kMaxLengthAngled = Units.inchesToMeters(36);
+    public static final double kMaxLengthStraight = Units.inchesToMeters(32);
     public static final double kLengthFromStaticHooksToAboveBar = Units.inchesToMeters(10);
 
     public static final TalonFXConfiguration kLeftConfig = new TalonFXConfiguration();

@@ -22,7 +22,7 @@ public class HoodContants {
     public static final double kMaxDegree = 40;
     public static final double kMinDegree = 15;
     public static final double kBatterAngle = 15;
-    public static final double kLowGoalAngle = 40;
+    public static final double kLowGoalAngle = 39;
     public static final double kPosThersholdDeg = 0.5;
     public static final boolean kCurrentLimitingEnable = false;
     public static final double kS = 0.451; // 0.85317;

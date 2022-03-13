@@ -8,7 +8,7 @@ public final class GlobalConstants {
     public static final PneumaticsModuleType kPCMType = PneumaticsModuleType.CTREPCM;
     public static final double kDt = 0.02; // 20ms loop
     public static final int kTimeoutMS = 255;
-    public static double kCenterOffsetMeters = Units.inchesToMeters(34) + Units.inchesToMeters(20);
+    public static double kCenterOffsetMeters = Units.inchesToMeters(34);
     public static double kDistanceTarmacToGoalCenter = Units.inchesToMeters(84);
     public static double kDistanceFarToGoalCenter = Units.feetToMeters(14) + kCenterOffsetMeters;
 

@@ -20,7 +20,7 @@ public final class FlywheelConstants {
     public static final double kMaxCurrent = 100;
     public static final double kMaxCurrentDurationSec = 1;
 
-    public static final double kS = 0.272; // 0.57; // 0.74;
+    public static final double kS = 0.31; // 0.57; // 0.74;
     public static final double kV = 0.25086; // 0.2;
     public static final double kA = 0.11684; // 0;
     public static final SimpleMotorFeedforward kFeedForward =
@@ -59,7 +59,7 @@ public final class FlywheelConstants {
     public static double constantVelocityMpS = 5;
 
     static {
-        kMasterConfig.slot0.kP = 0.14;
+        kMasterConfig.slot0.kP = 0.13; // 0.14
         kMasterConfig.slot0.kI = 0;
         kMasterConfig.slot0.kD = 0; // 0.08;
         kMasterConfig.slot0.kF = 0;
