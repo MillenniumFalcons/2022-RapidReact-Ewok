@@ -74,4 +74,8 @@ public class GroupPrinter implements Subsystem {
             field.getObject(entry.getKey()).setPose(pose);
         }
     }
+
+    public Field2d getField() {
+        return field;
+    }
 }

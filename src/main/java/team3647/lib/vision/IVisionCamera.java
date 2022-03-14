@@ -13,6 +13,7 @@ public interface IVisionCamera {
         public boolean validEntry = false;
         public double skew = 0.0;
         public double angleToVisionCenter = 0;
+        public double pitchToVisionCenter = 0;
     }
 
     public static class LEDMode extends NamedInt {

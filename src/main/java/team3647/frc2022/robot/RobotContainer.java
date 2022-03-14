@@ -5,6 +5,8 @@
 package team3647.frc2022.robot;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.Timer;
@@ -14,11 +16,14 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import java.util.LinkedList;
+import java.util.List;
 import team3647.frc2022.autonomous.AutoCommands;
 import team3647.frc2022.autonomous.AutoConstants;
 import team3647.frc2022.commands.ArcadeDrive;
 import team3647.frc2022.constants.*;
 import team3647.frc2022.states.ShooterState;
+import team3647.frc2022.states.TurretState;
 import team3647.frc2022.subsystems.Ballstopper;
 import team3647.frc2022.subsystems.ClimberArm;
 import team3647.frc2022.subsystems.ColumnBottom;
@@ -99,15 +104,15 @@ public class RobotContainer {
                                         m_superstructure.currentState.shooterState =
                                                 ShooterState.IDLE)
                         .andThen(m_superstructure.flywheelCommands.waitToSpinDownThenHold(0)));
-        // m_turret.setDefaultCommand(
-        //         new InstantCommand(
-        //                         () ->
-        //                                 m_superstructure.currentState.turretState =
-        //                                         TurretState.HOLD_POSITION)
-        //                 .andThen(m_superstructure.turretCommands.holdPositionAtCall()));
         m_turret.setDefaultCommand(
-                new RunCommand(
-                        () -> m_turret.setOpenloop(coController.getRightStickX()), m_turret));
+                new InstantCommand(
+                                () ->
+                                        m_superstructure.currentState.turretState =
+                                                TurretState.HOLD_POSITION)
+                        .andThen(m_superstructure.turretCommands.holdPositionAtCall()));
+        // m_turret.setDefaultCommand(
+        //         new RunCommand(
+        //                 () -> m_turret.setOpenloop(coController.getRightStickX()), m_turret));
         m_pivotClimber.setDefaultCommand(new RunCommand(m_pivotClimber::end, m_pivotClimber));
         m_intake.setDefaultCommand(
                 m_superstructure.intakeInThenManual(coController::getLeftStickY));
@@ -176,6 +181,7 @@ public class RobotContainer {
         m_printer.addDouble("Left Climber", m_pivotClimber::getLeftPosition);
         m_printer.addDouble("Right Climber", m_pivotClimber::getRightPosition);
         m_printer.addBoolean("Right stick", () -> mainController.rightJoyStickPress.get());
+        m_printer.addDouble("Target Range", m_superstructure::getDistanceToTarget);
         m_printer.addPose(
                 "Vision Pose",
                 () -> {
@@ -234,6 +240,17 @@ public class RobotContainer {
         double rightVel = Math.abs(m_drivetrain.getRightVelocity());
         double max = Math.max(leftVel, rightVel) * 2;
         return max < 3 ? 3 : max;
+    }
+
+    private final Translation2d toCenter = new Translation2d(5, 5);
+
+    public void updateTapeTranslations(List<Translation2d> translations) {
+        List<Pose2d> poses = new LinkedList<>();
+        translations.stream()
+                .map((translation) -> new Pose2d(translation, new Rotation2d()))
+                .map(m_flightDeck::getInFieldCoordinatesFromCamera)
+                .forEach(poses::add);
+        m_printer.getField().getObject("Tapes").setPoses(poses);
     }
 
     private final CommandScheduler m_commandScheduler = CommandScheduler.getInstance();
@@ -371,7 +388,8 @@ public class RobotContainer {
             new VisionController(
                     new Limelight("10.36.47.15", 0.06, VisionConstants.limelightConstants),
                     VisionConstants.kCenterGoalTargetConstants,
-                    m_flightDeck::addVisionObservation);
+                    m_flightDeck::addVisionObservation,
+                    this::updateTapeTranslations);
     final Superstructure m_superstructure =
             new Superstructure(
                     m_flightDeck,

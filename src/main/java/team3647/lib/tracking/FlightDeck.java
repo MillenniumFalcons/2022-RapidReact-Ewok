@@ -42,6 +42,15 @@ public class FlightDeck {
         // targetTracker.update(timestamp, List.of(new Pose2d(5.5, 5.5, new Rotation2d())));
     }
 
+    public synchronized Pose2d getInFieldCoordinatesFromCamera(Pose2d pose) {
+        Pose2d fieldToTurret = robotTracker.getFieldToTurret(Timer.getFPGATimestamp());
+        if (fieldToTurret == null || pose == null) {
+            return new Pose2d();
+        }
+        Transform2d camToGoalTransform = new Transform2d(new Pose2d(), pose);
+        return fieldToTurret.transformBy(kTurretToCamTransform).transformBy(camToGoalTransform);
+    }
+
     public Pose2d getFieldToCamera(Transform2d turretToCam) {
         var ftt = robotTracker.getFieldToTurret(Timer.getFPGATimestamp());
         if (ftt == null) {

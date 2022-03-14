@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import team3647.lib.PeriodicSubsystem;
 import team3647.lib.vision.CircleFitter;
 import team3647.lib.vision.IVisionCamera;
@@ -25,6 +26,7 @@ public class VisionController implements PeriodicSubsystem {
     private static final double kCircleFitPrecision = 0.01;
     private static final double kNetworklatency = 0.06;
     private final double targetAverageHeightMeters;
+    private final Consumer<List<Translation2d>> tapeTranslationConsumer;
 
     private static final class PeriodicIO {
         public final VisionInputs inputs = new VisionInputs();
@@ -34,7 +36,8 @@ public class VisionController implements PeriodicSubsystem {
     public VisionController(
             IVisionCamera camera,
             VisionTargetConstants targetConstants,
-            BiConsumer<Double, Translation2d> translationConsumer) {
+            BiConsumer<Double, Translation2d> translationConsumer,
+            Consumer<List<Translation2d>> tapeTranslation) {
         this.camera = camera;
         this.targetConstants = targetConstants;
         this.translationConsumer = translationConsumer;
@@ -42,6 +45,7 @@ public class VisionController implements PeriodicSubsystem {
         targetAverageHeightMeters =
                 (targetConstants.kTopTargetHeightMeters + targetConstants.kBottomTargetHeightMeters)
                         / 2.0;
+        tapeTranslationConsumer = tapeTranslation;
     }
 
     @Override
@@ -74,6 +78,24 @@ public class VisionController implements PeriodicSubsystem {
                 < targetConstants.kMinTargetCount * targetConstants.kPointsPerTarget) {
             return;
         }
+
+        tapeTranslationConsumer.accept(camToTargetTranslations);
+        Translation2d closest = camToTargetTranslations.get(0);
+        for (var translation : camToTargetTranslations) {
+            if (translation.getNorm() < closest.getNorm()) {
+                closest = translation;
+            }
+        }
+
+        SmartDashboard.putNumber("Distance to closest", closest.getNorm());
+        double a1a2 =
+                camera.getConstants().kHorizontalToLens.getRadians()
+                        + Math.toRadians(periodicIO.inputs.pitchToVisionCenter);
+        double naiveDistance =
+                (targetConstants.kBottomTargetHeightMeters
+                                - this.camera.getConstants().kCameraHeightMeters)
+                        / Math.tan(a1a2);
+        SmartDashboard.putNumber("Naive Distance", naiveDistance);
 
         var fitCircle =
                 CircleFitter.fit(
