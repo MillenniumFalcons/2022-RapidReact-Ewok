@@ -82,7 +82,7 @@ public class RobotContainer {
         m_drivetrain.setOdometry(
                 AutoConstants.positionOnTarmacParallel,
                 AutoConstants.positionOnTarmacParallel.getRotation());
-        runningAutoSequence = autoCommands.getStraightTurn();
+        runningAutoSequence = autoCommands.getLowFive();
         m_ballstopper.extend();
     }
 
@@ -403,17 +403,6 @@ public class RobotContainer {
                     m_statusLED,
                     m_drivetrain::isStopped);
     private final Command runningAutoSequence;
-    /*private final AutoCommands autoCommands =
-    new AutoCommands(
-            m_drivetrain,
-            DrivetrainConstants.kDriveKinematics,
-            m_superstructure.getBallstopIntakeCommand(() -> 0.4),
-            m_superstructure.getAimTurretCommand(),
-            m_superstructure
-                    .turretCommands
-                    .getTurretMotionMagic(0)
-                    .alongWith(m_superstructure.getBatterSpinupCommand()),
-            m_superstructure.getShootCommand());*/
     private final AutoCommands autoCommands =
             new AutoCommands(m_drivetrain, DrivetrainConstants.kDriveKinematics, m_superstructure);
 }

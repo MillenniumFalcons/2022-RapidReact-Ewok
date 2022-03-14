@@ -97,12 +97,4 @@ public class Trajectories {
                     List.of(),
                     AutoConstants.upperPositionOnTarmac,
                     forwardTrajectoryConfigSlow);
-
-    // straight to test characterization
-    public static Trajectory straightPath =
-            TrajectoryGenerator.generateTrajectory(
-                    AutoConstants.startingStraight,
-                    List.of(),
-                    AutoConstants.endingTurn,
-                    forwardTrajectoryConfigSlow);
 }

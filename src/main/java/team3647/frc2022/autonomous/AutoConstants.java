@@ -2,7 +2,6 @@ package team3647.frc2022.autonomous;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 
 // previous contants.cField
@@ -23,23 +22,23 @@ public class AutoConstants {
     public static final Pose2d bottomLeftBall1 =
             new Pose2d(
                     Units.inchesToMeters(296.541),
-                    Units.inchesToMeters(18.21),
+                    Units.inchesToMeters(25.21),
                     Rotation2d.fromDegrees(90));
     public static final Pose2d positionEndPath2 =
             new Pose2d(
                     Units.inchesToMeters(320),
                     Units.inchesToMeters(73.11),
                     Rotation2d.fromDegrees(32.5));
-    public static final Translation2d bottomLeftBall2 =
-            new Translation2d(Units.inchesToMeters(197.593), Units.inchesToMeters(73.11));
-    public static final Translation2d bottomLeftBall3 =
-            new Translation2d(Units.inchesToMeters(50), Units.inchesToMeters(50));
-
     public static final Pose2d bottomLeftBall2At20Left =
-            new Pose2d(bottomLeftBall2, Rotation2d.fromDegrees(20));
-
+            new Pose2d(
+                    Units.inchesToMeters(197.593),
+                    Units.inchesToMeters(73.11),
+                    Rotation2d.fromDegrees(20));
     public static final Pose2d bottomLeftBall3At32 =
-            new Pose2d(bottomLeftBall3, Rotation2d.fromDegrees(10.11));
+            new Pose2d(
+                    Units.inchesToMeters(50),
+                    Units.inchesToMeters(50),
+                    Rotation2d.fromDegrees(17.11));
 
     public static final Pose2d upperPositionOnTarmac =
             new Pose2d(
@@ -51,12 +50,4 @@ public class AutoConstants {
                     Units.inchesToMeters(192.5),
                     Units.inchesToMeters(242),
                     Rotation2d.fromDegrees(-38.65980825));
-
-    public static final Pose2d startingStraight =
-            new Pose2d(Units.inchesToMeters(0), Units.inchesToMeters(0), Rotation2d.fromDegrees(0));
-    public static final Pose2d endingTurn =
-            new Pose2d(
-                    Units.inchesToMeters(60),
-                    Units.inchesToMeters(-60),
-                    Rotation2d.fromDegrees(-90));
 }

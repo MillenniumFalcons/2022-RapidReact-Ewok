@@ -72,12 +72,4 @@ public class AutoCommands {
         //         .andThen(ramseteCommands.getHighBallToShoot().deadlineWith(accelerateFlywheel))
         //         .andThen(autoShoot);
     }
-
-    public Command getStraightTurn() {
-        return ramseteCommands.getStraight();
-    }
-
-    public Command getOneTraj() {
-        return ramseteCommands.getTarmacToBottomLeftBall1();
-    }
 }
