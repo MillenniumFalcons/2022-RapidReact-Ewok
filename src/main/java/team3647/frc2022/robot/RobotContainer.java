@@ -15,7 +15,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import java.util.LinkedList;
 import java.util.List;
 import team3647.frc2022.autonomous.AutoCommands;
@@ -416,11 +415,5 @@ public class RobotContainer {
                     .alongWith(m_superstructure.getBatterSpinupCommand()),
             m_superstructure.getShootCommand());*/
     private final AutoCommands autoCommands =
-            new AutoCommands(
-                    m_drivetrain,
-                    DrivetrainConstants.kDriveKinematics,
-                    new WaitCommand(2),
-                    new WaitCommand(2),
-                    new WaitCommand(2),
-                    new WaitCommand(2));
+            new AutoCommands(m_drivetrain, DrivetrainConstants.kDriveKinematics, m_superstructure);
 }

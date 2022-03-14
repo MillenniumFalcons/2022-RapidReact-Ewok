@@ -4,6 +4,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+import edu.wpi.first.math.trajectory.constraint.CentripetalAccelerationConstraint;
 import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
 import java.util.List;
 import team3647.frc2022.constants.DrivetrainConstants;
@@ -15,6 +16,8 @@ public class Trajectories {
                     DrivetrainConstants.kFeedforward,
                     DrivetrainConstants.kDriveKinematics,
                     DrivetrainConstants.kNominalVoltage);
+    private static final CentripetalAccelerationConstraint slowTurns =
+            new CentripetalAccelerationConstraint(1);
 
     private static final TrajectoryConfig forwardTrajectoryConfigSlow =
             new TrajectoryConfig(
@@ -38,6 +41,14 @@ public class Trajectories {
                     .setKinematics(DrivetrainConstants.kDriveKinematics)
                     .addConstraint(autoVoltageConstraint)
                     .setReversed(true);
+    private static final TrajectoryConfig reverseTrajectorySlowTurnsConfig =
+            new TrajectoryConfig(
+                            DrivetrainConstants.kMaxSpeedMetersPerSecond,
+                            DrivetrainConstants.kMaxAccelerationMetersPerSecondSquared)
+                    .setKinematics(DrivetrainConstants.kDriveKinematics)
+                    .addConstraints(List.of(autoVoltageConstraint, slowTurns))
+                    .setReversed(true);
+
     private static final TrajectoryConfig reverseTrajectoryConfigSlow =
             new TrajectoryConfig(
                             DrivetrainConstants.kMaxSpeedMetersPerSecondSlow - 0.5,
@@ -65,7 +76,7 @@ public class Trajectories {
                     path2Start, List.of(), path2End, forwardTrajectoryConfig);
     public static Trajectory tarmacToBall2 =
             TrajectoryGenerator.generateTrajectory(
-                    path3Start, List.of(), path3End, reverseTrajectoryConfigSlow);
+                    path3Start, List.of(), path3End, reverseTrajectorySlowTurnsConfig);
     public static Trajectory ball2ToLoad2 =
             TrajectoryGenerator.generateTrajectory(
                     path4Start, List.of(), path4End, reverseTrajectoryConfig);

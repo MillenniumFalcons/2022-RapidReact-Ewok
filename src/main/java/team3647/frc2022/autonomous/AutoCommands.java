@@ -2,51 +2,75 @@ package team3647.frc2022.autonomous;
 
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.CommandGroupBase;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import team3647.frc2022.subsystems.Drivetrain;
+import team3647.frc2022.subsystems.Superstructure;
 
 public class AutoCommands {
     private final Drivetrain drivetrain;
-    private final Command intakeFromGround;
-    private final Command aimTurretHood;
-    private final Command autoShoot;
-    private final Command accelerateFlywheel;
+    private final Superstructure superstructure;
     private final RamseteCommands ramseteCommands;
 
     public AutoCommands(
             Drivetrain drivetrain,
             DifferentialDriveKinematics driveKinematics,
-            Command intakeFromGround,
-            Command aimTurretHood,
-            Command autoShoot,
-            Command accelerateFlywheel) {
+            Superstructure superstructure) {
         this.drivetrain = drivetrain;
-        this.intakeFromGround = intakeFromGround;
-        this.aimTurretHood = aimTurretHood;
-        this.autoShoot = autoShoot;
-        this.accelerateFlywheel = accelerateFlywheel;
+        this.superstructure = superstructure;
         ramseteCommands = new RamseteCommands(drivetrain, driveKinematics);
     }
 
     public Command getLowFive() {
-        return ramseteCommands
-                .getTarmacToBottomLeftBall1()
-                .andThen(
+        CommandGroupBase autoAndIntake =
+                CommandGroupBase.sequence(
+                        ramseteCommands
+                                .getTarmacToBottomLeftBall1()
+                                .deadlineWith(
+                                        CommandGroupBase.parallel(
+                                                superstructure.deployAndRunIntake(() -> 8),
+                                                superstructure.flywheelCommands.variableVelocity(
+                                                        superstructure
+                                                                ::getAimedFlywheelSurfaceVel))),
+                        superstructure.autoAccelerateAndShoot().withTimeout(2),
                         ramseteCommands.getBottomLeftBall1ToTarmac(),
-                        new WaitCommand(2),
-                        ramseteCommands.getTarmacToBall2(),
-                        new WaitCommand(1),
-                        ramseteCommands.getBall2ToLoad2(),
-                        new WaitCommand(2),
-                        ramseteCommands.getLoad2ToShoot());
+                        ramseteCommands
+                                .getTarmacToBall2()
+                                .deadlineWith(
+                                        CommandGroupBase.parallel(
+                                                superstructure.deployAndRunIntake(() -> 8),
+                                                superstructure.flywheelCommands.variableVelocity(
+                                                        superstructure
+                                                                ::getAimedFlywheelSurfaceVel))),
+                        superstructure.autoAccelerateAndShoot().withTimeout(2),
+                        ramseteCommands
+                                .getBall2ToLoad2()
+                                .deadlineWith(
+                                        CommandGroupBase.parallel(
+                                                superstructure.deployAndRunIntake(() -> 8),
+                                                superstructure.flywheelCommands.variableVelocity(
+                                                        superstructure
+                                                                ::getAimedFlywheelSurfaceVel))),
+                        superstructure.deployAndRunIntake(() -> 8).withTimeout(1.5),
+                        ramseteCommands
+                                .getLoad2ToShoot()
+                                .deadlineWith(
+                                        superstructure.deployAndRunIntake(() -> 8),
+                                        superstructure.flywheelCommands.variableVelocity(
+                                                superstructure::getAimedFlywheelSurfaceVel)),
+                        superstructure.autoAccelerateAndShoot().withTimeout(5));
+        return CommandGroupBase.parallel(
+                superstructure.turretCommands.motionMagic(0).andThen(superstructure.aimTurret()),
+                autoAndIntake);
     }
 
     public Command getHighTwo() {
-        return ramseteCommands
-                .getTarmacToHighBall()
-                .deadlineWith(intakeFromGround)
-                .andThen(ramseteCommands.getHighBallToShoot().deadlineWith(accelerateFlywheel))
-                .andThen(autoShoot);
+        return new InstantCommand();
+        // return ramseteCommands
+        //         .getTarmacToHighBall()
+        //         .deadlineWith(intakeFromGround)
+        //         .andThen(ramseteCommands.getHighBallToShoot().deadlineWith(accelerateFlywheel))
+        //         .andThen(autoShoot);
     }
 
     public Command getStraightTurn() {

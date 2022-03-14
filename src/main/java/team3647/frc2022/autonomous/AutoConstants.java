@@ -33,10 +33,10 @@ public class AutoConstants {
     public static final Translation2d bottomLeftBall2 =
             new Translation2d(Units.inchesToMeters(197.593), Units.inchesToMeters(73.11));
     public static final Translation2d bottomLeftBall3 =
-            new Translation2d(Units.inchesToMeters(40), Units.inchesToMeters(45.684));
+            new Translation2d(Units.inchesToMeters(50), Units.inchesToMeters(50));
 
     public static final Pose2d bottomLeftBall2At20Left =
-            new Pose2d(bottomLeftBall2, Rotation2d.fromDegrees(10.11));
+            new Pose2d(bottomLeftBall2, Rotation2d.fromDegrees(20));
 
     public static final Pose2d bottomLeftBall3At32 =
             new Pose2d(bottomLeftBall3, Rotation2d.fromDegrees(10.11));
