@@ -74,16 +74,7 @@ public class RobotContainer {
         m_hood.resetEncoder();
         HoodContants.kHoodMotor.configAllSettings(HoodContants.kMasterConfig);
 
-        /*m_drivetrain.setOdometry(
-                AutoConstants.positionOnTarmacParallel,
-                AutoConstants.positionOnTarmacParallel.getRotation());
-        runningAutoSequence = autoCommands.getOneTraj();*/
-
-        m_drivetrain.setOdometry(
-                AutoConstants.positionOnTarmacParallel,
-                AutoConstants.positionOnTarmacParallel.getRotation());
-        runningAutoSequence = autoCommands.getLowFive();
-        m_ballstopper.extend();
+        m_drivetrain.setOdometry(startPosition, startPosition.getRotation());
     }
 
     private void configureDefaultCommands() {
@@ -164,6 +155,17 @@ public class RobotContainer {
                 .whileActiveOnce(m_superstructure.runFeeder(this::calculateIntakeSurfaceSpeed));
         coController.dPadDown.whileActiveOnce(
                 m_superstructure.hoodCommands.autoAdjustAngle(this::getHoodDegree));
+
+        mainController.buttonA.whenActive(
+                () -> {
+                    this.autoCommand = autoCommands.getLowFive();
+                    this.startPosition = AutoConstants.positionOnTarmacParallel;
+                });
+        mainController.buttonY.whenActive(
+                () -> {
+                    this.autoCommand = autoCommands.getHighTwo();
+                    this.startPosition = AutoConstants.upperPositionOnTarmac;
+                });
     }
 
     private void configureSmartDashboardLogging() {
@@ -222,8 +224,7 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() {
-        // An ExampleCommand will run in autonomous
-        return autoCommands.getLowFive();
+        return autoCommand;
     }
 
     public double getShooterSpeed() {
@@ -402,7 +403,9 @@ public class RobotContainer {
                     m_ballstopper,
                     m_statusLED,
                     m_drivetrain::isStopped);
-    private final Command runningAutoSequence;
+
     private final AutoCommands autoCommands =
             new AutoCommands(m_drivetrain, DrivetrainConstants.kDriveKinematics, m_superstructure);
+    private Command autoCommand = autoCommands.getLowFive();
+    private Pose2d startPosition = AutoConstants.positionOnTarmacParallel;
 }

@@ -15,10 +15,6 @@ public class RamseteCommands {
         this.kDriveKinematics = driveKinematics;
     }
 
-    public RamseteCommand getStraight() {
-        return createDefaultRamseteCommand(Trajectories.straightPath);
-    }
-
     public RamseteCommand getTarmacToBottomLeftBall1() {
         return createDefaultRamseteCommand(Trajectories.tarmacToBottomLeftBall1);
     }
