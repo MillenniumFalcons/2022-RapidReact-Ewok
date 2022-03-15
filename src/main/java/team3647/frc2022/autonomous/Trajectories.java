@@ -66,7 +66,7 @@ public class Trajectories {
     private static final Pose2d path4Start = path3End;
     private static final Pose2d path4End = AutoConstants.bottomLeftBall3At32;
     private static final Pose2d path5Start = path4End;
-    private static final Pose2d path5End = AutoConstants.bottomLeftBall2At20Left;
+    private static final Pose2d path5End = AutoConstants.positionEndPath5;
     // 5 ball
     public static Trajectory tarmacToBottomLeftBall1 =
             TrajectoryGenerator.generateTrajectory(
@@ -83,6 +83,12 @@ public class Trajectories {
     public static Trajectory load2ToShoot =
             TrajectoryGenerator.generateTrajectory(
                     path5Start, List.of(), path5End, forwardTrajectoryConfig);
+
+    public static double path1Time = tarmacToBottomLeftBall1.getTotalTimeSeconds();
+    public static double path2Time = bottomLeftBall1ToTarmac.getTotalTimeSeconds();
+    public static double path3Time = tarmacToBall2.getTotalTimeSeconds();
+    public static double path4Time = ball2ToLoad2.getTotalTimeSeconds();
+    public static double path5Time = load2ToShoot.getTotalTimeSeconds();
 
     // 2 ball
     public static Trajectory upperTarmacToUpperBall1 =

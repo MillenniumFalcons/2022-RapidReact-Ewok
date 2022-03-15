@@ -85,7 +85,7 @@ public class Superstructure {
                 this::getAimedKickerVelocity,
                 this::readyToAutoShoot,
                 this::autoShootBallWentThrough,
-                0.2);
+                0.4);
     }
 
     public Command batterAccelerateAndShoot() {
