@@ -134,16 +134,14 @@ public class Superstructure {
                                         feederCommands.retractStopper(),
                                         // Shoot (The second command stops when the first
                                         // command ends)
-                                        new WaitUntilCommand(ballWentThrough)
-                                                .deadlineWith(feederCommands.feedIn(() -> 1.5)),
+                                        feederCommands.feedIn(() -> 2).until(ballWentThrough),
                                         feederCommands.extendStopper(),
                                         new WaitCommand(delayBetweenShots),
                                         new WaitUntilCommand(readyToShoot),
                                         feederCommands.retractStopper(),
                                         // Shoot (The second command stops when the first
                                         // command ends)
-                                        new WaitUntilCommand(ballWentThrough)
-                                                .deadlineWith(feederCommands.feedIn(() -> 1.5)),
+                                        feederCommands.feedIn(() -> 2).until(ballWentThrough),
                                         feederCommands.extendStopper())));
     }
 
