@@ -301,7 +301,7 @@ public final class Drivetrain implements PeriodicSubsystem {
     }
 
     public boolean isStopped() {
-        return isStopped(0.05);
+        return isStopped(0.0254);
     }
 
     @Override

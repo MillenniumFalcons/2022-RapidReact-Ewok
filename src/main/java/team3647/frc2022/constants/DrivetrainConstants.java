@@ -51,7 +51,7 @@ public final class DrivetrainConstants {
             new SimpleMotorFeedforward(kS, kV, kA);
 
     public static final double kWheelDiameterMeters = 0.1016; // 4inches
-    public static final double kTrackWidth = 0.75;
+    public static final double kTrackWidth = 0.7493;
     public static final DifferentialDriveKinematics kDriveKinematics =
             new DifferentialDriveKinematics(kTrackWidth);
     public static final double kMaxSpeedMetersPerSecondSlow = 2;

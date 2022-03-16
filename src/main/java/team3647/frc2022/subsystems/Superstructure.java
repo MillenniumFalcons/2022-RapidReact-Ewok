@@ -1,5 +1,6 @@
 package team3647.frc2022.subsystems;
 
+import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandGroupBase;
@@ -49,6 +50,7 @@ public class Superstructure {
             Hood m_hood,
             Flywheel m_flywheel,
             Ballstopper ballstopper,
+            Compressor compressor,
             StatusLED statusLEDs,
             BooleanSupplier drivetrainStopped) {
         this.deck = deck;
@@ -60,6 +62,7 @@ public class Superstructure {
         this.m_hood = m_hood;
         this.m_flywheel = m_flywheel;
         this.m_ballstopper = ballstopper;
+        this.compressor = compressor;
         this.m_statusLED = statusLEDs;
         this.drivetrainStopped = drivetrainStopped;
 
@@ -85,6 +88,17 @@ public class Superstructure {
                 this::getAimedKickerVelocity,
                 this::readyToAutoShoot,
                 this::autoShootBallWentThrough,
+                1.2,
+                0.4);
+    }
+
+    public Command autoAccelerateAndShoot(double feederSpeed) {
+        return accelerateAndShoot(
+                this::getAimedFlywheelSurfaceVel,
+                this::getAimedKickerVelocity,
+                this::readyToAutoShoot,
+                this::autoShootBallWentThrough,
+                feederSpeed,
                 0.4);
     }
 
@@ -96,6 +110,7 @@ public class Superstructure {
                                 () -> ColumnTopConstants.kBatterVelocity,
                                 this::readyToBatter,
                                 this::batterBallWentThrough,
+                                2,
                                 0.5));
     }
 
@@ -107,6 +122,7 @@ public class Superstructure {
                                 () -> ColumnTopConstants.kLowGoalVelocity,
                                 this::readyToLowGoal,
                                 this::lowBallWentThrough,
+                                2,
                                 0.1));
     }
 
@@ -115,6 +131,7 @@ public class Superstructure {
             DoubleSupplier kickerVelocity,
             BooleanSupplier readyToShoot,
             BooleanSupplier ballWentThrough,
+            double feederSpeed,
             double delayBetweenShots) {
 
         return CommandGroupBase.parallel(
@@ -122,11 +139,11 @@ public class Superstructure {
                 flywheelCommands.variableVelocity(flywhelVelocity),
                 columnTopCommands
                         .getRunOutwards()
-                        .withTimeout(0.1)
+                        .withTimeout(0.07)
                         .andThen(columnTopCommands.getGoVariableVelocity(kickerVelocity)),
                 feederCommands
                         .runColumnBottomOut()
-                        .withTimeout(0.1)
+                        .withTimeout(0.07)
                         .andThen(
                                 new WaitUntilCommand(drivetrainStopped),
                                 CommandGroupBase.sequence(
@@ -134,14 +151,18 @@ public class Superstructure {
                                         feederCommands.retractStopper(),
                                         // Shoot (The second command stops when the first
                                         // command ends)
-                                        feederCommands.feedIn(() -> 2).until(ballWentThrough),
+                                        feederCommands
+                                                .feedIn(() -> feederSpeed)
+                                                .until(ballWentThrough),
                                         feederCommands.extendStopper(),
                                         new WaitCommand(delayBetweenShots),
                                         new WaitUntilCommand(readyToShoot),
                                         feederCommands.retractStopper(),
                                         // Shoot (The second command stops when the first
                                         // command ends)
-                                        feederCommands.feedIn(() -> 2).until(ballWentThrough),
+                                        feederCommands
+                                                .feedIn(() -> feederSpeed)
+                                                .until(ballWentThrough),
                                         feederCommands.extendStopper())));
     }
 
@@ -190,13 +211,7 @@ public class Superstructure {
     }
 
     public Command deployAndRunIntake(DoubleSupplier surfaceVelocity) {
-        return intakeCommands
-                .deploy()
-                .andThen(
-                        new ConditionalCommand(
-                                intakeCommands.runOpenLoop(0.3),
-                                intakeCommands.runClosedLoop(surfaceVelocity),
-                                () -> this.currentState.shooterState == ShooterState.SHOOT));
+        return intakeCommands.deploy().andThen(intakeCommands.runClosedLoop(surfaceVelocity));
     }
 
     public Command runFeeder(DoubleSupplier surfaceVelocity) {
@@ -229,11 +244,19 @@ public class Superstructure {
                                 m_columnBottom));
     }
 
+    public Command disableCompressor() {
+        return new InstantCommand(compressor::disable);
+    }
+
+    public Command enableCompressor() {
+        return new InstantCommand(compressor::enableDigital);
+    }
+
     public void periodic(double timestamp) {
         aimingParameters = deck.getLatestParameters();
         if (aimingParameters != null) {
             flywheelVelocity = FlywheelConstants.getFlywheelRPM(aimingParameters.getRangeMeters());
-            kickerVelocity = flywheelVelocity * 0.5;
+            kickerVelocity = flywheelVelocity * 0.6;
             hoodAngle = HoodContants.getHoodAngle(aimingParameters.getRangeMeters());
         }
     }
@@ -256,7 +279,7 @@ public class Superstructure {
     public boolean readyToShoot(
             DoubleSupplier flywheel, DoubleSupplier kicker, DoubleSupplier hood) {
         return getFlywheelReady(flywheel)
-                && Math.abs(m_columnTop.getVelocity() - kicker.getAsDouble()) < 0.5
+                && Math.abs(m_columnTop.getVelocity() - kicker.getAsDouble()) < 0.3
                 && Math.abs(m_hood.getAngle() - hood.getAsDouble()) < 0.1
                 && Math.abs(m_flywheel.getVelocity()) > 5
                 && Math.abs(m_columnTop.getVelocity()) > 2;
@@ -438,6 +461,7 @@ public class Superstructure {
     private final Hood m_hood;
     private final Flywheel m_flywheel;
     private final Ballstopper m_ballstopper;
+    private final Compressor compressor;
     private final StatusLED m_statusLED;
     private final BooleanSupplier drivetrainStopped;
 

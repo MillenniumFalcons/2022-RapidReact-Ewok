@@ -17,7 +17,7 @@ public class Trajectories {
                     DrivetrainConstants.kDriveKinematics,
                     DrivetrainConstants.kNominalVoltage);
     private static final CentripetalAccelerationConstraint slowTurns =
-            new CentripetalAccelerationConstraint(1);
+            new CentripetalAccelerationConstraint(2);
 
     private static final TrajectoryConfig forwardTrajectoryConfigSlow =
             new TrajectoryConfig(

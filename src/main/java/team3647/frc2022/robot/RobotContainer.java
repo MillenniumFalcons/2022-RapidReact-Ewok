@@ -7,6 +7,7 @@ package team3647.frc2022.robot;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.Timer;
@@ -390,6 +391,9 @@ public class RobotContainer {
                     VisionConstants.kCenterGoalTargetConstants,
                     m_flightDeck::addVisionObservation,
                     this::updateTapeTranslations);
+
+    private final Compressor compressor = new Compressor(GlobalConstants.kPCMType);
+
     final Superstructure m_superstructure =
             new Superstructure(
                     m_flightDeck,
@@ -401,6 +405,7 @@ public class RobotContainer {
                     m_hood,
                     m_flywheel,
                     m_ballstopper,
+                    compressor,
                     m_statusLED,
                     m_drivetrain::isStopped);
 
