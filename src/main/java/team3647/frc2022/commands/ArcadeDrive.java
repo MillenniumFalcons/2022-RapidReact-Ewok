@@ -41,7 +41,7 @@ public class ArcadeDrive extends CommandBase {
         double turn = m_turn.getAsDouble() * driveMultiplier;
         m_drivetrain.curvatureDrive(
                 m_accelerationLimiter.calculate(throttle * throttle * Math.signum(throttle)),
-                turn * turn * Math.signum(turn),
+                turn * turn * Math.signum(turn) * 0.8,
                 m_quickTurn.getAsBoolean());
     }
 

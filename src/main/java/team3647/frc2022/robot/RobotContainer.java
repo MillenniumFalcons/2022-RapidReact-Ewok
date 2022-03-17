@@ -94,7 +94,7 @@ public class RobotContainer {
                                 () ->
                                         m_superstructure.currentState.shooterState =
                                                 ShooterState.IDLE)
-                        .andThen(m_superstructure.flywheelCommands.waitToSpinDownThenHold(0)));
+                        .andThen(m_superstructure.flywheelCommands.waitToSpinDownThenHold(5)));
         m_turret.setDefaultCommand(
                 new InstantCommand(
                                 () ->
@@ -411,6 +411,6 @@ public class RobotContainer {
 
     private final AutoCommands autoCommands =
             new AutoCommands(m_drivetrain, DrivetrainConstants.kDriveKinematics, m_superstructure);
-    private Command autoCommand = autoCommands.getLowFive();
+    private Command autoCommand = autoCommands.lowFiveQuestionable();
     private Pose2d startPosition = AutoConstants.positionOnTarmacParallel;
 }

@@ -1,5 +1,6 @@
 package team3647.frc2022.subsystems;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -137,33 +138,30 @@ public class Superstructure {
         return CommandGroupBase.parallel(
                 new InstantCommand(() -> currentState.shooterState = ShooterState.SHOOT),
                 flywheelCommands.variableVelocity(flywhelVelocity),
-                columnTopCommands
-                        .getRunOutwards()
-                        .withTimeout(0.07)
-                        .andThen(columnTopCommands.getGoVariableVelocity(kickerVelocity)),
-                feederCommands
-                        .runColumnBottomOut()
-                        .withTimeout(0.07)
-                        .andThen(
-                                new WaitUntilCommand(drivetrainStopped),
-                                CommandGroupBase.sequence(
-                                        new WaitUntilCommand(readyToShoot),
-                                        feederCommands.retractStopper(),
-                                        // Shoot (The second command stops when the first
-                                        // command ends)
-                                        feederCommands
-                                                .feedIn(() -> feederSpeed)
-                                                .until(ballWentThrough),
-                                        feederCommands.extendStopper(),
-                                        new WaitCommand(delayBetweenShots),
-                                        new WaitUntilCommand(readyToShoot),
-                                        feederCommands.retractStopper(),
-                                        // Shoot (The second command stops when the first
-                                        // command ends)
-                                        feederCommands
-                                                .feedIn(() -> feederSpeed)
-                                                .until(ballWentThrough),
-                                        feederCommands.extendStopper())));
+                columnTopCommands.getGoVariableVelocity(kickerVelocity),
+                CommandGroupBase.sequence(
+                        new WaitUntilCommand(drivetrainStopped),
+                        CommandGroupBase.sequence(
+                                new WaitUntilCommand(readyToShoot),
+                                feederCommands.retractStopper(),
+                                // Shoot (The second command stops when the first
+                                // command ends)
+                                feederCommands.feedIn(() -> feederSpeed).until(ballWentThrough),
+                                feederCommands.extendStopper(),
+                                new WaitCommand(delayBetweenShots),
+                                new WaitUntilCommand(readyToShoot),
+                                feederCommands.retractStopper(),
+                                // Shoot (The second command stops when the first
+                                // command ends)
+                                feederCommands.feedIn(() -> feederSpeed).until(ballWentThrough),
+                                feederCommands.extendStopper(),
+                                new WaitCommand(delayBetweenShots),
+                                new WaitUntilCommand(readyToShoot),
+                                feederCommands.retractStopper(),
+                                // Shoot (The second command stops when the first
+                                // command ends)
+                                feederCommands.feedIn(() -> feederSpeed).until(ballWentThrough),
+                                feederCommands.extendStopper())));
     }
 
     public Command autoClimbSequnce() {
@@ -242,6 +240,11 @@ public class Superstructure {
                                     m_columnBottom.setOpenloop(leftY * leftY * leftY);
                                 },
                                 m_columnBottom));
+    }
+
+    public Command accelerateWithMinMaxDistance(double minDistance, double maxDistance) {
+        return flywheelCommands.variableVelocity(
+                () -> this.getAimedFlywhelAtMinMaxDistance(minDistance, maxDistance));
     }
 
     public Command disableCompressor() {
@@ -335,6 +338,11 @@ public class Superstructure {
 
     public AimingParameters getAimingParameters() {
         return aimingParameters;
+    }
+
+    public double getAimedFlywhelAtMinMaxDistance(double minDistance, double maxDistance) {
+        return FlywheelConstants.getFlywheelRPM(
+                MathUtil.clamp(getDistanceToTarget(), minDistance, maxDistance));
     }
 
     public double getAimedFlywheelSurfaceVel() {
