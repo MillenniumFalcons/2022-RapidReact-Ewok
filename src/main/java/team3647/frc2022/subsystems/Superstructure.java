@@ -246,6 +246,14 @@ public class Superstructure {
                                 m_columnBottom));
     }
 
+    public Command clearFeederFlywheel() {
+        return CommandGroupBase.parallel(
+                feederCommands.retractStopper(),
+                feederCommands.runColumnBottomOut(),
+                columnTopCommands.getRunOutwards(),
+                flywheelCommands.openloop(-0.6));
+    }
+
     public Command accelerateWithMinMaxDistance(double minDistance, double maxDistance) {
         return flywheelCommands.variableVelocity(
                 () -> this.getAimedFlywhelAtMinMaxDistance(minDistance, maxDistance));

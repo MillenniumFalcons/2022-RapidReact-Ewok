@@ -158,6 +158,8 @@ public class RobotContainer {
         coController.dPadDown.whileActiveOnce(
                 m_superstructure.hoodCommands.autoAdjustAngle(this::getHoodDegree));
 
+        coController.dPadUp.whileActiveOnce(m_superstructure.clearFeederFlywheel());
+
         mainController.buttonA.whenActive(
                 () -> {
                     this.autoCommand = autoCommands.getLowFive();

@@ -33,6 +33,15 @@ public class FlywheelCommands {
                 .andThen(new RunCommand(() -> m_flywheel.setSurfaceSpeed(velToKeep), m_flywheel));
     }
 
+    public Command openloop(double demand) {
+        return new FunctionalCommand(
+                () -> {},
+                () -> m_flywheel.setOpenloop(demand),
+                interrupted -> m_flywheel.setOpenloop(0),
+                () -> false,
+                m_flywheel);
+    }
+
     /**
      * This command will not stop the flywheel when it ends (use for accelerate before shooting), it
      * ends once we reach the speed
