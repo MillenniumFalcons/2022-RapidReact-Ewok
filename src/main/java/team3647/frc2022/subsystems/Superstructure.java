@@ -84,7 +84,7 @@ public class Superstructure {
     }
 
     public Command autoAccelerateAndShoot() {
-        return autoAccelerateAndShoot(1.2, 0.4, 1.5);
+        return autoAccelerateAndShoot(1.2, 0.4, 0);
     }
 
     public Command autoAccelerateAndShoot(
