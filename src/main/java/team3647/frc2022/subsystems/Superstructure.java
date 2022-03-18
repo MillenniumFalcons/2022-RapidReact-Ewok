@@ -104,7 +104,7 @@ public class Superstructure {
     }
 
     public Command batterAccelerateAndShoot() {
-        return new WaitUntilCommand(() -> Math.abs(m_turret.getAngle() + 180) < 1)
+        return new WaitUntilCommand(() -> Math.abs(m_turret.getAngle() + 180) < 3)
                 .andThen(
                         accelerateAndShoot(
                                 () -> FlywheelConstants.kBatterVelocity,
@@ -116,7 +116,7 @@ public class Superstructure {
     }
 
     public Command lowAccelerateAndShoot() {
-        return new WaitUntilCommand(() -> Math.abs(m_turret.getAngle() - 0) < 1)
+        return new WaitUntilCommand(() -> Math.abs(m_turret.getAngle() - 0) < 3)
                 .andThen(
                         new WaitCommand(0.9),
                         feederCommands.retractStopper(),
@@ -265,6 +265,10 @@ public class Superstructure {
             flywheelVelocity = FlywheelConstants.getFlywheelRPM(aimingParameters.getRangeMeters());
             kickerVelocity = MathUtil.clamp(flywheelVelocity * 0.5, 0, 10);
             hoodAngle = HoodContants.getHoodAngle(aimingParameters.getRangeMeters());
+        }
+
+        if (ClimberState.CLIMB == currentState.climberState) {
+            hoodAngle = 15;
         }
     }
 
