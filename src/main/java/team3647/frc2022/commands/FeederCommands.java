@@ -42,7 +42,7 @@ public class FeederCommands {
     }
 
     public Command retractStopper() {
-        return new InstantCommand(ballstopper::retract);
+        return new InstantCommand(ballstopper::retract, ballstopper);
     }
 
     public Command feedIn(DoubleSupplier columnSpeed) {
