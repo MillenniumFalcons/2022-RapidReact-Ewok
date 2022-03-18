@@ -46,7 +46,7 @@ public class AutoCommands {
                                                 + Trajectories.path2Time
                                                 + Trajectories.path3Time * 0.9),
                         superstructure
-                                .autoAccelerateAndShoot()
+                                .autoAccelerateAndShoot(1.2, 0.4, 0)
                                 .withTimeout(3 + Trajectories.path3Time * 0.1),
                         new WaitCommand(Trajectories.path4Time * 0.5),
                         superstructure
@@ -58,7 +58,7 @@ public class AutoCommands {
                                 .runFeeder(() -> 8)
                                 .alongWith(superstructure.accelerateWithMinMaxDistance(4.05, 4.15))
                                 .withTimeout(Trajectories.path5Time * 0.4),
-                        superstructure.autoAccelerateAndShoot());
+                        superstructure.autoAccelerateAndShoot(1.2, 0.4, 0));
 
         return CommandGroupBase.parallel(
                 superstructure.disableCompressor(),

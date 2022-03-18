@@ -84,13 +84,19 @@ public class Superstructure {
     }
 
     public Command autoAccelerateAndShoot() {
+        return autoAccelerateAndShoot(1.2, 0.4, 1.5);
+    }
+
+    public Command autoAccelerateAndShoot(
+            double feederSpeed, double delayBetweenShots, double timeoutAfterDrivetrainStops) {
         return accelerateAndShoot(
                 this::getAimedFlywheelSurfaceVel,
                 this::getAimedKickerVelocity,
                 this::readyToAutoShoot,
                 this::autoShootBallWentThrough,
-                1.2,
-                0.4);
+                feederSpeed,
+                delayBetweenShots,
+                timeoutAfterDrivetrainStops);
     }
 
     public Command autoAccelerateAndShoot(double feederSpeed) {
@@ -100,7 +106,8 @@ public class Superstructure {
                 this::readyToAutoShoot,
                 this::autoShootBallWentThrough,
                 feederSpeed,
-                0.4);
+                0.4,
+                0);
     }
 
     public Command batterAccelerateAndShoot() {
@@ -112,7 +119,8 @@ public class Superstructure {
                                 this::readyToBatter,
                                 this::batterBallWentThrough,
                                 2,
-                                0.5));
+                                0.5,
+                                0));
     }
 
     public Command lowAccelerateAndShoot() {
@@ -133,7 +141,8 @@ public class Superstructure {
             BooleanSupplier readyToShoot,
             BooleanSupplier ballWentThrough,
             double feederSpeed,
-            double delayBetweenShots) {
+            double delayBetweenShots,
+            double delayAfterDrivetrainStops) {
 
         return CommandGroupBase.parallel(
                 new InstantCommand(() -> currentState.shooterState = ShooterState.SHOOT),
@@ -143,7 +152,7 @@ public class Superstructure {
                         new ConditionalCommand(
                                 new InstantCommand(),
                                 new WaitUntilCommand(drivetrainStopped)
-                                        .andThen(new WaitCommand(1.5)),
+                                        .andThen(new WaitCommand(delayAfterDrivetrainStops)),
                                 drivetrainStopped),
                         CommandGroupBase.sequence(
                                 new WaitUntilCommand(readyToShoot),
