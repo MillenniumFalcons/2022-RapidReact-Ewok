@@ -118,13 +118,13 @@ public class Superstructure {
     public Command lowAccelerateAndShoot() {
         return new WaitUntilCommand(() -> Math.abs(m_turret.getAngle() - 0) < 1)
                 .andThen(
-                        accelerateAndShoot(
-                                () -> FlywheelConstants.kLowGoalVelocity,
-                                () -> ColumnTopConstants.kLowGoalVelocity,
-                                this::readyToLowGoal,
-                                this::lowBallWentThrough,
-                                2,
-                                0.1));
+                        new WaitCommand(0.9),
+                        feederCommands.retractStopper(),
+                        feederCommands.feedIn(() -> 2))
+                .alongWith(
+                        flywheelCommands.variableVelocity(() -> FlywheelConstants.kLowGoalVelocity),
+                        columnTopCommands.getGoVariableVelocity(
+                                () -> ColumnTopConstants.kLowGoalVelocity));
     }
 
     public Command accelerateAndShoot(
@@ -140,7 +140,11 @@ public class Superstructure {
                 flywheelCommands.variableVelocity(flywhelVelocity),
                 columnTopCommands.getGoVariableVelocity(kickerVelocity),
                 CommandGroupBase.sequence(
-                        new WaitUntilCommand(drivetrainStopped),
+                        new ConditionalCommand(
+                                new InstantCommand(),
+                                new WaitUntilCommand(drivetrainStopped)
+                                        .andThen(new WaitCommand(1.5)),
+                                drivetrainStopped),
                         CommandGroupBase.sequence(
                                 new WaitUntilCommand(readyToShoot),
                                 feederCommands.retractStopper(),
@@ -237,7 +241,7 @@ public class Superstructure {
                         new RunCommand(
                                 () -> {
                                     var leftY = manual.getAsDouble();
-                                    m_columnBottom.setOpenloop(leftY * leftY * leftY);
+                                    m_columnBottom.setOpenloop(leftY * leftY * leftY * 0.5);
                                 },
                                 m_columnBottom));
     }
@@ -259,7 +263,7 @@ public class Superstructure {
         aimingParameters = deck.getLatestParameters();
         if (aimingParameters != null) {
             flywheelVelocity = FlywheelConstants.getFlywheelRPM(aimingParameters.getRangeMeters());
-            kickerVelocity = flywheelVelocity * 0.6;
+            kickerVelocity = MathUtil.clamp(flywheelVelocity * 0.5, 0, 10);
             hoodAngle = HoodContants.getHoodAngle(aimingParameters.getRangeMeters());
         }
     }
@@ -296,10 +300,11 @@ public class Superstructure {
     }
 
     public boolean readyToBatter() {
-        return readyToShoot(
-                () -> FlywheelConstants.kBatterVelocity,
-                () -> ColumnTopConstants.kBatterVelocity,
-                () -> HoodContants.kBatterAngle);
+        return getFlywheelReady(() -> FlywheelConstants.kBatterVelocity, 1.5)
+                && Math.abs(m_columnTop.getVelocity() - ColumnTopConstants.kBatterVelocity) < 0.3
+                && Math.abs(m_hood.getAngle() - HoodContants.kBatterAngle) < 0.1
+                && Math.abs(m_flywheel.getVelocity()) > 5
+                && Math.abs(m_columnTop.getVelocity()) > 2;
     }
 
     public boolean readyToAutoShoot() {
@@ -323,17 +328,21 @@ public class Superstructure {
 
     public boolean batterBallWentThrough() {
         return ballWentThrough(
-                () -> FlywheelConstants.kBatterVelocity,
+                () -> FlywheelConstants.kBatterVelocity + 0.5,
                 () -> ColumnTopConstants.kBatterVelocity,
-                .1);
+                1);
     }
 
     public boolean autoShootBallWentThrough() {
         return ballWentThrough(this::getAimedFlywheelSurfaceVel, this::getAimedKickerVelocity, 1);
     }
 
+    public boolean getFlywheelReady(DoubleSupplier expectedVelocity, double threshold) {
+        return Math.abs(m_flywheel.getVelocity() - expectedVelocity.getAsDouble()) < threshold;
+    }
+
     public boolean getFlywheelReady(DoubleSupplier expectedVelocity) {
-        return Math.abs(m_flywheel.getVelocity() - expectedVelocity.getAsDouble()) < 0.1;
+        return getFlywheelReady(expectedVelocity, 0.1);
     }
 
     public AimingParameters getAimingParameters() {

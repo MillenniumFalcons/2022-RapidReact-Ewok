@@ -36,14 +36,17 @@ public final class FlywheelConstants {
     public static final double kNativeVelToSurfaceMpS =
             10 * kWheelRotationMeters / GlobalConstants.kFalconTicksPerRotation * kGearboxReduction;
 
-    public static final double kLowGoalVelocity = 5;
+    public static final double kLowGoalVelocity = 3;
     public static final double kBatterVelocity = 8.5;
 
     public static final double[][] kFlywheelMap = {
-        {Units.feetToMeters(2) + GlobalConstants.kCenterOffsetMeters, 9.3},
-        {Units.feetToMeters(4) + GlobalConstants.kCenterOffsetMeters, 10.2},
-        {Units.feetToMeters(6) + GlobalConstants.kCenterOffsetMeters, 10.5},
-        {Units.feetToMeters(8) + GlobalConstants.kCenterOffsetMeters, 11.3},
+        {Units.feetToMeters(2) + GlobalConstants.kCenterOffsetMeters, 8.6},
+        {Units.feetToMeters(4) + GlobalConstants.kCenterOffsetMeters, 9.2},
+        {Units.feetToMeters(5) + GlobalConstants.kCenterOffsetMeters, 10.2},
+        {Units.feetToMeters(6) + GlobalConstants.kCenterOffsetMeters, 10.3},
+        {Units.feetToMeters(7) + GlobalConstants.kCenterOffsetMeters, 10.8},
+        {Units.feetToMeters(8) + GlobalConstants.kCenterOffsetMeters, 10.9},
+        {Units.feetToMeters(9) + GlobalConstants.kCenterOffsetMeters, 11.5},
         {Units.feetToMeters(10) + GlobalConstants.kCenterOffsetMeters, 11.8},
         {Units.feetToMeters(12) + GlobalConstants.kCenterOffsetMeters, 12},
         {Units.feetToMeters(14) + GlobalConstants.kCenterOffsetMeters, 12.8},
@@ -86,7 +89,7 @@ public final class FlywheelConstants {
     public static double getFlywheelRPM(double range) {
         InterpolatingDouble d = kFlywheelAutoAimMap.getInterpolated(new InterpolatingDouble(range));
 
-        return d == null ? 10.5 : MathUtil.clamp(d.value, 7, 35);
+        return d == null ? 10.5 : MathUtil.clamp(d.value, 7, 35) + 0.2;
     }
 
     private FlywheelConstants() {}

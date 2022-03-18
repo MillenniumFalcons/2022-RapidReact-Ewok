@@ -64,6 +64,7 @@ public class RobotContainer {
                 m_flywheel,
                 m_pivotClimber,
                 m_visionController,
+                m_ballstopper,
                 m_turret,
                 m_hood,
                 m_statusLED);
@@ -94,7 +95,7 @@ public class RobotContainer {
                                 () ->
                                         m_superstructure.currentState.shooterState =
                                                 ShooterState.IDLE)
-                        .andThen(m_superstructure.flywheelCommands.waitToSpinDownThenHold(5)));
+                        .andThen(m_superstructure.flywheelCommands.waitToSpinDownThenHold(0)));
         m_turret.setDefaultCommand(
                 new InstantCommand(
                                 () ->

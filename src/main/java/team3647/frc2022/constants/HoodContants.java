@@ -44,12 +44,15 @@ public class HoodContants {
     public static final double kNominalVoltage = 11;
 
     public static final double[][] kHoodMap = {
-        {Units.feetToMeters(2) + GlobalConstants.kCenterOffsetMeters, 15 + 0.5},
-        {Units.feetToMeters(4) + GlobalConstants.kCenterOffsetMeters, 17 + 0.5},
-        {Units.feetToMeters(6) + GlobalConstants.kCenterOffsetMeters, 19 + 0.5},
-        {Units.feetToMeters(8) + GlobalConstants.kCenterOffsetMeters, 23 + 0.5},
-        {Units.feetToMeters(10) + GlobalConstants.kCenterOffsetMeters, 25 + 0.5},
-        {Units.feetToMeters(12) + GlobalConstants.kCenterOffsetMeters, 30 + 0.5},
+        {Units.feetToMeters(2) + GlobalConstants.kCenterOffsetMeters, 15},
+        {Units.feetToMeters(4) + GlobalConstants.kCenterOffsetMeters, 17},
+        {Units.feetToMeters(5) + GlobalConstants.kCenterOffsetMeters, 18},
+        {Units.feetToMeters(6) + GlobalConstants.kCenterOffsetMeters, 19},
+        {Units.feetToMeters(7) + GlobalConstants.kCenterOffsetMeters, 23},
+        {Units.feetToMeters(8) + GlobalConstants.kCenterOffsetMeters, 23},
+        {Units.feetToMeters(8) + GlobalConstants.kCenterOffsetMeters, 24},
+        {Units.feetToMeters(10) + GlobalConstants.kCenterOffsetMeters, 25},
+        {Units.feetToMeters(12) + GlobalConstants.kCenterOffsetMeters, 30},
         {Units.feetToMeters(14) + GlobalConstants.kCenterOffsetMeters, 35},
         {Units.feetToMeters(16) + GlobalConstants.kCenterOffsetMeters, 36},
         {Units.feetToMeters(18) + GlobalConstants.kCenterOffsetMeters, 37},
