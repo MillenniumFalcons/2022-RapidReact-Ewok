@@ -355,7 +355,7 @@ public class Superstructure {
     }
 
     public boolean autoShootBallWentThrough() {
-        return ballWentThrough(this::getAimedFlywheelSurfaceVel, this::getAimedKickerVelocity, 1);
+        return ballWentThrough(this::getAimedFlywheelSurfaceVel, this::getAimedKickerVelocity, 0.7);
     }
 
     public boolean getFlywheelReady(DoubleSupplier expectedVelocity, double threshold) {

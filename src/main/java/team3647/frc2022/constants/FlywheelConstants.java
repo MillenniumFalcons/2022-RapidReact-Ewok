@@ -20,9 +20,9 @@ public final class FlywheelConstants {
     public static final double kMaxCurrent = 100;
     public static final double kMaxCurrentDurationSec = 1;
 
-    public static final double kS = 0.74619; // 0.57; // 0.74;
-    public static final double kV = 0.24882 * 0.87; // 0.2;
-    public static final double kA = 0.11684; // 0;
+    public static final double kS = 0.6; // 0.57; // 0.74;
+    public static final double kV = 0.518; // 0.2;
+    public static final double kA = 0.0238; // 0;
     public static final SimpleMotorFeedforward kFeedForward =
             new SimpleMotorFeedforward(kS, kV, kA);
     public static final double kNominalVoltage = 10;
@@ -30,7 +30,7 @@ public final class FlywheelConstants {
     public static final TalonFX kMaster = new LazyTalonFX(GlobalConstants.FlywheelIds.kMasterId);
     public static final TalonFX kFollower =
             new LazyTalonFX(GlobalConstants.FlywheelIds.kFollowerId);
-    public static final double kGearboxReduction = 36.0 / 24;
+    public static final double kGearboxReduction = 24 / 36.0;
     public static final double kWheelDiameterMeters = Units.inchesToMeters(4);
     public static final double kWheelRotationMeters = kWheelDiameterMeters * Math.PI;
     public static final double kNativeVelToSurfaceMpS =
@@ -62,7 +62,7 @@ public final class FlywheelConstants {
     public static double constantVelocityMpS = 5;
 
     static {
-        kMasterConfig.slot0.kP = 0.27; // 0.14
+        kMasterConfig.slot0.kP = 0.05; // 0.14
         kMasterConfig.slot0.kI = 0;
         kMasterConfig.slot0.kD = 0; // 0.08;
         kMasterConfig.slot0.kF = 0;
@@ -89,7 +89,7 @@ public final class FlywheelConstants {
     public static double getFlywheelRPM(double range) {
         InterpolatingDouble d = kFlywheelAutoAimMap.getInterpolated(new InterpolatingDouble(range));
 
-        return d == null ? 10.5 : MathUtil.clamp(d.value, 7, 35) + 0.2;
+        return d == null ? 10.5 : MathUtil.clamp(d.value, 7, 35) - 1.5;
     }
 
     private FlywheelConstants() {}

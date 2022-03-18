@@ -47,6 +47,7 @@ public class AutoCommands {
                                         Trajectories.path1Time
                                                 + Trajectories.path2Time
                                                 + Trajectories.path3Time * 0.9),
+                        new WaitUntilCommand(superstructure::hasTarget),
                         superstructure
                                 .autoAccelerateAndShoot(1.2, 0.4, 0)
                                 .withTimeout(3 + Trajectories.path3Time * 0.1),
