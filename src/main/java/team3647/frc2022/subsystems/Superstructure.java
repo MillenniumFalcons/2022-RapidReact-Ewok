@@ -321,8 +321,8 @@ public class Superstructure {
     }
 
     public boolean readyToBatter() {
-        return getFlywheelReady(() -> FlywheelConstants.kBatterVelocity, 1.5)
-                && Math.abs(m_columnTop.getVelocity() - ColumnTopConstants.kBatterVelocity) < 0.3
+        return getFlywheelReady(() -> FlywheelConstants.kBatterVelocity, 2)
+                && Math.abs(m_columnTop.getVelocity() - ColumnTopConstants.kBatterVelocity) < 0.5
                 && Math.abs(m_hood.getAngle() - HoodContants.kBatterAngle) < 0.1
                 && Math.abs(m_flywheel.getVelocity()) > 5
                 && Math.abs(m_columnTop.getVelocity()) > 2;
