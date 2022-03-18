@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandGroupBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import team3647.frc2022.subsystems.Drivetrain;
 import team3647.frc2022.subsystems.Superstructure;
 
@@ -29,6 +30,7 @@ public class AutoCommands {
                 CommandGroupBase.sequence(
                         ramseteCommands.getTarmacToBottomLeftBall1(),
                         ramseteCommands.getBottomLeftBall1ToTarmac(),
+                        new WaitUntilCommand(superstructure::hasTarget),
                         ramseteCommands.getTarmacToBall2(),
                         new WaitCommand(3),
                         ramseteCommands.getBall2ToLoad2(),
