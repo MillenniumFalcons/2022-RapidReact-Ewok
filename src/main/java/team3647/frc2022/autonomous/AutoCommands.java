@@ -69,9 +69,14 @@ public class AutoCommands {
                                         Trajectories.path4Time * 0.5
                                                 + Trajectories.path5Time * 0.5),
                         superstructure
+                                .feederCommands
+                                .runColumnBottomOut()
+                                .alongWith(superstructure.columnTopCommands.getRunOutwards())
+                                .withTimeout(0.1),
+                        superstructure
                                 .runFeeder(() -> 8)
                                 .alongWith(superstructure.accelerateWithMinMaxDistance(4.05, 4.15))
-                                .withTimeout(Trajectories.path5Time * 0.5),
+                                .withTimeout(Trajectories.path5Time * 0.5 - 0.1),
                         new WaitCommand(0.1),
                         superstructure.autoAccelerateAndShoot(1.2, 0.4, 0));
 
