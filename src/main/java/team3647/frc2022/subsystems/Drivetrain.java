@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive.WheelSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import team3647.lib.PeriodicSubsystem;
+import team3647.lib.team254.util.MovingAverage;
 import team3647.lib.wpi.HALMethods;
 
 public final class Drivetrain implements PeriodicSubsystem {
@@ -39,6 +40,9 @@ public final class Drivetrain implements PeriodicSubsystem {
 
     private final double nominalVoltage;
     private final double kDt;
+
+    private final MovingAverage leftAverageSpeed = new MovingAverage(20);
+    private final MovingAverage rightAverageSpeed = new MovingAverage(20);
 
     public Drivetrain(
             TalonFX leftMaster,
@@ -120,6 +124,9 @@ public final class Drivetrain implements PeriodicSubsystem {
                 rightMaster.getSelectedSensorVelocity() * velocityConversion;
         periodicIO.leftMasterVelocity = periodicIO.wheelSpeeds.leftMetersPerSecond;
         periodicIO.rightMasterVelocity = periodicIO.wheelSpeeds.rightMetersPerSecond;
+
+        leftAverageSpeed.add(periodicIO.wheelSpeeds.leftMetersPerSecond);
+        rightAverageSpeed.add(periodicIO.wheelSpeeds.rightMetersPerSecond);
 
         pigeonIMU.getYawPitchRoll(periodicIO.ypr);
         periodicIO.heading = Math.IEEEremainder(periodicIO.ypr[0], 360);
@@ -297,11 +304,12 @@ public final class Drivetrain implements PeriodicSubsystem {
     }
 
     public boolean isStopped(double threshold) {
-        return Math.abs(getRightVelocity()) < threshold && Math.abs(getLeftVelocity()) < threshold;
+        return Math.abs(rightAverageSpeed.getAverage()) < threshold
+                && Math.abs(leftAverageSpeed.getAverage()) < threshold;
     }
 
     public boolean isStopped() {
-        return isStopped(0.0254);
+        return isStopped(0.0127);
     }
 
     @Override
