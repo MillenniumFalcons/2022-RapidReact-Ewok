@@ -186,7 +186,7 @@ public class Superstructure {
                                             currentState.climberState = ClimberState.CLIMB;
                                             currentState.turretState = TurretState.HOLD_POSITION;
                                         }),
-                                turretCommands.motionMagic(0),
+                                turretCommands.motionMagic(0, 2),
                                 climberCommands.deploy()),
                         this::isClimbing)
                 .alongWith(new ScheduleCommand(flywheelCommands.stop()));

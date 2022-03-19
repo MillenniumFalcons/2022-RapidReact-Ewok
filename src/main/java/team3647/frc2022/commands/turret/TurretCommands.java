@@ -20,13 +20,17 @@ public class TurretCommands {
         return new RunCommand(() -> m_turret.setOpenloop(output.getAsDouble()), m_turret);
     }
 
-    public Command motionMagic(double angle) {
+    public Command motionMagic(double angle, double threshold) {
         return new FunctionalCommand(
                 () -> {},
                 () -> m_turret.setAngle(angle, 0),
                 interrupted -> {},
-                () -> Math.abs(m_turret.getAngle() - angle) < 1,
+                () -> Math.abs(m_turret.getAngle() - angle) < threshold,
                 m_turret);
+    }
+
+    public Command motionMagic(double angle) {
+        return motionMagic(angle, 1);
     }
 
     public Command holdPositionAtCall() {

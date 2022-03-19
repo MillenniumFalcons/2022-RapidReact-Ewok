@@ -30,13 +30,19 @@ public class AutoCommands {
                 CommandGroupBase.sequence(
                         ramseteCommands.getTarmacToBottomLeftBall1(),
                         ramseteCommands.getBottomLeftBall1ToTarmac(),
-                        new WaitUntilCommand(superstructure::hasTarget),
                         ramseteCommands.getTarmacToBall2(),
+                        new WaitUntilCommand(superstructure::hasTarget),
                         new WaitCommand(3),
                         ramseteCommands.getBall2ToLoad2(),
                         new WaitCommand(1),
                         ramseteCommands.getLoad2ToShoot());
-        Command intakeSequence = superstructure.deployAndRunIntake(() -> 13);
+        Command intakeSequence =
+                superstructure
+                        .deployAndRunIntake(() -> 13)
+                        .withTimeout(Trajectories.path1Time + Trajectories.path2Time)
+                        .andThen(
+                                new WaitCommand(Trajectories.path3Time + 0.5),
+                                superstructure.deployAndRunIntake(() -> 13));
 
         Command shooterFeeder =
                 CommandGroupBase.sequence(
@@ -47,10 +53,15 @@ public class AutoCommands {
                                         Trajectories.path1Time
                                                 + Trajectories.path2Time
                                                 + Trajectories.path3Time * 0.9),
-                        new WaitUntilCommand(superstructure::hasTarget),
                         superstructure
                                 .autoAccelerateAndShoot(1.2, 0.4, 0)
-                                .withTimeout(3 + Trajectories.path3Time * 0.1),
+                                .withTimeout(1.5 + Trajectories.path3Time * 0.1),
+                        new WaitUntilCommand(superstructure::hasTarget),
+                        superstructure
+                                .runFeeder(() -> 8)
+                                .alongWith(superstructure.accelerateWithMinMaxDistance(3.7, 3.8))
+                                .withTimeout(0.5),
+                        superstructure.autoAccelerateAndShoot(1.2, 0.4, 0).withTimeout(1),
                         new WaitCommand(Trajectories.path4Time * 0.5),
                         superstructure
                                 .runFeeder(() -> 8)
@@ -60,7 +71,8 @@ public class AutoCommands {
                         superstructure
                                 .runFeeder(() -> 8)
                                 .alongWith(superstructure.accelerateWithMinMaxDistance(4.05, 4.15))
-                                .withTimeout(Trajectories.path5Time * 0.4),
+                                .withTimeout(Trajectories.path5Time * 0.5),
+                        new WaitCommand(0.1),
                         superstructure.autoAccelerateAndShoot(1.2, 0.4, 0));
 
         return CommandGroupBase.parallel(
