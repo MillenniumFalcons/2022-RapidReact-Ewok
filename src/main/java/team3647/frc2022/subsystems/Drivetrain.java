@@ -73,6 +73,7 @@ public final class Drivetrain implements PeriodicSubsystem {
         setStatusFrames(leftSlave, 255);
         setStatusFrames(rightSlave, 255);
         setPidgeonStatusFrames(255);
+        setToBrake();
     }
 
     public static class PeriodicIO {

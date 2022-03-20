@@ -5,7 +5,6 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ArmFeedforward;
-import edu.wpi.first.math.util.Units;
 import team3647.lib.drivers.LazyTalonFX;
 import team3647.lib.team254.util.InterpolatingDouble;
 import team3647.lib.team254.util.InterpolatingTreeMap;
@@ -43,22 +42,30 @@ public class HoodContants {
     public static final double kPeakCurrentDuration = 10; // milliseconds
     public static final double kNominalVoltage = 11;
 
+    // public static final double[][] kHoodMap1 = {
+    //     {Units.feetToMeters(2) + GlobalConstants.kCenterOffsetMeters, 15},
+    //     {Units.feetToMeters(4) + GlobalConstants.kCenterOffsetMeters, 17},
+    //     {Units.feetToMeters(5) + GlobalConstants.kCenterOffsetMeters, 18},
+    //     {Units.feetToMeters(6) + GlobalConstants.kCenterOffsetMeters, 19},
+    //     {Units.feetToMeters(7) + GlobalConstants.kCenterOffsetMeters, 23},
+    //     {Units.feetToMeters(8) + GlobalConstants.kCenterOffsetMeters, 23},
+    //     {Units.feetToMeters(8) + GlobalConstants.kCenterOffsetMeters, 24},
+    //     {Units.feetToMeters(10) + GlobalConstants.kCenterOffsetMeters, 25},
+    //     {Units.feetToMeters(12) + GlobalConstants.kCenterOffsetMeters, 30},
+    //     {Units.feetToMeters(14) + GlobalConstants.kCenterOffsetMeters, 35},
+    //     {Units.feetToMeters(16) + GlobalConstants.kCenterOffsetMeters, 36},
+    //     {Units.feetToMeters(18) + GlobalConstants.kCenterOffsetMeters, 37},
+    //     {Units.feetToMeters(20) + GlobalConstants.kCenterOffsetMeters, 37.5},
+    //     {Units.feetToMeters(22) + GlobalConstants.kCenterOffsetMeters, 39},
+    //     {Units.feetToMeters(24) + GlobalConstants.kCenterOffsetMeters, 39},
+    // };
     public static final double[][] kHoodMap = {
-        {Units.feetToMeters(2) + GlobalConstants.kCenterOffsetMeters, 15},
-        {Units.feetToMeters(4) + GlobalConstants.kCenterOffsetMeters, 17},
-        {Units.feetToMeters(5) + GlobalConstants.kCenterOffsetMeters, 18},
-        {Units.feetToMeters(6) + GlobalConstants.kCenterOffsetMeters, 19},
-        {Units.feetToMeters(7) + GlobalConstants.kCenterOffsetMeters, 23},
-        {Units.feetToMeters(8) + GlobalConstants.kCenterOffsetMeters, 23},
-        {Units.feetToMeters(8) + GlobalConstants.kCenterOffsetMeters, 24},
-        {Units.feetToMeters(10) + GlobalConstants.kCenterOffsetMeters, 25},
-        {Units.feetToMeters(12) + GlobalConstants.kCenterOffsetMeters, 30},
-        {Units.feetToMeters(14) + GlobalConstants.kCenterOffsetMeters, 35},
-        {Units.feetToMeters(16) + GlobalConstants.kCenterOffsetMeters, 36},
-        {Units.feetToMeters(18) + GlobalConstants.kCenterOffsetMeters, 37},
-        {Units.feetToMeters(20) + GlobalConstants.kCenterOffsetMeters, 37.5},
-        {Units.feetToMeters(22) + GlobalConstants.kCenterOffsetMeters, 39},
-        {Units.feetToMeters(24) + GlobalConstants.kCenterOffsetMeters, 39},
+        {2.2, 25},
+        {2.6, 28},
+        {3, 31},
+        {3.77, 35},
+        {4.15, 38},
+        {4.55, 39}
     };
 
     public static final InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble>
@@ -92,7 +99,7 @@ public class HoodContants {
         }
     }
 
-    public static double getHoodAngle(double range) {
+    public static double getHoodAngle1(double range) {
         InterpolatingDouble d = kHoodAutoAimMap.getInterpolated(new InterpolatingDouble(range));
 
         return d == null ? 19 : MathUtil.clamp(d.value, kMinDegree, kMaxDegree);

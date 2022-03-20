@@ -69,7 +69,7 @@ public class RobotContainer {
                 m_hood,
                 m_statusLED);
         // Configure the button bindings
-        m_drivetrain.init();
+        // m_drivetrain.init();
         configureDefaultCommands();
         configureButtonBindings();
         configureSmartDashboardLogging();
@@ -114,7 +114,21 @@ public class RobotContainer {
 
     private void configureButtonBindings() {
         mainController.leftTrigger.whileActiveContinuous(
-                m_superstructure.flywheelCommands.variableVelocity(this::getShooterSpeed));
+                m_superstructure
+                        .feederCommands
+                        .retractStopper()
+                        .andThen(
+                                m_superstructure
+                                        .flywheelCommands
+                                        .variableVelocity(this::getShooterSpeed)
+                                        .alongWith(
+                                                m_superstructure.columnTopCommands
+                                                        .getGoVariableVelocity(
+                                                                () -> this.getShooterSpeed() * 0.5),
+                                                m_superstructure.feederCommands.feedIn(
+                                                        () -> 1.5))));
+        // mainController.leftTrigger.whileActiveOnce(
+        //         m_superstructure.flywheelCommands.openloop(this::getShooterSpeed));
         mainController
                 .rightTrigger
                 .whileActiveOnce(m_superstructure.autoAccelerateAndShoot())
@@ -160,16 +174,16 @@ public class RobotContainer {
 
         coController.dPadUp.whileActiveOnce(m_superstructure.clearFeederFlywheel());
 
-        mainController.buttonA.whenActive(
-                () -> {
-                    this.autoCommand = autoCommands.getLowFive();
-                    this.startPosition = AutoConstants.positionOnTarmacParallel;
-                });
-        mainController.buttonY.whenActive(
-                () -> {
-                    this.autoCommand = autoCommands.getHighTwo();
-                    this.startPosition = AutoConstants.upperPositionOnTarmac;
-                });
+        // mainController.buttonA.whenActive(
+        //         () -> {
+        //             this.autoCommand = autoCommands.getLowFive();
+        //             this.startPosition = AutoConstants.positionOnTarmacParallel;
+        //         });
+        // mainController.buttonY.whenActive(
+        //         () -> {
+        //             this.autoCommand = autoCommands.getHighTwo();
+        //             this.startPosition = AutoConstants.upperPositionOnTarmac;
+        //         });
     }
 
     private void configureSmartDashboardLogging() {

@@ -39,7 +39,7 @@ public final class FlywheelConstants {
     public static final double kLowGoalVelocity = 3;
     public static final double kBatterVelocity = 8.5;
 
-    public static final double[][] kFlywheelMap = {
+    public static final double[][] kFlywheelMap2 = {
         {Units.feetToMeters(2) + GlobalConstants.kCenterOffsetMeters, 8.6},
         {Units.feetToMeters(4) + GlobalConstants.kCenterOffsetMeters, 9.2},
         {Units.feetToMeters(5) + GlobalConstants.kCenterOffsetMeters, 10.2},
@@ -57,8 +57,31 @@ public final class FlywheelConstants {
         {Units.feetToMeters(24) + GlobalConstants.kCenterOffsetMeters, 16.7},
     };
 
+    public static final double[][] kFlywheelVoltageMap = {
+        {9.3, 5.2},
+        {9.7, 5.39},
+        {9.8, 5.48},
+        {10.5, 5.85},
+        {10.6, 5.9},
+        {11, 6.1}
+    };
+
+    public static final double[][] kFlywheelMap = {
+        {2.25, 9.3},
+        {2.6, 9.7},
+        {3, 10},
+        {3.79, 10.5},
+        {4.15, 10.6},
+        {4.55, 11}
+    };
+
     public static InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble>
             kFlywheelAutoAimMap = new InterpolatingTreeMap<>();
+
+    public static InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble>
+            kFlywheelAutoAimMap2 = new InterpolatingTreeMap<>();
+    public static InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble>
+            kFlywheelVelVoltage = new InterpolatingTreeMap<>();
     public static double constantVelocityMpS = 5;
 
     static {
@@ -84,12 +107,26 @@ public final class FlywheelConstants {
             kFlywheelAutoAimMap.put(
                     new InterpolatingDouble(pair[0]), new InterpolatingDouble(pair[1]));
         }
+
+        for (double[] pair : kFlywheelVoltageMap) {
+            kFlywheelVelVoltage.put(
+                    new InterpolatingDouble(pair[0]), new InterpolatingDouble(pair[1]));
+        }
     }
 
     public static double getFlywheelRPM(double range) {
         InterpolatingDouble d = kFlywheelAutoAimMap.getInterpolated(new InterpolatingDouble(range));
 
-        return d == null ? 10.5 : MathUtil.clamp(d.value, 7, 35) - 1.5;
+        return d == null ? 10.5 : MathUtil.clamp(d.value, 7, 35);
+    }
+
+    public static double getFlywheelVoltage(double velocity) {
+        InterpolatingDouble d =
+                kFlywheelVelVoltage.getInterpolated(new InterpolatingDouble(velocity));
+        if (velocity < kFlywheelVoltageMap[0][1]) {
+            return kFeedForward.calculate(velocity);
+        }
+        return d == null ? kFeedForward.calculate(velocity) : MathUtil.clamp(d.value, 2, 11);
     }
 
     private FlywheelConstants() {}

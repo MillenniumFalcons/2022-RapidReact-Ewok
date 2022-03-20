@@ -281,7 +281,7 @@ public class Superstructure {
         if (aimingParameters != null) {
             flywheelVelocity = FlywheelConstants.getFlywheelRPM(aimingParameters.getRangeMeters());
             kickerVelocity = MathUtil.clamp(flywheelVelocity * 0.5, 0, 10);
-            hoodAngle = HoodContants.getHoodAngle(aimingParameters.getRangeMeters());
+            hoodAngle = HoodContants.getHoodAngle1(aimingParameters.getRangeMeters());
         }
 
         if (ClimberState.CLIMB == currentState.climberState) {
@@ -355,7 +355,7 @@ public class Superstructure {
     }
 
     public boolean autoShootBallWentThrough() {
-        return ballWentThrough(this::getAimedFlywheelSurfaceVel, this::getAimedKickerVelocity, 0.7);
+        return Math.abs(m_flywheel.getVelocity() / getAimedFlywheelSurfaceVel()) <= 0.91;
     }
 
     public boolean getFlywheelReady(DoubleSupplier expectedVelocity, double threshold) {
