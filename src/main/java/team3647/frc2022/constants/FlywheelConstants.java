@@ -37,7 +37,7 @@ public final class FlywheelConstants {
             10 * kWheelRotationMeters / GlobalConstants.kFalconTicksPerRotation * kGearboxReduction;
 
     public static final double kLowGoalVelocity = 3;
-    public static final double kBatterVelocity = 8.5;
+    public static final double kBatterVelocity = 8.7;
 
     public static final double[][] kFlywheelMap2 = {
         {Units.feetToMeters(2) + GlobalConstants.kCenterOffsetMeters, 8.6},

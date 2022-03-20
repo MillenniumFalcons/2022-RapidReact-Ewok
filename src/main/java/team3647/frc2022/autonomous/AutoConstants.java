@@ -21,6 +21,7 @@ public class AutoConstants {
             new Pose2d(7.62, 2.74, Rotation2d.fromDegrees(90));
     public static final Pose2d bottomLeftBall2At20Left =
             new Pose2d(5.69, 1.73, Rotation2d.fromDegrees(-20));
+    public static final Pose2d shootPoint = new Pose2d(5.3, 2, Rotation2d.fromDegrees(-10));
     public static final Pose2d bottomLeftBall3At32 =
             new Pose2d(1.35, 1.35, Rotation2d.fromDegrees(40));
     public static final Pose2d positionEndPath5 =
