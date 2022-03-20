@@ -3,6 +3,7 @@ package team3647.frc2022.subsystems;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandGroupBase;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
@@ -114,7 +115,7 @@ public class Superstructure {
         return new WaitUntilCommand(() -> Math.abs(m_turret.getAngle() + 180) < 3)
                 .andThen(
                         accelerateAndShoot(
-                                () -> FlywheelConstants.kBatterVelocity,
+                                this::getBatterVelocity,
                                 () -> ColumnTopConstants.kBatterVelocity,
                                 this::readyToBatter,
                                 this::batterBallWentThrough,
@@ -321,11 +322,11 @@ public class Superstructure {
     }
 
     public boolean readyToBatter() {
-        return getFlywheelReady(() -> FlywheelConstants.kBatterVelocity, 2)
-                && Math.abs(m_columnTop.getVelocity() - ColumnTopConstants.kBatterVelocity) < 0.5
-                && Math.abs(m_hood.getAngle() - HoodContants.kBatterAngle) < 0.1
+        return getFlywheelReady(this::getBatterVelocity, 2)
+                && Math.abs(m_columnTop.getVelocity() - ColumnTopConstants.kBatterVelocity) < 2
+                && Math.abs(m_hood.getAngle() - HoodContants.kBatterAngle) < 1
                 && Math.abs(m_flywheel.getVelocity()) > 5
-                && Math.abs(m_columnTop.getVelocity()) > 2;
+                && Math.abs(m_columnTop.getVelocity()) > 1;
     }
 
     public boolean readyToAutoShoot() {
@@ -349,9 +350,7 @@ public class Superstructure {
 
     public boolean batterBallWentThrough() {
         return ballWentThrough(
-                () -> FlywheelConstants.kBatterVelocity + 0.5,
-                () -> ColumnTopConstants.kBatterVelocity,
-                1);
+                this::getBatterVelocity, () -> ColumnTopConstants.kBatterVelocity, 1);
     }
 
     public boolean autoShootBallWentThrough() {
@@ -373,6 +372,10 @@ public class Superstructure {
     public double getAimedFlywhelAtMinMaxDistance(double minDistance, double maxDistance) {
         return FlywheelConstants.getFlywheelRPM(
                 MathUtil.clamp(getDistanceToTarget(), minDistance, maxDistance));
+    }
+
+    public double getBatterVelocity() {
+        return FlywheelConstants.kBatterVelocity + getShooterSpeedOffset();
     }
 
     public double getAimedFlywheelSurfaceVel() {
@@ -405,6 +408,10 @@ public class Superstructure {
 
     public boolean hasTarget() {
         return getAimingParameters() != null;
+    }
+
+    public double getShooterSpeedOffset() {
+        return SmartDashboard.getNumber("Shooter Speed Offset", 0.0);
     }
 
     public void configLEDTriggers() {

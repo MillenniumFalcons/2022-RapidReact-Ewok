@@ -75,7 +75,7 @@ public class AutoCommands {
                                 .withTimeout(0.1),
                         superstructure
                                 .runFeeder(() -> 8)
-                                .alongWith(superstructure.accelerateWithMinMaxDistance(4.05, 4.15))
+                                .alongWith(superstructure.accelerateWithMinMaxDistance(4.05, 4.55))
                                 .withTimeout(Trajectories.path5Time * 0.5 - 0.1),
                         new WaitCommand(0.1),
                         superstructure.autoAccelerateAndShoot(1.2, 0.4, 0));
@@ -99,6 +99,10 @@ public class AutoCommands {
         return CommandGroupBase.parallel(
                 superstructure.runFeeder(() -> 8),
                 superstructure.accelerateWithMinMaxDistance(minDistance, maxDistance));
+    }
+
+    public Command lowGoalOnce() {
+        return superstructure.lowAccelerateAndShoot();
     }
 
     public Command getLowFive() {

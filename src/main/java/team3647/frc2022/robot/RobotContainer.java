@@ -113,20 +113,30 @@ public class RobotContainer {
     }
 
     private void configureButtonBindings() {
-        mainController.leftTrigger.whileActiveContinuous(
-                m_superstructure
-                        .feederCommands
-                        .retractStopper()
-                        .andThen(
-                                m_superstructure
-                                        .flywheelCommands
-                                        .variableVelocity(this::getShooterSpeed)
-                                        .alongWith(
-                                                m_superstructure.columnTopCommands
-                                                        .getGoVariableVelocity(
-                                                                () -> this.getShooterSpeed() * 0.5),
-                                                m_superstructure.feederCommands.feedIn(
-                                                        () -> 1.5))));
+        // mainController.leftTrigger.whileActiveContinuous(
+        //         m_superstructure
+        //                 .feederCommands
+        //                 .retractStopper()
+        //                 .andThen(
+        //                         m_superstructure
+        //                                 .flywheelCommands
+        //                                 .variableVelocity(this::getShooterSpeed)
+        //                                 .alongWith(
+        //                                         m_superstructure.columnTopCommands
+        //                                                 .getGoVariableVelocity(
+        //                                                         () -> this.getShooterSpeed() *
+        // 0.5),
+        //                                         m_superstructure.feederCommands.feedIn(
+        //                                                 () -> 1.5))));
+        mainController
+                .leftTrigger
+                .whileActiveOnce(m_superstructure.batterAccelerateAndShoot())
+                .whileActiveOnce(m_superstructure.turretCommands.motionMagic(-180).perpetually())
+                .whileActiveOnce(
+                        m_superstructure
+                                .hoodCommands
+                                .motionMagic(HoodContants.kBatterAngle)
+                                .perpetually());
         // mainController.leftTrigger.whileActiveOnce(
         //         m_superstructure.flywheelCommands.openloop(this::getShooterSpeed));
         mainController
@@ -233,6 +243,7 @@ public class RobotContainer {
                 });
         m_printer.addPose("Drivetrain Pose", m_drivetrain::getPose);
         SmartDashboard.putNumber("Shooter Speed", 0.0);
+        SmartDashboard.putNumber("Shooter Speed Offset", 0.0);
         SmartDashboard.putNumber("Hood angle", 15.0);
     }
 
