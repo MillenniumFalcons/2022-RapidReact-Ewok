@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj2.command.CommandGroupBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
+import team3647.frc2022.constants.HoodContants;
 import team3647.frc2022.subsystems.Drivetrain;
 import team3647.frc2022.subsystems.Superstructure;
 
@@ -59,7 +60,7 @@ public class AutoCommands {
                         new WaitUntilCommand(superstructure::hasTarget),
                         superstructure
                                 .runFeeder(() -> 8)
-                                .alongWith(superstructure.accelerateWithMinMaxDistance(3.7, 3.8))
+                                .alongWith(superstructure.accelerateWithMinMaxDistance(3.1, 3.2))
                                 .withTimeout(0.5),
                         superstructure.autoAccelerateAndShoot(1.2, 0.4, 0).withTimeout(1),
                         new WaitCommand(Trajectories.path4Time * 0.5),
@@ -75,7 +76,7 @@ public class AutoCommands {
                                 .withTimeout(0.1),
                         superstructure
                                 .runFeeder(() -> 8)
-                                .alongWith(superstructure.accelerateWithMinMaxDistance(4.05, 4.55))
+                                .alongWith(superstructure.accelerateWithMinMaxDistance(3.1, 3.2))
                                 .withTimeout(Trajectories.path5Time * 0.5 - 0.1),
                         new WaitCommand(0.1),
                         superstructure.autoAccelerateAndShoot(1.2, 0.4, 0));
@@ -102,7 +103,10 @@ public class AutoCommands {
     }
 
     public Command lowGoalOnce() {
-        return superstructure.lowAccelerateAndShoot();
+        return CommandGroupBase.parallel(
+                superstructure.lowAccelerateAndShoot(),
+                superstructure.turretCommands.motionMagic(0).perpetually(),
+                superstructure.hoodCommands.motionMagic(HoodContants.kLowGoalAngle).perpetually());
     }
 
     public Command getLowFive() {

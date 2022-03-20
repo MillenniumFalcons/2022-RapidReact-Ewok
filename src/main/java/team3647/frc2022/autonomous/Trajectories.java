@@ -66,7 +66,7 @@ public class Trajectories {
     private static final Pose2d path4Start = path3End;
     private static final Pose2d path4End = AutoConstants.bottomLeftBall3At32;
     private static final Pose2d path5Start = path4End;
-    private static final Pose2d path5End = AutoConstants.positionEndPath5;
+    private static final Pose2d path5End = path4Start;
     // 5 ball
     public static Trajectory tarmacToBottomLeftBall1 =
             TrajectoryGenerator.generateTrajectory(
