@@ -69,8 +69,9 @@ public final class FlywheelConstants {
     public static final double[][] kFlywheelMap = {
         {2.25, 9.3},
         {2.6, 9.5},
-        {3, 9.7},
-        {3.79, 10.2},
+        {3, 9.6},
+        {3.17, 9.7},
+        {3.79, 10.1},
         {3.94, 10.4},
         {4.05, 10.5},
         {4.15, 10.6},
