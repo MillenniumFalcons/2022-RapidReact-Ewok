@@ -253,7 +253,7 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() {
-        return this.autoCommands.lowFiveQuestionable();
+        return this.autoCommands.getHighTwo();
     }
 
     public double getShooterSpeed() {
@@ -439,6 +439,6 @@ public class RobotContainer {
 
     private final AutoCommands autoCommands =
             new AutoCommands(m_drivetrain, DrivetrainConstants.kDriveKinematics, m_superstructure);
-    private Command autoCommand = autoCommands.lowFiveQuestionable();
-    private Pose2d startPosition = AutoConstants.positionOnTarmacParallel;
+    private Command autoCommand = autoCommands.getHighTwo();
+    private Pose2d startPosition = AutoConstants.positionOnTarmacUpper;
 }

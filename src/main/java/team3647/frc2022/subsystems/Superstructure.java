@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandGroupBase;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.ScheduleCommand;
@@ -134,6 +135,22 @@ public class Superstructure {
                         flywheelCommands.variableVelocity(() -> FlywheelConstants.kLowGoalVelocity),
                         columnTopCommands.getGoVariableVelocity(
                                 () -> ColumnTopConstants.kLowGoalVelocity));
+    }
+
+    public Command manualShootForAuto() {
+        return feederCommands
+                .retractStopper()
+                .alongWith(feederCommands.feedIn(() -> 2))
+                .alongWith(
+                        new FunctionalCommand(
+                                () -> {},
+                                () -> m_hood.setAngleMotionMagic(39),
+                                interrupted -> {},
+                                () -> false,
+                                m_hood))
+                .alongWith(
+                        flywheelCommands.variableVelocity(() -> 3),
+                        columnTopCommands.getGoVariableVelocity(() -> 2));
     }
 
     public Command accelerateAndShoot(

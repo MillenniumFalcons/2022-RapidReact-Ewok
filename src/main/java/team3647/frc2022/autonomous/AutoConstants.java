@@ -2,7 +2,6 @@ package team3647.frc2022.autonomous;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.util.Units;
 
 // previous contants.cField
 public class AutoConstants {
@@ -27,14 +26,9 @@ public class AutoConstants {
     public static final Pose2d positionEndPath5 =
             new Pose2d(3.74, 3.32, Rotation2d.fromDegrees(40));
 
-    public static final Pose2d upperPositionOnTarmac =
-            new Pose2d(
-                    Units.inchesToMeters(250),
-                    Units.inchesToMeters(200),
-                    Rotation2d.fromDegrees(-38.65980825));
-    public static final Pose2d upperBall1 =
-            new Pose2d(
-                    Units.inchesToMeters(192.5),
-                    Units.inchesToMeters(242),
-                    Rotation2d.fromDegrees(-38.65980825));
+    public static final Pose2d positionOnTarmacUpper =
+            new Pose2d(6.16, 5.13, Rotation2d.fromDegrees(-44.45));
+    public static final Pose2d upperBall1 = new Pose2d(5.04, 6.16, Rotation2d.fromDegrees(-69.72));
+    public static final Pose2d upperOtherColorBall1 =
+            new Pose2d(6.09, 7.37, new Rotation2d(154.19));
 }

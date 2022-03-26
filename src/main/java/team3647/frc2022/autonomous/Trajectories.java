@@ -91,16 +91,18 @@ public class Trajectories {
     public static double path5Time = load2ToShoot.getTotalTimeSeconds();
 
     // 2 ball
+    private static final Pose2d path6Start = AutoConstants.positionOnTarmacUpper;
+    private static final Pose2d path6End = AutoConstants.upperBall1;
+    private static final Pose2d path7Start = path6End;
+    private static final Pose2d path7End = AutoConstants.upperOtherColorBall1;
+
     public static Trajectory upperTarmacToUpperBall1 =
             TrajectoryGenerator.generateTrajectory(
-                    AutoConstants.upperPositionOnTarmac,
-                    List.of(),
-                    AutoConstants.upperBall1,
-                    reverseTrajectoryConfig);
-    public static Trajectory upperBall1ToUpperTarmac =
+                    path6Start, List.of(), path6End, reverseTrajectoryConfigSlow);
+    public static Trajectory upperBall1ToOtherBall1 =
             TrajectoryGenerator.generateTrajectory(
-                    AutoConstants.upperBall1,
-                    List.of(),
-                    AutoConstants.upperPositionOnTarmac,
-                    forwardTrajectoryConfigSlow);
+                    path7Start, List.of(), path7End, reverseTrajectoryConfigSlow);
+
+    public static double path6Time = upperTarmacToUpperBall1.getTotalTimeSeconds();
+    public static double path7Time = upperBall1ToOtherBall1.getTotalTimeSeconds();
 }
