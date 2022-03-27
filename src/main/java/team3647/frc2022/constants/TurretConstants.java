@@ -26,7 +26,7 @@ public class TurretConstants {
     public static final double kPosThersholdDeg = 1.0;
     public static final boolean kCurrentLimitingEnable = true;
 
-    public static final double kS = 0.5;
+    public static final double kS = 0;
     public static final double kV = 0.011614;
     public static final double kA = 0.005;
 

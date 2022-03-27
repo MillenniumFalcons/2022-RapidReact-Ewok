@@ -82,9 +82,13 @@ public class Limelight implements IVisionCamera {
         skew = getDouble(Data.SKEW);
         tx = getDouble(Data.X);
         ty = getDouble(Data.Y);
-        double timestamp = Timer.getFPGATimestamp() - getDouble(Data.LATNECY_MS) / 1000.0 - 0.011;
+        double timestamp =
+                Timer.getFPGATimestamp()
+                        - getDouble(Data.LATNECY_MS) / 1000.0
+                        - 0.011
+                        - extraLatencySec;
         synchronized (Limelight.this) {
-            captureTimestamp = timestamp - 0.011;
+            captureTimestamp = timestamp;
             corners = new LinkedList<>();
             for (int i = 0; i < latestRawCorners.length - 1; i += 2) {
                 corners.add(new VisionPoint(latestRawCorners[i], latestRawCorners[i + 1]));

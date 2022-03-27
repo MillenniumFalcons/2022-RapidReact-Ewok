@@ -128,17 +128,17 @@ public class RobotContainer {
         // 0.5),
         //                                         m_superstructure.feederCommands.feedIn(
         //                                                 () -> 1.5))));
-        mainController
-                .leftTrigger
-                .whileActiveOnce(m_superstructure.batterAccelerateAndShoot())
-                .whileActiveOnce(m_superstructure.turretCommands.motionMagic(-180).perpetually())
-                .whileActiveOnce(
-                        m_superstructure
-                                .hoodCommands
-                                .motionMagic(HoodContants.kBatterAngle)
-                                .perpetually());
-        // mainController.leftTrigger.whileActiveOnce(
-        //         m_superstructure.flywheelCommands.openloop(this::getShooterSpeed));
+        // mainController
+        //         .leftTrigger
+        //         .whileActiveOnce(m_superstructure.batterAccelerateAndShoot())
+        //         .whileActiveOnce(m_superstructure.turretCommands.motionMagic(-180).perpetually())
+        //         .whileActiveOnce(
+        //                 m_superstructure
+        //                         .hoodCommands
+        //                         .motionMagic(HoodContants.kBatterAngle)
+        //                         .perpetually());
+        mainController.leftTrigger.whileActiveOnce(
+                m_superstructure.flywheelCommands.variableVelocity(this::getShooterSpeed));
         mainController
                 .rightTrigger
                 .whileActiveOnce(m_superstructure.autoAccelerateAndShoot())
