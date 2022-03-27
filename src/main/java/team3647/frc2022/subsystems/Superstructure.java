@@ -33,6 +33,7 @@ import team3647.frc2022.states.ClimberState;
 import team3647.frc2022.states.RobotState;
 import team3647.frc2022.states.ShooterState;
 import team3647.frc2022.states.TurretState;
+import team3647.lib.NetworkColorSensor.Color;
 import team3647.lib.tracking.FlightDeck;
 import team3647.lib.vision.AimingParameters;
 
@@ -45,6 +46,7 @@ public class Superstructure {
     private double hoodAngle = 16;
     private double turretVelFF = 0.0;
     private double turretSetpoint = TurretConstants.kStartingAngle;
+    public Color ourColor = Color.NONE;
 
     public Superstructure(
             FlightDeck deck,
@@ -86,6 +88,7 @@ public class Superstructure {
         isShooting = new Trigger(this::isShooting);
         isAiming = new Trigger(this::isAiming);
         fullyReadyToShoot = new Trigger(this::readyToAutoShoot);
+        wrongBallDetected = new Trigger(this::isWrongBall);
     }
 
     public Command autoAccelerateAndShoot() {
@@ -386,6 +389,11 @@ public class Superstructure {
         return getFlywheelReady(expectedVelocity, 0.1);
     }
 
+    public boolean isWrongBall() {
+        return m_columnBottom.getBallColor() != ourColor
+                && m_columnBottom.getBallColor() != Color.NONE;
+    }
+
     public AimingParameters getAimingParameters() {
         return aimingParameters;
     }
@@ -554,4 +562,5 @@ public class Superstructure {
     public final Trigger isClimbing;
     public final Trigger fullyReadyToShoot;
     public final Trigger isAiming;
+    public final Trigger wrongBallDetected;
 }

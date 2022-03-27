@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandGroupBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -38,6 +39,7 @@ import team3647.frc2022.subsystems.Superstructure;
 import team3647.frc2022.subsystems.Turret;
 import team3647.frc2022.subsystems.vision.VisionController;
 import team3647.lib.GroupPrinter;
+import team3647.lib.NetworkColorSensor;
 import team3647.lib.inputs.Joysticks;
 import team3647.lib.tracking.FlightDeck;
 import team3647.lib.tracking.RobotTracker;
@@ -67,7 +69,8 @@ public class RobotContainer {
                 m_ballstopper,
                 m_turret,
                 m_hood,
-                m_statusLED);
+                m_statusLED,
+                m_colorSensor);
         // Configure the button bindings
         // m_drivetrain.init();
         configureDefaultCommands();
@@ -110,6 +113,17 @@ public class RobotContainer {
                 m_superstructure.intakeInThenManual(coController::getLeftStickY));
         m_columnBottom.setDefaultCommand(
                 m_superstructure.feederInThenManual(coController::getLeftStickY));
+        m_superstructure.wrongBallDetected.whenActive(
+                CommandGroupBase.sequence(
+                        m_superstructure.feederCommands.retractStopper(),
+                        m_superstructure.turretCommands.motionMagic(-30, 5),
+                        m_superstructure.feederCommands.runColumnBottom(() -> -1).withInterrupt(m_columnBottom::isBallWithinDistance).withTimeout(0.1),
+                        CommandGroupBase.parallel(
+                                        m_superstructure.flywheelCommands.openloop(0.3),
+                                        m_superstructure.feederCommands.feedIn(() -> 1.7),
+                                        m_superstructure.columnTopCommands.getRunInwards())
+                                .withTimeout(0.3),
+                        m_superstructure.feederCommands.extendStopper()));
     }
 
     private void configureButtonBindings() {
@@ -211,6 +225,8 @@ public class RobotContainer {
         m_printer.addDouble("Right Climber", m_pivotClimber::getRightPosition);
         m_printer.addBoolean("Right stick", () -> mainController.rightJoyStickPress.get());
         m_printer.addDouble("Target Range", m_superstructure::getDistanceToTarget);
+        m_printer.addString("Color", m_colorSensor::getColorAsString);
+        m_printer.addBoolean("Read Color", m_colorSensor::isReadColor);
         m_printer.addPose(
                 "Vision Pose",
                 () -> {
@@ -290,6 +306,12 @@ public class RobotContainer {
 
     private final GroupPrinter m_printer = GroupPrinter.getInstance();
 
+    final NetworkColorSensor m_colorSensor =
+            new NetworkColorSensor(
+                    ColorsensorConstants.kProximityEntry,
+                    ColorsensorConstants.kColorEntry,
+                    ColorsensorConstants.kMaxReadDistance);
+
     final Drivetrain m_drivetrain =
             new Drivetrain(
                     DrivetrainConstants.kLeftMaster,
@@ -333,7 +355,8 @@ public class RobotContainer {
                     ColumnBottomConstants.kPosConverstion,
                     ColumnBottomConstants.kNominalVoltage,
                     GlobalConstants.kDt,
-                    ColumnBottomConstants.kFeedForward);
+                    ColumnBottomConstants.kFeedForward,
+                    m_colorSensor);
 
     final Ballstopper m_ballstopper = new Ballstopper(ColumnBottomConstants.kBallstopperPiston);
 
