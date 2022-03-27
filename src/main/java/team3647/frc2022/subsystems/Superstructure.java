@@ -137,7 +137,7 @@ public class Superstructure {
                                 () -> ColumnTopConstants.kLowGoalVelocity));
     }
 
-    public Command manualShootForAuto() {
+    public Command lowShot() {
         return feederCommands
                 .retractStopper()
                 .alongWith(feederCommands.feedIn(() -> 2))

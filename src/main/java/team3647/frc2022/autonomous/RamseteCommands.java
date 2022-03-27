@@ -43,6 +43,10 @@ public class RamseteCommands {
         return createDefaultRamseteCommand(Trajectories.upperBall1ToOtherBall1);
     }
 
+    public RamseteCommand getOtherColorBall1ToOtherColorBall2() {
+        return createDefaultRamseteCommand(Trajectories.otherBall1ToOtherBall2);
+    }
+
     private RamseteCommand createDefaultRamseteCommand(Trajectory trajectory) {
         return new RamseteCommand(
                 trajectory,
