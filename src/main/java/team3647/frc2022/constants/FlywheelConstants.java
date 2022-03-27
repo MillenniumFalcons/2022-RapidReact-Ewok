@@ -20,8 +20,8 @@ public final class FlywheelConstants {
     public static final double kMaxCurrent = 100;
     public static final double kMaxCurrentDurationSec = 1;
 
-    public static final double kS = 0.6; // 0.57; // 0.74;
-    public static final double kV = 0.518; // 0.2;
+    public static final double kS = 0.2; // 0.57; // 0.74;
+    public static final double kV = 0.55; // 0.2;
     public static final double kA = 0.0238; // 0;
     public static final SimpleMotorFeedforward kFeedForward =
             new SimpleMotorFeedforward(kS, kV, kA);
