@@ -28,7 +28,8 @@ public class AutoConstants {
 
     public static final Pose2d positionOnTarmacUpper =
             new Pose2d(6.16, 5.13, Rotation2d.fromDegrees(-44.45));
-    public static final Pose2d upperBall1 = new Pose2d(5.04, 6.16, Rotation2d.fromDegrees(-69.72));
+    public static final Pose2d upperBall1 = new Pose2d(5, 6.17, Rotation2d.fromDegrees(-95.47));
     public static final Pose2d upperOtherColorBall1 =
-            new Pose2d(6.09, 7.37, new Rotation2d(154.19));
+            new Pose2d(6.05, 7.24, new Rotation2d(161.79));
+    public static final Pose2d upperOtherColorBall2 = new Pose2d(4.54, 3.32, new Rotation2d(42.61));
 }

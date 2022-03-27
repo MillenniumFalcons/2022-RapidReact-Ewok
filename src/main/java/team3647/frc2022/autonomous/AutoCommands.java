@@ -94,33 +94,27 @@ public class AutoCommands {
                         ramseteCommands.getTarmacToUpperBall1(),
                         new WaitCommand(2),
                         ramseteCommands.getUpperBall1ToOtherColorBall1(),
-                        new WaitCommand(1));
+                        ramseteCommands.getOtherColorBall1ToOtherColorBall2(),
+                        new WaitCommand(2));
         Command intakeSequence =
                 superstructure
                         .deployAndRunIntake(() -> 13)
                         .withTimeout(Trajectories.path6Time + .2)
                         .andThen(new WaitCommand(1.8), superstructure.deployAndRunIntake(() -> 13));
         Command turretSequence =
-                CommandGroupBase.sequence(
-                        superstructure
-                                .turretCommands
-                                .motionMagic(0)
-                                .andThen(superstructure.aimTurret())
-                                .withTimeout(Trajectories.path6Time),
-                        new WaitCommand(2),
-                        superstructure.turretCommands.motionMagic(135));
+                superstructure.turretCommands.motionMagic(0).andThen(superstructure.aimTurret());
         Command shooterFeederSequence =
                 CommandGroupBase.sequence(
                         superstructure
                                 .runFeeder(() -> 8)
                                 .alongWith(superstructure.accelerateWithMinMaxDistance(3.04, 3.14))
-                                .withTimeout(Trajectories.path6Time),
-                        superstructure.autoAccelerateAndShoot(1.2, 0.4, 0).withTimeout(2),
+                                .withTimeout(Trajectories.path6Time + .5),
+                        superstructure.autoAccelerateAndShoot(1.2, 0.4, 0).withTimeout(1.5),
                         superstructure
                                 .runFeeder(() -> 8)
                                 .alongWith(superstructure.accelerateWithMinMaxDistance(3.04, 3.14))
                                 .withTimeout(Trajectories.path7Time),
-                        superstructure.manualShootForAuto().withTimeout(2));
+                        superstructure.lowShot().withTimeout(1));
 
         return CommandGroupBase.parallel(
                 superstructure.disableCompressor(),
