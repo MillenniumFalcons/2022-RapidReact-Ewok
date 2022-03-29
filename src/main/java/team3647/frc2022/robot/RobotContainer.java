@@ -69,8 +69,7 @@ public class RobotContainer {
                 m_ballstopper,
                 m_turret,
                 m_hood,
-                m_statusLED,
-                m_colorSensor);
+                m_statusLED);
         // Configure the button bindings
         // m_drivetrain.init();
         configureDefaultCommands();
@@ -117,7 +116,11 @@ public class RobotContainer {
                 CommandGroupBase.sequence(
                         m_superstructure.feederCommands.retractStopper(),
                         m_superstructure.turretCommands.motionMagic(-30, 5),
-                        m_superstructure.feederCommands.runColumnBottom(() -> -1).withInterrupt(m_columnBottom::isBallWithinDistance).withTimeout(0.1),
+                        m_superstructure
+                                .feederCommands
+                                .runColumnBottom(() -> -1)
+                                .withInterrupt(m_columnBottom::isBallWithinDistance)
+                                .withTimeout(0.1),
                         CommandGroupBase.parallel(
                                         m_superstructure.flywheelCommands.openloop(0.3),
                                         m_superstructure.feederCommands.feedIn(() -> 1.7),
@@ -225,8 +228,8 @@ public class RobotContainer {
         m_printer.addDouble("Right Climber", m_pivotClimber::getRightPosition);
         m_printer.addBoolean("Right stick", () -> mainController.rightJoyStickPress.get());
         m_printer.addDouble("Target Range", m_superstructure::getDistanceToTarget);
-        m_printer.addString("Color", m_colorSensor::getColorAsString);
-        m_printer.addBoolean("Read Color", m_colorSensor::isReadColor);
+        m_printer.addString("Color", m_columnBottom.getColorSensor()::getColorAsString);
+        m_printer.addBoolean("Read Color", m_columnBottom.getColorSensor()::isReadColor);
         m_printer.addPose(
                 "Vision Pose",
                 () -> {
@@ -306,12 +309,6 @@ public class RobotContainer {
 
     private final GroupPrinter m_printer = GroupPrinter.getInstance();
 
-    final NetworkColorSensor m_colorSensor =
-            new NetworkColorSensor(
-                    ColorsensorConstants.kProximityEntry,
-                    ColorsensorConstants.kColorEntry,
-                    ColorsensorConstants.kMaxReadDistance);
-
     final Drivetrain m_drivetrain =
             new Drivetrain(
                     DrivetrainConstants.kLeftMaster,
@@ -356,7 +353,10 @@ public class RobotContainer {
                     ColumnBottomConstants.kNominalVoltage,
                     GlobalConstants.kDt,
                     ColumnBottomConstants.kFeedForward,
-                    m_colorSensor);
+                    new NetworkColorSensor(
+                            ColorsensorConstants.kProximityEntry,
+                            ColorsensorConstants.kColorEntry,
+                            ColorsensorConstants.kMaxReadDistance));
 
     final Ballstopper m_ballstopper = new Ballstopper(ColumnBottomConstants.kBallstopperPiston);
 
@@ -438,7 +438,7 @@ public class RobotContainer {
 
     final VisionController m_visionController =
             new VisionController(
-                    new Limelight("10.36.47.15", 0.06, VisionConstants.limelightConstants),
+                    new Limelight("10.36.47.15", 0, VisionConstants.limelightConstants),
                     VisionConstants.kCenterGoalTargetConstants,
                     m_flightDeck::addVisionObservation,
                     this::updateTapeTranslations);

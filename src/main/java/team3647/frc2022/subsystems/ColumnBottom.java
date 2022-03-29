@@ -63,7 +63,11 @@ public class ColumnBottom extends TalonFXSubsystem {
     public Color getBallColor() {
         return colorSensor.getColor();
     }
-    
+
+    public NetworkColorSensor getColorSensor() {
+        return this.colorSensor;
+    }
+
     public boolean isBallWithinDistance() {
         return colorSensor.isReadColor();
     }

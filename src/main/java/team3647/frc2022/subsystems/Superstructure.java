@@ -89,6 +89,7 @@ public class Superstructure {
         isAiming = new Trigger(this::isAiming);
         fullyReadyToShoot = new Trigger(this::readyToAutoShoot);
         wrongBallDetected = new Trigger(this::isWrongBall);
+        configLEDTriggers();
     }
 
     public Command autoAccelerateAndShoot() {

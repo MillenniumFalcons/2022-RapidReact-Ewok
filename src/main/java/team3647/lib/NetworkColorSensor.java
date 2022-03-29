@@ -4,18 +4,24 @@
 
 package team3647.lib;
 
+import edu.wpi.first.networktables.EntryListenerFlags;
+import edu.wpi.first.networktables.EntryNotification;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 
 /** Add your docs here. */
-public class NetworkColorSensor implements PeriodicSubsystem {
+public final class NetworkColorSensor {
     public final NetworkTableInstance networkTableInstance = NetworkTableInstance.getDefault();
 
-    public final NetworkTableEntry proxymityEntry;
+    public final NetworkTableEntry proximityEntry;
     public final NetworkTableEntry rawColorsEntry;
 
     private final double[] kEmptyDoubleThree = new double[3];
     private final int kMaxReadDistance;
+
+    private static final int kRedIndex = 0;
+    private static final int kGreenIndex = 1;
+    private static final int kBlueIndex = 2;
 
     public enum Color {
         NONE("None"),
@@ -33,44 +39,40 @@ public class NetworkColorSensor implements PeriodicSubsystem {
     private double[] rawColors = new double[3];
 
     private Color currentColor = Color.NONE;
-    private Color allianceColor = Color.NONE;
 
     public NetworkColorSensor(String proximity, String color, int maxReadDistance) {
-        this.proxymityEntry = networkTableInstance.getEntry(proximity);
+        this.proximityEntry = networkTableInstance.getEntry(proximity);
         this.rawColorsEntry = networkTableInstance.getEntry(color);
 
         kMaxReadDistance = maxReadDistance;
+        this.proximityEntry.addListener(this::processNTEvent, EntryListenerFlags.kUpdate);
     }
 
-    public double getProximity() {
+    private synchronized void processNTEvent(EntryNotification notification) {
+        proximity = proximityEntry.getDouble(0.0);
+        rawColors = rawColorsEntry.getDoubleArray(kEmptyDoubleThree);
+        currentColor =
+                updateColor(
+                        rawColors[kRedIndex],
+                        rawColors[kGreenIndex],
+                        rawColors[kBlueIndex],
+                        isReadColor());
+    }
+
+    public synchronized double getProximity() {
         return proximity;
     }
 
-    public double[] getRawColors() {
-        return rawColors;
-    }
-
-    public double getRed() {
-        return rawColors[0];
-    }
-
-    public double getGreen() {
-        return rawColors[1];
-    }
-
-    public double getBlue() {
-        return rawColors[2];
-    }
-
-    public boolean isReadColor() {
+    public synchronized boolean isReadColor() {
         return this.proximity > kMaxReadDistance;
     }
 
-    private Color updateColor() {
+    private static Color updateColor(
+            double red, double green, double blue, boolean withinDistance) {
         Color result;
-        if (getGreen() > getRed() && getGreen() > getBlue() || !isReadColor()) {
+        if (green > red && green > blue || !withinDistance) {
             result = Color.NONE;
-        } else if (getBlue() > getRed()) {
+        } else if (blue > red) {
             result = Color.BLUE;
         } else {
             result = Color.RED;
@@ -78,40 +80,11 @@ public class NetworkColorSensor implements PeriodicSubsystem {
         return result;
     }
 
-    private boolean isMatchingColor() {
-        if (this.allianceColor == this.currentColor) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    public boolean isCorrectBall() {
-        if (isMatchingColor() && isReadColor()) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    public String getColorAsString() {
+    public synchronized String getColorAsString() {
         return this.currentColor.str;
     }
 
-    public Color getColor() {
+    public synchronized Color getColor() {
         return this.currentColor;
-    }
-
-    @Override
-    public void readPeriodicInputs() {
-        proximity = proxymityEntry.getDouble(0.0);
-        rawColors = rawColorsEntry.getDoubleArray(kEmptyDoubleThree);
-        currentColor = updateColor();
-    }
-
-    @Override
-    public String getName() {
-        // TODO Auto-generated method stub
-        return "ColorSensor";
     }
 }
