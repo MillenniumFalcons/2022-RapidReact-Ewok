@@ -47,6 +47,18 @@ public class RamseteCommands {
         return createDefaultRamseteCommand(Trajectories.otherBall1ToOtherBall2);
     }
 
+    public RamseteCommand getOtherColorBall2ToHangar() {
+        return createDefaultRamseteCommand(Trajectories.otherBall1ToOtherBall2);
+    }
+
+    public RamseteCommand getUpperBall1ToTarmac() {
+        return createDefaultRamseteCommand(Trajectories.upperBall1ToTarmac);
+    }
+
+    public RamseteCommand getTarmacToUpperBall1Straight() {
+        return createDefaultRamseteCommand(Trajectories.tarmacToUpperBall1Straight);
+    }
+
     private RamseteCommand createDefaultRamseteCommand(Trajectory trajectory) {
         return new RamseteCommand(
                 trajectory,

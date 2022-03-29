@@ -88,19 +88,27 @@ public class AutoCommands {
                 turretSequence);
     }
 
-    public Command getHighTwo() {
+    public Command getHighTwoSendIntoHangar() {
         Command drivetrainSequence =
                 CommandGroupBase.sequence(
                         ramseteCommands.getTarmacToUpperBall1(),
                         new WaitCommand(2),
                         ramseteCommands.getUpperBall1ToOtherColorBall1(),
                         ramseteCommands.getOtherColorBall1ToOtherColorBall2(),
-                        new WaitCommand(2));
+                        ramseteCommands.getOtherColorBall2ToHangar());
         Command intakeSequence =
                 superstructure
                         .deployAndRunIntake(() -> 13)
-                        .withTimeout(Trajectories.path6Time + .2)
-                        .andThen(new WaitCommand(1.8), superstructure.deployAndRunIntake(() -> 13));
+                        .withTimeout(Trajectories.path6Time + .5)
+                        .andThen(
+                                new WaitCommand(1.5),
+                                superstructure
+                                        .deployAndRunIntake(() -> 13)
+                                        .withTimeout(
+                                                Trajectories.path7Time
+                                                        + Trajectories.path8Time
+                                                        + .5 * Trajectories.path9Time))
+                        .andThen(outtake().withTimeout(1));
         Command turretSequence =
                 superstructure.turretCommands.motionMagic(0).andThen(superstructure.aimTurret());
         Command shooterFeederSequence =
@@ -113,8 +121,7 @@ public class AutoCommands {
                         superstructure
                                 .runFeeder(() -> 8)
                                 .alongWith(superstructure.accelerateWithMinMaxDistance(3.04, 3.14))
-                                .withTimeout(Trajectories.path7Time),
-                        superstructure.lowShot().withTimeout(1));
+                                .withTimeout(Trajectories.path7Time + .5));
 
         return CommandGroupBase.parallel(
                 superstructure.disableCompressor(),
@@ -122,6 +129,42 @@ public class AutoCommands {
                 intakeSequence,
                 turretSequence,
                 shooterFeederSequence);
+    }
+
+    public final Command getHighTwoStay() {
+        Command drivetrainSequence =
+                CommandGroupBase.sequence(
+                        ramseteCommands.getTarmacToUpperBall1Straight(),
+                        new WaitCommand(2.2),
+                        ramseteCommands.getUpperBall1ToTarmac());
+        Command intakeSequence =
+                superstructure
+                        .deployAndRunIntake(() -> 13)
+                        .withTimeout(Trajectories.path6Time + .7);
+        Command turretSequence =
+                superstructure.turretCommands.motionMagic(0).andThen(superstructure.aimTurret());
+        Command shooterFeederSequence =
+                CommandGroupBase.sequence(
+                        superstructure
+                                .runFeeder(() -> 8)
+                                .alongWith(superstructure.accelerateWithMinMaxDistance(3.04, 3.14))
+                                .withTimeout(Trajectories.path6Time + .7),
+                        superstructure.autoAccelerateAndShoot(1.2, 0.4, 0).withTimeout(1.5));
+
+        return CommandGroupBase.parallel(
+                superstructure.disableCompressor(),
+                drivetrainSequence,
+                intakeSequence,
+                turretSequence,
+                shooterFeederSequence);
+    }
+
+    private final Command outtake() {
+        return CommandGroupBase.parallel(
+                superstructure.feederCommands.retractStopper(),
+                superstructure.feederCommands.runColumnBottomOut(),
+                superstructure.columnTopCommands.getRunOutwards(),
+                superstructure.flywheelCommands.openloop(-0.6));
     }
 
     private final Command runFeederAndAccelerate() {
