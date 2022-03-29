@@ -13,10 +13,10 @@ import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandGroupBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import java.util.LinkedList;
 import java.util.List;
 import team3647.frc2022.autonomous.AutoCommands;
@@ -112,21 +112,14 @@ public class RobotContainer {
                 m_superstructure.intakeInThenManual(coController::getLeftStickY));
         m_columnBottom.setDefaultCommand(
                 m_superstructure.feederInThenManual(coController::getLeftStickY));
-        m_superstructure.wrongBallDetected.whenActive(
-                CommandGroupBase.sequence(
-                        m_superstructure.feederCommands.retractStopper(),
-                        m_superstructure.turretCommands.motionMagic(-30, 5),
-                        m_superstructure
-                                .feederCommands
-                                .runColumnBottom(() -> -1)
-                                .withInterrupt(m_columnBottom::isBallWithinDistance)
-                                .withTimeout(0.1),
-                        CommandGroupBase.parallel(
-                                        m_superstructure.flywheelCommands.openloop(0.3),
-                                        m_superstructure.feederCommands.feedIn(() -> 1.7),
-                                        m_superstructure.columnTopCommands.getRunInwards())
-                                .withTimeout(0.3),
-                        m_superstructure.feederCommands.extendStopper()));
+        m_superstructure
+                .wrongBallDetected
+                .and(new Trigger(m_columnTop::getTopBannerValue))
+                .whenActive(m_superstructure.rejectBallBottom(), false);
+        m_superstructure
+                .wrongBallDetected
+                .and(new Trigger(() -> !m_columnTop.getTopBannerValue()))
+                .whenActive(m_superstructure.rejectBallTop(), false);
     }
 
     private void configureButtonBindings() {
@@ -195,7 +188,8 @@ public class RobotContainer {
                 .whileActiveOnce(
                         m_superstructure.deployAndRunIntake(this::calculateIntakeSurfaceSpeed))
                 .and(m_superstructure.isShooting.negate())
-                .whileActiveOnce(m_superstructure.runFeeder(this::calculateIntakeSurfaceSpeed));
+                .whileActiveOnce(
+                        m_superstructure.feederWithSensor(this::calculateIntakeSurfaceSpeed));
         coController.dPadDown.whileActiveOnce(
                 m_superstructure.hoodCommands.autoAdjustAngle(this::getHoodDegree));
 
@@ -230,6 +224,7 @@ public class RobotContainer {
         m_printer.addDouble("Target Range", m_superstructure::getDistanceToTarget);
         m_printer.addString("Color", m_columnBottom.getColorSensor()::getColorAsString);
         m_printer.addBoolean("Read Color", m_columnBottom.getColorSensor()::isReadColor);
+        m_printer.addBoolean("Top Sensor", m_columnTop::getTopBannerValue);
         m_printer.addPose(
                 "Vision Pose",
                 () -> {
@@ -346,8 +341,6 @@ public class RobotContainer {
     final ColumnBottom m_columnBottom =
             new ColumnBottom(
                     ColumnBottomConstants.kColumnMotor,
-                    ColumnBottomConstants.kBottomBanner,
-                    ColumnBottomConstants.kMiddleBanner,
                     ColumnBottomConstants.kNativeVelToSurfaceMpS,
                     ColumnBottomConstants.kPosConverstion,
                     ColumnBottomConstants.kNominalVoltage,
@@ -368,7 +361,8 @@ public class RobotContainer {
                     ColumnTopConstants.kPosConverstion,
                     ColumnTopConstants.kNominalVoltage,
                     GlobalConstants.kDt,
-                    ColumnTopConstants.kFeedForward);
+                    ColumnTopConstants.kFeedForward,
+                    ColumnTopConstants.kTopBanner);
 
     private final ClimberArm m_leftArm =
             new ClimberArm(

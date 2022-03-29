@@ -27,14 +27,12 @@ public final class GlobalConstants {
 
     public static final class ColumnBottomIds {
         public static final int kMotorId = 6;
-        public static final int kBottomSensorPin = 0;
-        public static final int kMiddleSensorPin = 1;
         public static final int kSolenoidPin = 2;
     }
 
     public static final class ColumnTopIds {
         public static final int kMotorId = 7;
-        public static final int kTopSensorPin = 2;
+        public static final int kTopSensorPin = 0;
     }
 
     public static final class VerticalRollersIds {
@@ -47,7 +45,6 @@ public final class GlobalConstants {
 
     public static final class HoodIds {
         public static final int kMotorId = 10;
-        public static final int kBannerSensorPin = 3;
     }
 
     public static final class FlywheelIds {

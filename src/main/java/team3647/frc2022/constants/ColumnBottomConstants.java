@@ -4,7 +4,6 @@ import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Solenoid;
 import team3647.lib.drivers.LazyTalonFX;
 
@@ -31,10 +30,6 @@ public final class ColumnBottomConstants {
 
     public static final TalonFX kColumnMotor =
             new LazyTalonFX(GlobalConstants.ColumnBottomIds.kMotorId);
-    public static final DigitalInput kBottomBanner =
-            new DigitalInput(GlobalConstants.ColumnBottomIds.kBottomSensorPin);
-    public static final DigitalInput kMiddleBanner =
-            new DigitalInput(GlobalConstants.ColumnBottomIds.kMiddleSensorPin);
     public static final Solenoid kBallstopperPiston =
             new Solenoid(GlobalConstants.kPCMType, GlobalConstants.ColumnBottomIds.kSolenoidPin);
 

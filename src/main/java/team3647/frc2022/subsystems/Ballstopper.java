@@ -19,7 +19,7 @@ public class Ballstopper implements PeriodicSubsystem {
     }
 
     public void set(boolean value) {
-        piston.set(value);
+        // piston.set(value);
     }
 
     @Override

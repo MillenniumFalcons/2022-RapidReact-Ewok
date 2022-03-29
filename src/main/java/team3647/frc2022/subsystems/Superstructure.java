@@ -93,7 +93,7 @@ public class Superstructure {
     }
 
     public Command autoAccelerateAndShoot() {
-        return autoAccelerateAndShoot(1.2, 0.4, 0);
+        return autoAccelerateAndShoot(5, 0.25, 0);
     }
 
     public Command autoAccelerateAndShoot(
@@ -153,10 +153,12 @@ public class Superstructure {
             double delayBetweenShots,
             double delayAfterDrivetrainStops) {
 
+        DoubleSupplier feederSpeedSup = () -> feederSpeed;
+        DoubleSupplier topSpeed = () -> 0.8;
+
         return CommandGroupBase.parallel(
                 new InstantCommand(() -> currentState.shooterState = ShooterState.SHOOT),
                 flywheelCommands.variableVelocity(flywhelVelocity),
-                columnTopCommands.getGoVariableVelocity(kickerVelocity),
                 CommandGroupBase.sequence(
                         new ConditionalCommand(
                                 new InstantCommand(),
@@ -164,26 +166,30 @@ public class Superstructure {
                                         .andThen(new WaitCommand(delayAfterDrivetrainStops)),
                                 drivetrainStopped),
                         CommandGroupBase.sequence(
+                                feederCommands
+                                        .feedIn(feederSpeedSup)
+                                        .alongWith(
+                                                columnTopCommands.getGoVariableVelocity(topSpeed))
+                                        .until(m_columnTop::getTopBannerValue),
                                 new WaitUntilCommand(readyToShoot),
-                                feederCommands.retractStopper(),
-                                // Shoot (The second command stops when the first
-                                // command ends)
-                                feederCommands.feedIn(() -> feederSpeed).until(ballWentThrough),
-                                feederCommands.extendStopper(),
-                                new WaitCommand(delayBetweenShots),
-                                new WaitUntilCommand(readyToShoot),
-                                feederCommands.retractStopper(),
-                                // Shoot (The second command stops when the first
-                                // command ends)
-                                feederCommands.feedIn(() -> feederSpeed).until(ballWentThrough),
-                                feederCommands.extendStopper(),
-                                new WaitCommand(delayBetweenShots),
-                                new WaitUntilCommand(readyToShoot),
-                                feederCommands.retractStopper(),
-                                // Shoot (The second command stops when the first
-                                // command ends)
-                                feederCommands.feedIn(() -> feederSpeed).until(ballWentThrough),
-                                feederCommands.extendStopper())));
+                                columnTopCommands
+                                        .getGoVariableVelocity(topSpeed)
+                                        .until(ballWentThrough),
+                                CommandGroupBase.parallel(
+                                        new WaitCommand(delayBetweenShots)
+                                                .andThen(new WaitUntilCommand(readyToShoot)),
+                                        columnTopCommands
+                                                .getGoVariableVelocity(topSpeed)
+                                                .alongWith(feederCommands.feedIn(feederSpeedSup))
+                                                .until(m_columnTop::getTopBannerValue)),
+                                columnTopCommands
+                                        .getGoVariableVelocity(topSpeed)
+                                        .until(() -> !m_columnTop.getTopBannerValue()),
+                                feederCommands
+                                        .feedIn(feederSpeedSup)
+                                        .alongWith(
+                                                columnTopCommands.getGoVariableVelocity(
+                                                        topSpeed)))));
     }
 
     public Command autoClimbSequnce() {
@@ -233,6 +239,15 @@ public class Superstructure {
         return intakeCommands.deploy().andThen(intakeCommands.runClosedLoop(surfaceVelocity));
     }
 
+    public Command feederWithSensor(DoubleSupplier surfaceVelocity) {
+        return feederCommands
+                .feedIn(surfaceVelocity)
+                .alongWith(
+                        columnTopCommands
+                                .getGoVariableVelocity(() -> 1)
+                                .until(m_columnTop::getTopBannerValue));
+    }
+
     public Command runFeeder(DoubleSupplier surfaceVelocity) {
         return feederCommands.extendStopper().andThen(feederCommands.feedIn(surfaceVelocity));
     }
@@ -269,6 +284,32 @@ public class Superstructure {
                 feederCommands.runColumnBottomOut(),
                 columnTopCommands.getRunOutwards(),
                 flywheelCommands.openloop(-0.6));
+    }
+
+    public Command rejectBallTop() {
+        return CommandGroupBase.sequence(
+                        turretCommands.motionMagic(-30, 5),
+                        CommandGroupBase.parallel(
+                                        flywheelCommands.openloop(0.3),
+                                        feederCommands.feedIn(() -> 1.7),
+                                        columnTopCommands.getRunInwards())
+                                .until(m_columnTop::getTopBannerValue)
+                                .withTimeout(0.5),
+                        CommandGroupBase.parallel(
+                                        flywheelCommands.openloop(0.3),
+                                        columnTopCommands.getRunInwards())
+                                .until(() -> !m_columnTop.getTopBannerValue())
+                                .withTimeout(0.7))
+                .withTimeout(2);
+    }
+
+    public Command rejectBallBottom() {
+        return new WaitUntilCommand(() -> !m_columnBottom.isBallWithinDistance())
+                .andThen(new WaitCommand(0.8))
+                .deadlineWith(
+                        feederCommands
+                                .runColumnBottom(() -> -5)
+                                .alongWith(intakeCommands.openLoopAndStop(-.5)));
     }
 
     public Command accelerateWithMinMaxDistance(double minDistance, double maxDistance) {
@@ -328,10 +369,8 @@ public class Superstructure {
             DoubleSupplier hood,
             double flywheelThreshold) {
         return getFlywheelReady(flywheel, flywheelThreshold)
-                && Math.abs(m_columnTop.getVelocity() - kicker.getAsDouble()) < 0.3
                 && Math.abs(m_hood.getAngle() - hood.getAsDouble()) < 0.1
-                && Math.abs(m_flywheel.getVelocity()) > 5
-                && Math.abs(m_columnTop.getVelocity()) > 2;
+                && Math.abs(m_flywheel.getVelocity()) > 5;
     }
 
     public boolean readyToLowGoal() {
@@ -344,20 +383,16 @@ public class Superstructure {
 
     public boolean readyToBatter() {
         return getFlywheelReady(this::getBatterVelocity, 2)
-                && Math.abs(m_columnTop.getVelocity() - ColumnTopConstants.kBatterVelocity) < 2
                 && Math.abs(m_hood.getAngle() - HoodContants.kBatterAngle) < 1
-                && Math.abs(m_flywheel.getVelocity()) > 5
-                && Math.abs(m_columnTop.getVelocity()) > 1;
+                && Math.abs(m_flywheel.getVelocity()) > 5;
     }
 
     public boolean readyToAutoShoot() {
         double turretSetpointNormalized =
                 getAimedTurretSetpoint() - 360.0 * Math.round(getAimedTurretSetpoint() / 360.0);
         return m_flywheel.getVelocity() > getAimedFlywheelSurfaceVel() - 0.2
-                && Math.abs(m_columnTop.getVelocity() - getAimedKickerVelocity()) < 2
                 && Math.abs(m_hood.getAngle() - getAimedHoodAngle()) < 1
-                && Math.abs(m_flywheel.getVelocity()) > 5
-                && Math.abs(m_columnTop.getVelocity()) > 1;
+                && Math.abs(m_flywheel.getVelocity()) > 5;
         // && Math.abs(m_turret.getAngle() - turretSetpointNormalized) < 1;
     }
 
@@ -379,7 +414,7 @@ public class Superstructure {
     }
 
     public boolean autoShootBallWentThrough() {
-        return Math.abs(m_flywheel.getVelocity() / getAimedFlywheelSurfaceVel()) <= 0.91;
+        return !m_columnTop.getTopBannerValue();
     }
 
     public boolean getFlywheelReady(DoubleSupplier expectedVelocity, double threshold) {
