@@ -119,7 +119,15 @@ public class RobotContainer {
         m_superstructure
                 .wrongBallDetected
                 .and(new Trigger(() -> !m_columnTop.getTopBannerValue()))
-                .whenActive(m_superstructure.rejectBallTop(), false);
+                .whenActive(m_superstructure.recordFeederCommands())
+                .whenActive(
+                        m_superstructure
+                                .rejectBallTop()
+                                .andThen(
+                                        m_superstructure.continueIntaking(
+                                                coController.rightTrigger,
+                                                mainController.rightTrigger)),
+                        false);
     }
 
     private void configureButtonBindings() {

@@ -46,6 +46,8 @@ public class Superstructure {
     private double hoodAngle = 16;
     private double turretVelFF = 0.0;
     private double turretSetpoint = TurretConstants.kStartingAngle;
+    private CurrentFeederCommands currentFeederCommands =
+            new CurrentFeederCommands(new InstantCommand(), new InstantCommand());
     public Color ourColor = Color.NONE;
 
     public Superstructure(
@@ -312,6 +314,28 @@ public class Superstructure {
                                 .alongWith(intakeCommands.openLoopAndStop(-.5)));
     }
 
+    public Command continueIntaking(Trigger coRightTrigger, Trigger mainRightTrigger) {
+        return new ConditionalCommand(
+                new ScheduleCommand(
+                        getCurrentFeederCommands()
+                                .columnBottomCommand
+                                .until(coRightTrigger.negate()),
+                        getCurrentFeederCommands()
+                                .columnBottomCommand
+                                .until(coRightTrigger.negate())),
+                new InstantCommand(),
+                coRightTrigger.and(mainRightTrigger.negate()));
+    }
+
+    public Command recordFeederCommands() {
+        return new InstantCommand(
+                () ->
+                        this.currentFeederCommands =
+                                new CurrentFeederCommands(
+                                        m_columnBottom.getCurrentCommand(),
+                                        m_columnTop.getCurrentCommand()));
+    }
+
     public Command accelerateWithMinMaxDistance(double minDistance, double maxDistance) {
         return flywheelCommands.variableVelocity(
                 () -> this.getAimedFlywhelAtMinMaxDistance(minDistance, maxDistance));
@@ -487,6 +511,10 @@ public class Superstructure {
         return SmartDashboard.getNumber("Shooter Speed Offset", 0.0);
     }
 
+    public CurrentFeederCommands getCurrentFeederCommands() {
+        return currentFeederCommands;
+    }
+
     public void configLEDTriggers() {
         var newTargetShooting =
                 hasTargetTrigger
@@ -599,4 +627,15 @@ public class Superstructure {
     public final Trigger fullyReadyToShoot;
     public final Trigger isAiming;
     public final Trigger wrongBallDetected;
+
+    public final class CurrentFeederCommands {
+        public final Command columnBottomCommand, columnTopCommand;
+
+        public CurrentFeederCommands(Command columnBottomCommand, Command columnTopCommand) {
+            this.columnBottomCommand =
+                    columnBottomCommand == null ? new InstantCommand() : columnBottomCommand;
+            this.columnTopCommand =
+                    columnTopCommand == null ? new InstantCommand() : columnTopCommand;
+        }
+    }
 }
