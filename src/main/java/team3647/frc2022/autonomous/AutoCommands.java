@@ -109,13 +109,14 @@ public class AutoCommands {
                         .turretCommands
                         .motionMagic(0)
                         .andThen(superstructure.aimTurret())
-                        .withTimeout(Trajectories.path6Time + 2 + Trajectories.path7Time)
+                        .withTimeout(Trajectories.path6Time + 3 + Trajectories.path7Time)
                         .andThen(superstructure.turretCommands.motionMagic(0));
         Command shooterFeederSequence =
                 CommandGroupBase.sequence(
                         superstructure
                                 .autoAccelerateAndShoot(1.2, 0.4, 0)
                                 .withTimeout(2 + Trajectories.path6Time),
+                        new WaitCommand(1),
                         superstructure.lowShot());
 
         return CommandGroupBase.parallel(
