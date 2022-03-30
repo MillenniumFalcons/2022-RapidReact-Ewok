@@ -76,7 +76,7 @@ public class RobotContainer {
         m_hood.resetEncoder();
         HoodContants.kHoodMotor.configAllSettings(HoodContants.kMasterConfig);
 
-        // chooseAuto();
+        chooseAuto();
         m_drivetrain.setOdometry(startPosition, startPosition.getRotation());
     }
 
@@ -440,14 +440,15 @@ public class RobotContainer {
 
     private final AutoCommands autoCommands =
             new AutoCommands(m_drivetrain, DrivetrainConstants.kDriveKinematics, m_superstructure);
-    private Command autoCommand = autoCommands.getHighTwoSendIntoHangar();
+    private Command autoCommand = autoCommands.getHighTwoStay();
     private Pose2d startPosition = AutoConstants.positionOnTarmacUpper;
-    /*public Auto currentAuto = Auto.HIGH_TWO;
+    public Auto currentAuto = Auto.HIGH_TWO_ONE;
 
     public enum Auto {
         LOW_FIVE(0),
-        MID_TWO(1),
-        HIGH_TWO(2);
+        HIGH_TWO_ONE(1),
+        HIGH_TWO(2),
+        HIGH_TWO_TWO(3);
         int index;
 
         Auto(int index) {
@@ -459,20 +460,23 @@ public class RobotContainer {
         switch (currentAuto) {
             case LOW_FIVE:
                 startPosition = AutoConstants.positionOnTarmacParallel;
-                autoCommand = autoCommands.getLowFive();
+                autoCommand = autoCommands.lowFiveClean();
                 break;
-            case MID_TWO:
+            case HIGH_TWO_ONE:
                 startPosition = AutoConstants.positionOnTarmacUpper;
-                autoCommand = autoCommands.getHighTwoSendIntoHangar();
+                autoCommand = autoCommands.getHighTwoSendOnetoHangar();
                 break;
             case HIGH_TWO:
                 startPosition = AutoConstants.positionOnTarmacUpper;
                 autoCommand = autoCommands.getHighTwoStay();
                 break;
+            case HIGH_TWO_TWO:
+                startPosition = AutoConstants.positionOnTarmacUpper;
+                autoCommand = autoCommands.getHighTwoSendTwotoHangar();
 
             default:
                 startPosition = AutoConstants.positionOnTarmacParallel;
-                autoCommand = autoCommands.getLowFive();
+                autoCommand = autoCommands.lowFiveClean();
         }
-    }*/
+    }
 }

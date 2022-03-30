@@ -2,6 +2,7 @@ package team3647.frc2022.autonomous;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 
 // previous contants.cField
 public class AutoConstants {
@@ -30,8 +31,10 @@ public class AutoConstants {
             new Pose2d(6.16, 5.13, Rotation2d.fromDegrees(-44.45));
     public static final Pose2d upperBall1Straight =
             new Pose2d(5, 6.17, Rotation2d.fromDegrees(-44.45));
-    public static final Pose2d upperOtherColorBall1 = new Pose2d(6.05, 7.24, new Rotation2d(180));
+    public static final Pose2d upperOtherColorBall1 = new Pose2d(5.68, 7.26, new Rotation2d(180));
 
-    public static final Pose2d upperOtherColorBall2 = new Pose2d(4.54, 3.32, new Rotation2d(23.94));
-    public static final Pose2d intoHangar = new Pose2d(3.10, 3.84, new Rotation2d(-59));
+    public static final Translation2d transitionPointForS = new Translation2d(4.55, 5.31);
+    public static final Pose2d transitionPointForUpperOtherBall2 =
+            new Pose2d(2.92, 3.28, new Rotation2d(180));
+    public static final Pose2d upperOtherColorBall2 = new Pose2d(4.54, 3.28, new Rotation2d(180));
 }

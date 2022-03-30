@@ -96,11 +96,9 @@ public class Trajectories {
     private static final Pose2d path7Start = path6End;
     private static final Pose2d path7End = AutoConstants.upperOtherColorBall1;
     private static final Pose2d path8Start = path7End;
-    private static final Pose2d path8End = AutoConstants.upperOtherColorBall2;
+    private static final Pose2d path8End = AutoConstants.transitionPointForUpperOtherBall2;
     private static final Pose2d path9Start = path7End;
-    private static final Pose2d path9End = AutoConstants.intoHangar;
-
-    private static final Pose2d path11End = AutoConstants.positionOnTarmacUpper;
+    private static final Pose2d path9End = AutoConstants.upperOtherColorBall2;
 
     public static Trajectory upperTarmacToUpperBall1 =
             TrajectoryGenerator.generateTrajectory(
@@ -110,17 +108,13 @@ public class Trajectories {
                     path7Start, List.of(), path7End, reverseTrajectoryConfigSlow);
     public static Trajectory otherBall1ToOtherBall2 =
             TrajectoryGenerator.generateTrajectory(
-                    path8Start, List.of(), path8End, reverseTrajectoryConfigSlow);
+                    path8Start,
+                    List.of(AutoConstants.transitionPointForS),
+                    path8End,
+                    forwardTrajectoryConfig);
     public static Trajectory otherBall2ToHangar =
             TrajectoryGenerator.generateTrajectory(
                     path9Start, List.of(), path9End, reverseTrajectoryConfigSlow);
-
-    public static Trajectory tarmacToUpperBall1Straight =
-            TrajectoryGenerator.generateTrajectory(
-                    path11End, List.of(), path6End, reverseTrajectoryConfigSlow);
-    public static Trajectory upperBall1ToTarmac =
-            TrajectoryGenerator.generateTrajectory(
-                    path6End, List.of(), path11End, forwardTrajectoryConfigSlow);
 
     public static double path6Time = upperTarmacToUpperBall1.getTotalTimeSeconds();
     public static double path7Time = upperBall1ToOtherBall1.getTotalTimeSeconds();
