@@ -116,8 +116,7 @@ public class AutoCommands {
                         superstructure
                                 .autoAccelerateAndShoot(1.2, 0.4, 0)
                                 .withTimeout(2 + Trajectories.path6Time),
-                        runFeederAndAccelerate(3.04, 3.14).withTimeout(.5 * Trajectories.path7Time),
-                        new WaitCommand(1));
+                        superstructure.lowShot());
 
         return CommandGroupBase.parallel(
                 superstructure.disableCompressor(),
