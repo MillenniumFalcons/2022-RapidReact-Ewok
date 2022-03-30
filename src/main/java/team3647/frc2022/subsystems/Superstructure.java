@@ -144,7 +144,7 @@ public class Superstructure {
                 .alongWith(
                         new FunctionalCommand(
                                 () -> {},
-                                () -> m_hood.setAngleMotionMagic(39),
+                                () -> m_hood.setAngleMotionMagic(180),
                                 interrupted -> {},
                                 () -> false,
                                 m_hood))

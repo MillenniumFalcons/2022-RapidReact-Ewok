@@ -93,35 +93,37 @@ public class AutoCommands {
                 CommandGroupBase.sequence(
                         ramseteCommands.getTarmacToUpperBall1(),
                         new WaitCommand(2),
-                        ramseteCommands.getUpperBall1ToOtherColorBall1(),
-                        ramseteCommands.getOtherColorBall1ToOtherColorBall2(),
-                        ramseteCommands.getOtherColorBall2ToHangar());
+                        ramseteCommands.getUpperBall1ToOtherColorBall1());
         Command intakeSequence =
                 superstructure
                         .deployAndRunIntake(() -> 13)
-                        .withTimeout(Trajectories.path6Time + .5)
+                        .withTimeout(Trajectories.path6Time)
                         .andThen(
-                                new WaitCommand(1.5),
-                                superstructure
-                                        .deployAndRunIntake(() -> 13)
-                                        .withTimeout(
-                                                Trajectories.path7Time
-                                                        + Trajectories.path8Time
-                                                        + .5 * Trajectories.path9Time))
-                        .andThen(outtake().withTimeout(1));
+                                new WaitCommand(2)
+                                        .andThen(
+                                                superstructure
+                                                        .deployAndRunIntake(() -> 13)
+                                                        .withTimeout(Trajectories.path7Time)));
         Command turretSequence =
-                superstructure.turretCommands.motionMagic(0).andThen(superstructure.aimTurret());
+                superstructure
+                        .turretCommands
+                        .motionMagic(0)
+                        .andThen(superstructure.aimTurret())
+                        .withTimeout(Trajectories.path6Time + 2)
+                        .andThen(superstructure.turretCommands.motionMagic(180));
         Command shooterFeederSequence =
                 CommandGroupBase.sequence(
                         superstructure
                                 .runFeeder(() -> 8)
-                                .alongWith(superstructure.accelerateWithMinMaxDistance(3.04, 3.14))
-                                .withTimeout(Trajectories.path6Time + .5),
-                        superstructure.autoAccelerateAndShoot(1.2, 0.4, 0).withTimeout(1.5),
+                                .alongWith(
+                                        superstructure.flywheelCommands.variableVelocity(() -> 5))
+                                .withTimeout(.2 * Trajectories.path6Time),
+                        superstructure.autoAccelerateAndShoot(1.2, 0.4, 0).withTimeout(2),
                         superstructure
                                 .runFeeder(() -> 8)
                                 .alongWith(superstructure.accelerateWithMinMaxDistance(3.04, 3.14))
-                                .withTimeout(Trajectories.path7Time + .5));
+                                .withTimeout(.5 * Trajectories.path7Time),
+                        superstructure.lowShot().withTimeout(1.5));
 
         return CommandGroupBase.parallel(
                 superstructure.disableCompressor(),
@@ -134,9 +136,7 @@ public class AutoCommands {
     public final Command getHighTwoStay() {
         Command drivetrainSequence =
                 CommandGroupBase.sequence(
-                        ramseteCommands.getTarmacToUpperBall1Straight(),
-                        new WaitCommand(2.2),
-                        ramseteCommands.getUpperBall1ToTarmac());
+                        ramseteCommands.getTarmacToUpperBall1Straight(), new WaitCommand(2.2));
         Command intakeSequence =
                 superstructure
                         .deployAndRunIntake(() -> 13)
