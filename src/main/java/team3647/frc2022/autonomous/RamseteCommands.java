@@ -35,12 +35,20 @@ public class RamseteCommands {
         return createDefaultRamseteCommand(Trajectories.load2ToShoot);
     }
 
-    public RamseteCommand getTarmacToHighBall() {
+    public RamseteCommand getTarmacToUpperBall1() {
         return createDefaultRamseteCommand(Trajectories.upperTarmacToUpperBall1);
     }
 
-    public RamseteCommand getHighBallToShoot() {
-        return createDefaultRamseteCommand(Trajectories.upperBall1ToUpperTarmac);
+    public RamseteCommand getUpperBall1ToOtherColorBall1() {
+        return createDefaultRamseteCommand(Trajectories.upperBall1ToOtherBall1);
+    }
+
+    public RamseteCommand getOtherColorBall1ToTransition() {
+        return createDefaultRamseteCommand(Trajectories.otherBall1ToOtherBall2);
+    }
+
+    public RamseteCommand getTransitionToOtherColorBall2() {
+        return createDefaultRamseteCommand(Trajectories.otherBall1ToOtherBall2);
     }
 
     private RamseteCommand createDefaultRamseteCommand(Trajectory trajectory) {
