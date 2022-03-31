@@ -92,7 +92,7 @@ public class AutoCommands {
         Command drivetrainSequence =
                 CommandGroupBase.sequence(
                         ramseteCommands.getTarmacToUpperBall1(),
-                        new WaitCommand(2),
+                        new WaitCommand(2.5),
                         ramseteCommands.getUpperBall1ToOtherColorBall1());
         Command intakeSequence =
                 superstructure
@@ -115,9 +115,9 @@ public class AutoCommands {
                 CommandGroupBase.sequence(
                         superstructure
                                 .autoAccelerateAndShoot(1.2, 0.4, 0)
-                                .withTimeout(2 + Trajectories.path6Time),
-                        new WaitCommand(1),
-                        superstructure.lowShot());
+                                .withTimeout(2.5 + Trajectories.path6Time),
+                        new WaitCommand(0.2),
+                        superstructure.lowAccelerateAndShoot());
 
         return CommandGroupBase.parallel(
                 superstructure.disableCompressor(),
