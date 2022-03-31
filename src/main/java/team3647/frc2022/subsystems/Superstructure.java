@@ -94,7 +94,7 @@ public class Superstructure {
     }
 
     public Command autoAccelerateAndShoot() {
-        return autoAccelerateAndShoot(5, 0.25, 0);
+        return autoAccelerateAndShoot(5, 0.5, 0);
     }
 
     public Command autoAccelerateAndShoot(
@@ -407,7 +407,7 @@ public class Superstructure {
     public boolean readyToAutoShoot() {
         double turretSetpointNormalized =
                 getAimedTurretSetpoint() - 360.0 * Math.round(getAimedTurretSetpoint() / 360.0);
-        return m_flywheel.getVelocity() > getAimedFlywheelSurfaceVel() - 0.2
+        return Math.abs(m_flywheel.getVelocity() - getAimedFlywheelSurfaceVel()) < 0.1
                 && Math.abs(m_hood.getAngle() - getAimedHoodAngle()) < 1
                 && Math.abs(m_flywheel.getVelocity()) > 5;
         // && Math.abs(m_turret.getAngle() - turretSetpointNormalized) < 1;

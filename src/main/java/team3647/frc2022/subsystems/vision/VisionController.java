@@ -113,7 +113,10 @@ public class VisionController implements PeriodicSubsystem {
         SmartDashboard.putNumber("Degrees to circle", angleToCenterCircle.getDegrees());
         SmartDashboard.putNumber("Meters to circle", fitCircle.getNorm());
         synchronized (translationConsumer) {
-            translationConsumer.accept(periodicIO.inputs.captureTimestamp, fitCircle);
+            translationConsumer.accept(
+                    periodicIO.inputs.captureTimestamp
+                            - SmartDashboard.getNumber("extra latency", 0.0),
+                    fitCircle);
         }
     }
 

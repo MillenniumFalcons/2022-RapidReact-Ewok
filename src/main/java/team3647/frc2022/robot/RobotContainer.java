@@ -260,6 +260,7 @@ public class RobotContainer {
         SmartDashboard.putNumber("Shooter Speed", 0.0);
         SmartDashboard.putNumber("Shooter Speed Offset", 0.0);
         SmartDashboard.putNumber("Hood angle", 15.0);
+        SmartDashboard.putNumber("extra latency", 0.0);
     }
 
     /**
@@ -433,7 +434,7 @@ public class RobotContainer {
 
     final VisionController m_visionController =
             new VisionController(
-                    new Limelight("10.36.47.15", 0, VisionConstants.limelightConstants),
+                    new Limelight("10.36.47.15", 0.0, VisionConstants.limelightConstants),
                     VisionConstants.kCenterGoalTargetConstants,
                     m_flightDeck::addVisionObservation,
                     this::updateTapeTranslations);
@@ -457,7 +458,7 @@ public class RobotContainer {
 
     private final AutoCommands autoCommands =
             new AutoCommands(m_drivetrain, DrivetrainConstants.kDriveKinematics, m_superstructure);
-    private Command autoCommand = autoCommands.getHighTwoStay();
+    private Command autoCommand = autoCommands.getHighTwoSendOnetoHangar();
     private Pose2d startPosition = AutoConstants.positionOnTarmacUpper;
     public Auto currentAuto = Auto.HIGH_TWO_ONE;
 
@@ -490,10 +491,11 @@ public class RobotContainer {
             case HIGH_TWO_TWO:
                 startPosition = AutoConstants.positionOnTarmacUpper;
                 autoCommand = autoCommands.getHighTwoSendTwotoHangar();
-
+                break;
             default:
                 startPosition = AutoConstants.positionOnTarmacParallel;
                 autoCommand = autoCommands.lowFiveClean();
+                break;
         }
     }
 }
