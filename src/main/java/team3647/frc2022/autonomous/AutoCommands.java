@@ -95,22 +95,21 @@ public class AutoCommands {
                         new WaitCommand(2.5),
                         ramseteCommands.getUpperBall1ToOtherColorBall1());
         Command intakeSequence =
-                superstructure
-                        .deployAndRunIntake(() -> 13)
-                        .withTimeout(Trajectories.path6Time + .1)
-                        .andThen(
-                                new WaitCommand(1.9)
-                                        .andThen(
-                                                superstructure
-                                                        .deployAndRunIntake(() -> 13)
-                                                        .withTimeout(Trajectories.path7Time)));
+                CommandGroupBase.sequence(
+                        superstructure
+                                .deployAndRunIntake(() -> 13)
+                                .withTimeout(Trajectories.path6Time + .1),
+                        new WaitCommand(1.9),
+                        superstructure
+                                .deployAndRunIntake(() -> 13)
+                                .withTimeout(Trajectories.path7Time));
         Command turretSequence =
                 superstructure
                         .turretCommands
                         .motionMagic(0)
                         .andThen(superstructure.aimTurret())
                         .withTimeout(Trajectories.path6Time + 3 + Trajectories.path7Time)
-                        .andThen(superstructure.turretCommands.motionMagic(0));
+                        .andThen(superstructure.turretCommands.motionMagic(-73));
         Command shooterFeederSequence =
                 CommandGroupBase.sequence(
                         superstructure
@@ -136,33 +135,32 @@ public class AutoCommands {
                         ramseteCommands.getOtherColorBall1ToTransition(),
                         ramseteCommands.getTransitionToOtherColorBall2());
         Command intakeSequence =
-                superstructure
-                        .deployAndRunIntake(() -> 13)
-                        .withTimeout(Trajectories.path6Time)
-                        .andThen(
-                                new WaitCommand(2)
-                                        .andThen(
-                                                superstructure
-                                                        .deployAndRunIntake(() -> 13)
-                                                        .withTimeout(
-                                                                Trajectories.path7Time
-                                                                        + Trajectories.path8Time)));
+                CommandGroupBase.sequence(
+                        superstructure
+                                .deployAndRunIntake(() -> 13)
+                                .withTimeout(Trajectories.path6Time + .1),
+                        new WaitCommand(1.9),
+                        superstructure
+                                .deployAndRunIntake(() -> 13)
+                                .withTimeout(Trajectories.path7Time),
+                        new WaitCommand(Trajectories.path8Time),
+                        superstructure
+                                .deployAndRunIntake(() -> 13)
+                                .withTimeout(Trajectories.path9Time));
         Command turretSequence =
                 superstructure
                         .turretCommands
                         .motionMagic(0)
                         .andThen(superstructure.aimTurret())
-                        .withTimeout(Trajectories.path6Time + 1.5)
-                        .andThen(superstructure.turretCommands.motionMagic(180));
+                        .withTimeout(Trajectories.path6Time + 3 + Trajectories.path7Time)
+                        .andThen(superstructure.turretCommands.motionMagic(0));
         Command shooterFeederSequence =
                 CommandGroupBase.sequence(
-                        runFeederAndAccelerate(3.04, 3.14).withTimeout(.5 * Trajectories.path6Time),
                         superstructure
                                 .autoAccelerateAndShoot(1.2, 0.4, 0)
-                                .withTimeout(1.5 + .5 * Trajectories.path6Time),
-                        runFeederAndAccelerate(3.04, 3.14)
-                                .withTimeout(.5 * Trajectories.path7Time + Trajectories.path8Time),
-                        superstructure.lowShot().withTimeout(1.5));
+                                .withTimeout(2.5 + Trajectories.path6Time),
+                        new WaitCommand(0.2 + Trajectories.path8Time),
+                        superstructure.lowAccelerateAndShoot());
 
         return CommandGroupBase.parallel(
                 superstructure.disableCompressor(),
