@@ -5,6 +5,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ArmFeedforward;
+import edu.wpi.first.math.util.Units;
 import team3647.lib.drivers.LazyTalonFX;
 import team3647.lib.team254.util.InterpolatingDouble;
 import team3647.lib.team254.util.InterpolatingTreeMap;
@@ -42,23 +43,32 @@ public class HoodContants {
     public static final double kPeakCurrentDuration = 10; // milliseconds
     public static final double kNominalVoltage = 11;
 
-    // public static final double[][] kHoodMap1 = {
-    //     {Units.feetToMeters(2) + GlobalConstants.kCenterOffsetMeters, 15},
-    //     {Units.feetToMeters(4) + GlobalConstants.kCenterOffsetMeters, 17},
-    //     {Units.feetToMeters(5) + GlobalConstants.kCenterOffsetMeters, 18},
-    //     {Units.feetToMeters(6) + GlobalConstants.kCenterOffsetMeters, 19},
-    //     {Units.feetToMeters(7) + GlobalConstants.kCenterOffsetMeters, 23},
-    //     {Units.feetToMeters(8) + GlobalConstants.kCenterOffsetMeters, 23},
-    //     {Units.feetToMeters(8) + GlobalConstants.kCenterOffsetMeters, 24},
-    //     {Units.feetToMeters(10) + GlobalConstants.kCenterOffsetMeters, 25},
-    //     {Units.feetToMeters(12) + GlobalConstants.kCenterOffsetMeters, 30},
-    //     {Units.feetToMeters(14) + GlobalConstants.kCenterOffsetMeters, 35},
-    //     {Units.feetToMeters(16) + GlobalConstants.kCenterOffsetMeters, 36},
-    //     {Units.feetToMeters(18) + GlobalConstants.kCenterOffsetMeters, 37},
-    //     {Units.feetToMeters(20) + GlobalConstants.kCenterOffsetMeters, 37.5},
-    //     {Units.feetToMeters(22) + GlobalConstants.kCenterOffsetMeters, 39},
-    //     {Units.feetToMeters(24) + GlobalConstants.kCenterOffsetMeters, 39},
-    // };
+    public static final double[][] kHoodMap1 = {
+        {Units.feetToMeters(4) + GlobalConstants.kCenterOffsetMeters, 18.75},
+        // {Units.feetToMeters(4.5) + GlobalConstants.kCenterOffsetMeters, 9.2},
+        {Units.feetToMeters(5) + GlobalConstants.kCenterOffsetMeters, 25},
+        {Units.feetToMeters(5.5) + GlobalConstants.kCenterOffsetMeters, 26},
+        {Units.feetToMeters(6) + GlobalConstants.kCenterOffsetMeters, 27.5},
+        {Units.feetToMeters(6.5) + GlobalConstants.kCenterOffsetMeters, 29},
+        {Units.feetToMeters(7) + GlobalConstants.kCenterOffsetMeters, 32},
+        {Units.feetToMeters(7.5) + GlobalConstants.kCenterOffsetMeters, 32.1},
+        {Units.feetToMeters(8) + GlobalConstants.kCenterOffsetMeters, 33},
+        {Units.feetToMeters(8.5) + GlobalConstants.kCenterOffsetMeters, 33.75},
+        {Units.feetToMeters(9) + GlobalConstants.kCenterOffsetMeters, 35},
+        {Units.feetToMeters(9.5) + GlobalConstants.kCenterOffsetMeters, 36},
+        {Units.feetToMeters(10) + GlobalConstants.kCenterOffsetMeters, 38},
+        {Units.feetToMeters(10.5) + GlobalConstants.kCenterOffsetMeters, 38},
+        {Units.feetToMeters(11) + GlobalConstants.kCenterOffsetMeters, 39},
+        {Units.feetToMeters(11.5) + GlobalConstants.kCenterOffsetMeters, 39},
+        {Units.feetToMeters(12) + GlobalConstants.kCenterOffsetMeters, 39},
+        {Units.feetToMeters(12.5) + GlobalConstants.kCenterOffsetMeters, 39},
+        {Units.feetToMeters(14) + GlobalConstants.kCenterOffsetMeters, 39},
+        {Units.feetToMeters(16) + GlobalConstants.kCenterOffsetMeters, 39},
+        {Units.feetToMeters(18) + GlobalConstants.kCenterOffsetMeters, 39},
+        {Units.feetToMeters(20) + GlobalConstants.kCenterOffsetMeters, 39},
+        {Units.feetToMeters(22) + GlobalConstants.kCenterOffsetMeters, 39},
+        {Units.feetToMeters(24) + GlobalConstants.kCenterOffsetMeters, 39},
+    };
     public static final double[][] kHoodMap = {
         {2.2, 25},
         {2.6, 28},

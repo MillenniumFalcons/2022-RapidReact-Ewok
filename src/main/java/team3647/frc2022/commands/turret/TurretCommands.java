@@ -33,6 +33,15 @@ public class TurretCommands {
         return motionMagic(angle, 1);
     }
 
+    public Command aim(DoubleSupplier position, DoubleSupplier velocity) {
+        return new FunctionalCommand(
+                () -> {},
+                () -> m_turret.setAngle(position.getAsDouble(), velocity.getAsDouble()),
+                interrupted -> m_turret.setOpenloop(0),
+                () -> false,
+                m_turret);
+    }
+
     public Command holdPositionAtCall() {
         return new Command() {
             double degreeAtStart = TurretConstants.kStartingAngle;

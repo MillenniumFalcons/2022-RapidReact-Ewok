@@ -19,7 +19,8 @@ public class ColumnTop extends TalonFXSubsystem {
             double positionConversion,
             double nominalVoltage,
             double kDt,
-            SimpleMotorFeedforward ff) {
+            SimpleMotorFeedforward ff,
+            DigitalInput sensor) {
         super(master, velocityConversion, positionConversion, nominalVoltage, kDt);
         setStatusFramesThatDontMatter(master, kLongStatusTimeMS, kTimeoutMS);
         this.topBanner = topBanner;
@@ -41,10 +42,6 @@ public class ColumnTop extends TalonFXSubsystem {
     /** @return topbannerValue returns false when no ball, returns true when ball */
     public boolean getTopBannerValue() {
         return !topBannerValue;
-    }
-
-    public boolean getNotTopBannerValue() {
-        return topBannerValue;
     }
 
     @Override

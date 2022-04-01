@@ -4,13 +4,14 @@ import com.ctre.phoenix.led.Animation;
 import com.ctre.phoenix.led.CANdle;
 import com.ctre.phoenix.led.CANdle.VBatOutputMode;
 import com.ctre.phoenix.led.CANdleConfiguration;
+import com.ctre.phoenix.led.SingleFadeAnimation;
 import com.ctre.phoenix.led.StrobeAnimation;
 
 public class LEDConstants {
     public static final int numofLED = 0;
     public static final double speed = 0.0;
     public static final int kCANdleId = 17;
-    public static final double kBlinkSpeed = 0.1;
+    public static final double kBlinkSpeed = 1;
 
     public static CANdle kCANdle = new CANdle(kCANdleId);
 
@@ -40,11 +41,11 @@ public class LEDConstants {
     public static Animation kSolidWhite =
             new StrobeAnimation(Color.WHITE.red, Color.WHITE.green, Color.WHITE.blue, 255, 1, 512);
     public static Animation kBlinkWhiteFast =
-            new StrobeAnimation(
+            new SingleFadeAnimation(
                     Color.WHITE.red, Color.WHITE.green, Color.WHITE.blue, 255, kBlinkSpeed, 512);
 
     public static Animation kBlinkYellow =
-            new StrobeAnimation(
+            new SingleFadeAnimation(
                     Color.YELLOW.red, Color.YELLOW.green, Color.YELLOW.blue, 128, kBlinkSpeed, 512);
     public static Animation kSolidYellow =
             new StrobeAnimation(
@@ -74,7 +75,7 @@ public class LEDConstants {
 
     static {
         kCANdleConfig.vBatOutputMode = VBatOutputMode.Off;
-        kCANdleConfig.brightnessScalar = 0.7;
+        kCANdleConfig.brightnessScalar = 0.15;
         kCANdle.configAllSettings(kCANdleConfig);
     }
 }

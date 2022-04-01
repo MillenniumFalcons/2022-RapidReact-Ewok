@@ -21,12 +21,12 @@ public class TurretConstants {
     public static final double kGearboxReduction = 16 / 60.0 * 16 / 150.0;
     public static final double kFalconPositionToDegrees = kGearboxReduction / 2048.0 * 360;
     public static final double kFalconVelocityToDegpS = kFalconPositionToDegrees * 10;
-    public static final double kMaxDegree = 135;
-    public static final double kMinDegree = -225;
+    public static final double kMaxDegree = 120;
+    public static final double kMinDegree = -210;
     public static final double kPosThersholdDeg = 1.0;
     public static final boolean kCurrentLimitingEnable = true;
 
-    public static final double kS = 0.5;
+    public static final double kS = 0;
     public static final double kV = 0.011614;
     public static final double kA = 0.005;
 

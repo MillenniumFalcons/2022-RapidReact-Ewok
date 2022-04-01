@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import java.util.LinkedList;
 import java.util.List;
 import team3647.frc2022.autonomous.AutoCommands;
@@ -38,6 +39,7 @@ import team3647.frc2022.subsystems.Superstructure;
 import team3647.frc2022.subsystems.Turret;
 import team3647.frc2022.subsystems.vision.VisionController;
 import team3647.lib.GroupPrinter;
+import team3647.lib.NetworkColorSensor;
 import team3647.lib.inputs.Joysticks;
 import team3647.lib.tracking.FlightDeck;
 import team3647.lib.tracking.RobotTracker;
@@ -111,6 +113,14 @@ public class RobotContainer {
                 m_superstructure.intakeInThenManual(coController::getLeftStickY));
         m_columnBottom.setDefaultCommand(
                 m_superstructure.feederInThenManual(coController::getLeftStickY));
+        m_superstructure
+                .wrongBallDetected
+                .and(new Trigger(m_columnTop::getTopBannerValue))
+                .whenActive(m_superstructure.rejectBallBottom(), false);
+        m_superstructure
+                .wrongBallDetected
+                .and(new Trigger(() -> !m_columnTop.getTopBannerValue()))
+                .whenActive(m_superstructure.rejectBallTop(), false);
     }
 
     private void configureButtonBindings() {
@@ -129,17 +139,17 @@ public class RobotContainer {
         // 0.5),
         //                                         m_superstructure.feederCommands.feedIn(
         //                                                 () -> 1.5))));
-        mainController
-                .leftTrigger
-                .whileActiveOnce(m_superstructure.batterAccelerateAndShoot())
-                .whileActiveOnce(m_superstructure.turretCommands.motionMagic(-180).perpetually())
-                .whileActiveOnce(
-                        m_superstructure
-                                .hoodCommands
-                                .motionMagic(HoodContants.kBatterAngle)
-                                .perpetually());
-        // mainController.leftTrigger.whileActiveOnce(
-        //         m_superstructure.flywheelCommands.openloop(this::getShooterSpeed));
+        // mainController
+        //         .leftTrigger
+        //         .whileActiveOnce(m_superstructure.batterAccelerateAndShoot())
+        //         .whileActiveOnce(m_superstructure.turretCommands.motionMagic(-180).perpetually())
+        //         .whileActiveOnce(
+        //                 m_superstructure
+        //                         .hoodCommands
+        //                         .motionMagic(HoodContants.kBatterAngle)
+        //                         .perpetually());
+        mainController.leftTrigger.whileActiveOnce(
+                m_superstructure.flywheelCommands.variableVelocity(this::getShooterSpeed));
         mainController
                 .rightTrigger
                 .whileActiveOnce(m_superstructure.autoAccelerateAndShoot())
@@ -179,7 +189,8 @@ public class RobotContainer {
                 .whileActiveOnce(
                         m_superstructure.deployAndRunIntake(this::calculateIntakeSurfaceSpeed))
                 .and(m_superstructure.isShooting.negate())
-                .whileActiveOnce(m_superstructure.runFeeder(this::calculateIntakeSurfaceSpeed));
+                .whileActiveOnce(
+                        m_superstructure.feederWithSensor(this::calculateIntakeSurfaceSpeed));
         coController.dPadDown.whileActiveOnce(
                 m_superstructure.hoodCommands.autoAdjustAngle(this::getHoodDegree));
 
@@ -212,6 +223,9 @@ public class RobotContainer {
         m_printer.addDouble("Right Climber", m_pivotClimber::getRightPosition);
         m_printer.addBoolean("Right stick", () -> mainController.rightJoyStickPress.get());
         m_printer.addDouble("Target Range", m_superstructure::getDistanceToTarget);
+        m_printer.addString("Color", m_columnBottom.getColorSensor()::getColorAsString);
+        m_printer.addBoolean("Read Color", m_columnBottom.getColorSensor()::isReadColor);
+        m_printer.addBoolean("Top Sensor", m_columnTop::getTopBannerValue);
         m_printer.addPose(
                 "Vision Pose",
                 () -> {
@@ -246,6 +260,7 @@ public class RobotContainer {
         SmartDashboard.putNumber("Shooter Speed", 0.0);
         SmartDashboard.putNumber("Shooter Speed Offset", 0.0);
         SmartDashboard.putNumber("Hood angle", 15.0);
+        SmartDashboard.putNumber("extra latency", 0.0);
     }
 
     /**
@@ -328,13 +343,15 @@ public class RobotContainer {
     final ColumnBottom m_columnBottom =
             new ColumnBottom(
                     ColumnBottomConstants.kColumnMotor,
-                    ColumnBottomConstants.kBottomBanner,
-                    ColumnBottomConstants.kMiddleBanner,
                     ColumnBottomConstants.kNativeVelToSurfaceMpS,
                     ColumnBottomConstants.kPosConverstion,
                     ColumnBottomConstants.kNominalVoltage,
                     GlobalConstants.kDt,
-                    ColumnBottomConstants.kFeedForward);
+                    ColumnBottomConstants.kFeedForward,
+                    new NetworkColorSensor(
+                            ColorsensorConstants.kProximityEntry,
+                            ColorsensorConstants.kColorEntry,
+                            ColorsensorConstants.kMaxReadDistance));
 
     final Ballstopper m_ballstopper = new Ballstopper(ColumnBottomConstants.kBallstopperPiston);
 
@@ -346,7 +363,8 @@ public class RobotContainer {
                     ColumnTopConstants.kPosConverstion,
                     ColumnTopConstants.kNominalVoltage,
                     GlobalConstants.kDt,
-                    ColumnTopConstants.kFeedForward);
+                    ColumnTopConstants.kFeedForward,
+                    ColumnTopConstants.kTopBanner);
 
     private final ClimberArm m_leftArm =
             new ClimberArm(
@@ -416,7 +434,7 @@ public class RobotContainer {
 
     final VisionController m_visionController =
             new VisionController(
-                    new Limelight("10.36.47.15", 0.06, VisionConstants.limelightConstants),
+                    new Limelight("10.36.47.15", 0.018, VisionConstants.limelightConstants),
                     VisionConstants.kCenterGoalTargetConstants,
                     m_flightDeck::addVisionObservation,
                     this::updateTapeTranslations);
@@ -473,10 +491,11 @@ public class RobotContainer {
             case HIGH_TWO_TWO:
                 startPosition = AutoConstants.positionOnTarmacUpper;
                 autoCommand = autoCommands.getHighTwoSendTwotoHangar();
-
+                break;
             default:
                 startPosition = AutoConstants.positionOnTarmacParallel;
                 autoCommand = autoCommands.lowFiveClean();
+                break;
         }
     }
 }

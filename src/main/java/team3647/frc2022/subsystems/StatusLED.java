@@ -32,6 +32,7 @@ public class StatusLED extends SubsystemBase {
         this.animation = animation;
         this.ledColor = null;
         candle.animate(this.animation);
+        System.out.println("Setting LEDs");
     }
 
     @Override

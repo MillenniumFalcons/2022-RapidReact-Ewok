@@ -4,11 +4,14 @@
 
 package team3647.frc2022.robot;
 
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import team3647.lib.NetworkColorSensor.Color;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -20,6 +23,8 @@ public class Robot extends TimedRobot {
     private Command m_autonomousCommand;
     public static final double kTenMSLoopTime = 0.01;
     public static final double kTwentyMSLoopTime = 0.02;
+
+    public Alliance allianceColor = Alliance.Invalid;
 
     private RobotContainer m_robotContainer = new RobotContainer();
     int lastId = 0;
@@ -84,8 +89,7 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void autonomousInit() {
-        m_autonomousCommand = m_robotContainer.getAutonomousCommand();
-
+        // updateColor();
         // schedule the autonomous command (example)
         if (m_autonomousCommand != null) {
             m_autonomousCommand.schedule();
@@ -98,6 +102,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopInit() {
+        updateColor();
         // This makes sure that the autonomous stops running when
         // teleop starts running. If you want the autonomous to
         // continue until interrupted by another command, remove
@@ -121,4 +126,16 @@ public class Robot extends TimedRobot {
     /** This function is called periodically during test mode. */
     @Override
     public void testPeriodic() {}
+
+    private void updateColor() {
+        allianceColor = DriverStation.getAlliance();
+        switch (allianceColor) {
+            case Blue:
+                m_robotContainer.m_superstructure.ourColor = Color.BLUE;
+                break;
+            case Red:
+                m_robotContainer.m_superstructure.ourColor = Color.RED;
+                break;
+        }
+    }
 }
