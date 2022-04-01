@@ -75,7 +75,7 @@ public class LEDConstants {
 
     static {
         kCANdleConfig.vBatOutputMode = VBatOutputMode.Off;
-        kCANdleConfig.brightnessScalar = 0.4;
+        kCANdleConfig.brightnessScalar = 0.15;
         kCANdle.configAllSettings(kCANdleConfig);
     }
 }

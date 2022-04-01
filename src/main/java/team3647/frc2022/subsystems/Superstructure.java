@@ -84,7 +84,7 @@ public class Superstructure {
         turretCommands = new TurretCommands(m_turret);
         isClimbing = new Trigger(this::isClimbing);
         hasTargetTrigger = new Trigger(this::hasTarget);
-        flywheelOnlyReady = new Trigger(() -> getFlywheelReady(this::getAimedFlywheelSurfaceVel));
+        turretAndHoodAimed = new Trigger(this::lookingAtTarget);
         newTargetTrigger = new Trigger(this::hasNewTarget);
         isShooting = new Trigger(this::isShooting);
         isAiming = new Trigger(this::isAiming);
@@ -500,6 +500,11 @@ public class Superstructure {
         return getAimingParameters() != null;
     }
 
+    public boolean lookingAtTarget() {
+        return Math.abs(aimingParameters.getTurretAngleToTarget().getDegrees()) < 1
+                && Math.abs(m_hood.getAngle() - getAimedHoodAngle()) < 1;
+    }
+
     public double getShooterSpeedOffset() {
         return SmartDashboard.getNumber("Shooter Speed Offset", 0.0);
     }
@@ -508,30 +513,31 @@ public class Superstructure {
         var newTargetShooting =
                 hasTargetTrigger
                         .and(isClimbing.negate())
-                        .and(newTargetTrigger)
+                        .and(newTargetTrigger.negate())
                         .and(fullyReadyToShoot)
-                        .and(flywheelOnlyReady)
+                        .and(turretAndHoodAimed.negate())
+                        // .and(lookingAtTarget)
                         .and(isAiming);
         var newTargetReady =
                 hasTargetTrigger
                         .and(isClimbing.negate())
                         .and(newTargetTrigger)
                         .and(fullyReadyToShoot.negate())
-                        .and(flywheelOnlyReady)
+                        .and(turretAndHoodAimed)
                         .and(isAiming);
         var newTargetNotReady =
                 hasTargetTrigger
                         .and(isClimbing.negate())
                         .and(newTargetTrigger)
                         .and(fullyReadyToShoot.negate())
-                        .and(flywheelOnlyReady.negate())
+                        .and(turretAndHoodAimed.negate())
                         .and(isAiming.negate());
         var newTargetNotReadyAiming =
                 hasTargetTrigger
                         .and(isClimbing.negate())
                         .and(newTargetTrigger)
                         .and(fullyReadyToShoot.negate())
-                        .and(flywheelOnlyReady.negate())
+                        .and(turretAndHoodAimed.negate())
                         .and(isAiming);
 
         var oldTargetShooting =
@@ -539,28 +545,28 @@ public class Superstructure {
                         .and(isClimbing.negate())
                         .and(newTargetTrigger.negate())
                         .and(fullyReadyToShoot)
-                        .and(flywheelOnlyReady)
+                        .and(turretAndHoodAimed)
                         .and(isAiming);
         var oldTargetReady =
                 hasTargetTrigger
                         .and(isClimbing.negate())
                         .and(newTargetTrigger.negate())
                         .and(fullyReadyToShoot.negate())
-                        .and(flywheelOnlyReady)
+                        .and(turretAndHoodAimed)
                         .and(isAiming);
         var oldTargetNotReadyAiming =
                 hasTargetTrigger
                         .and(isClimbing.negate())
                         .and(newTargetTrigger.negate())
                         .and(fullyReadyToShoot.negate())
-                        .and(flywheelOnlyReady.negate())
+                        .and(turretAndHoodAimed.negate())
                         .and(isAiming);
         var oldTargetNotReady =
                 hasTargetTrigger
                         .and(isClimbing.negate())
                         .and(newTargetTrigger.negate())
                         .and(fullyReadyToShoot.negate())
-                        .and(flywheelOnlyReady.negate())
+                        .and(turretAndHoodAimed.negate())
                         .and(isAiming.negate());
         hasTargetTrigger
                 .negate()
@@ -608,7 +614,7 @@ public class Superstructure {
     public final FeederCommands feederCommands;
     public final IntakeCommands intakeCommands;
 
-    public final Trigger flywheelOnlyReady;
+    public final Trigger turretAndHoodAimed;
     public final Trigger newTargetTrigger;
     public final Trigger hasTargetTrigger;
     public final Trigger isShooting;
