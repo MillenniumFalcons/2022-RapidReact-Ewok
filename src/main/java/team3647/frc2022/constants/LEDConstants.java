@@ -58,14 +58,14 @@ public class LEDConstants {
             new StrobeAnimation(Color.GREEN.red, Color.GREEN.green, Color.GREEN.blue, 128, 1, 512);
 
     public static Animation kBlinkRed =
-            new StrobeAnimation(
+            new SingleFadeAnimation(
                     Color.RED.red, Color.RED.green, Color.RED.blue, 128, kBlinkSpeed, 512);
 
     public static Animation kSolidPink =
             new StrobeAnimation(
                     Color.PINK.red, Color.PINK.green, Color.PINK.blue, 128, kBlinkSpeed, 512);
     public static Animation kBlinkOrange =
-            new StrobeAnimation(
+            new SingleFadeAnimation(
                     Color.ORANGE.red, Color.ORANGE.green, Color.ORANGE.blue, 128, kBlinkSpeed, 512);
     public static Animation kSolidOrange =
             new StrobeAnimation(

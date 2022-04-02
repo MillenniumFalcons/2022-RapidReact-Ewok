@@ -28,9 +28,16 @@ public class FlywheelCommands {
     }
 
     public Command waitToSpinDownThenHold(double velToKeep) {
-        return new WaitUntilCommand(() -> m_flywheel.getVelocity() < velToKeep)
+        return waitToSpinDownThenHold(() -> velToKeep);
+    }
+
+    public Command waitToSpinDownThenHold(DoubleSupplier velToKeep) {
+        return new WaitUntilCommand(() -> m_flywheel.getVelocity() < velToKeep.getAsDouble())
                 .deadlineWith(new RunCommand(() -> m_flywheel.setOpenloop(0), m_flywheel))
-                .andThen(new RunCommand(() -> m_flywheel.setSurfaceSpeed(velToKeep), m_flywheel));
+                .andThen(
+                        new RunCommand(
+                                () -> m_flywheel.setSurfaceSpeed(velToKeep.getAsDouble()),
+                                m_flywheel));
     }
 
     public Command openloop(DoubleSupplier demand) {

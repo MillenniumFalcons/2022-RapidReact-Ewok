@@ -38,7 +38,7 @@ public final class FlywheelConstants {
 
     public static final double kLowGoalVelocity = 3;
     public static final double kBatterVelocity = 8.7;
-    private static final double kOffset = 0.4;
+    private static final double kOffset = 0.41;
 
     public static final double[][] kFlywheelMap2 = {
         {Units.feetToMeters(4) + GlobalConstants.kCenterOffsetMeters, 9},
@@ -133,7 +133,7 @@ public final class FlywheelConstants {
     static {
         kMasterConfig.slot0.kP = 0.05; // 0.14
         kMasterConfig.slot0.kI = 0;
-        kMasterConfig.slot0.kD = 0.0; // 0.08;
+        kMasterConfig.slot0.kD = 0; // 0.08;
         kMasterConfig.slot0.kF = 0;
 
         kMasterConfig.voltageCompSaturation = kNominalVoltage;
