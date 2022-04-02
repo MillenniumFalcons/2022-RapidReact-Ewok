@@ -459,8 +459,8 @@ public class RobotContainer {
     private final AutoCommands autoCommands =
             new AutoCommands(m_drivetrain, DrivetrainConstants.kDriveKinematics, m_superstructure);
     private Pose2d startPosition = AutoConstants.positionOnTarmacUpper;
-    private Command autoCommand = autoCommands.getHighTwoSendTwotoHangar();
-    public Auto currentAuto = Auto.HIGH_TWO_TWO;
+    private Command autoCommand = autoCommands.getHighTwoStay();
+    public Auto currentAuto = Auto.HIGH_TWO;
 
     public enum Auto {
         LOW_FIVE(0),
