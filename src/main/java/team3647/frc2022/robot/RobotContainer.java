@@ -78,7 +78,7 @@ public class RobotContainer {
         m_hood.resetEncoder();
         HoodContants.kHoodMotor.configAllSettings(HoodContants.kMasterConfig);
 
-        chooseAuto();
+        // chooseAuto();
         m_drivetrain.setOdometry(startPosition, startPosition.getRotation());
     }
 
@@ -458,9 +458,9 @@ public class RobotContainer {
 
     private final AutoCommands autoCommands =
             new AutoCommands(m_drivetrain, DrivetrainConstants.kDriveKinematics, m_superstructure);
-    private Command autoCommand = autoCommands.getHighTwoSendOnetoHangar();
     private Pose2d startPosition = AutoConstants.positionOnTarmacUpper;
-    public Auto currentAuto = Auto.HIGH_TWO_ONE;
+    private Command autoCommand = autoCommands.getHighTwoSendTwotoHangar();
+    public Auto currentAuto = Auto.HIGH_TWO_TWO;
 
     public enum Auto {
         LOW_FIVE(0),
