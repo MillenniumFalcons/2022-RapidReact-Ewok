@@ -31,10 +31,12 @@ public class AutoConstants {
             new Pose2d(6.16, 5.13, Rotation2d.fromDegrees(-44.45));
     public static final Pose2d upperBall1Straight =
             new Pose2d(5, 6.17, Rotation2d.fromDegrees(-44.45));
-    public static final Pose2d upperOtherColorBall1 = new Pose2d(5.68, 7.26, new Rotation2d(180));
+    public static final Pose2d upperOtherColorBall1 =
+            new Pose2d(5.68, 7.26, Rotation2d.fromDegrees(180));
 
     public static final Translation2d transitionPointForS = new Translation2d(4.55, 5.31);
     public static final Pose2d transitionPointForUpperOtherBall2 =
-            new Pose2d(2.92, 3.28, new Rotation2d(180));
-    public static final Pose2d upperOtherColorBall2 = new Pose2d(4.54, 3.28, new Rotation2d(180));
+            new Pose2d(2.92, 3.28, Rotation2d.fromDegrees(180));
+    public static final Pose2d upperOtherColorBall2 =
+            new Pose2d(4.54, 3.28, Rotation2d.fromDegrees(180));
 }

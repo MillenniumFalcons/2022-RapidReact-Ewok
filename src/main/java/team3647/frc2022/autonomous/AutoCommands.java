@@ -109,7 +109,7 @@ public class AutoCommands {
                         .motionMagic(0)
                         .andThen(superstructure.aimTurret())
                         .withTimeout(Trajectories.path6Time + 3 + Trajectories.path7Time)
-                        .andThen(superstructure.turretCommands.motionMagic(0));
+                        .andThen(superstructure.turretCommands.motionMagic(-73));
         Command shooterFeederSequence =
                 CommandGroupBase.sequence(
                         superstructure

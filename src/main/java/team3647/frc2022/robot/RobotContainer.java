@@ -459,44 +459,44 @@ public class RobotContainer {
 
     private final AutoCommands autoCommands =
             new AutoCommands(m_drivetrain, DrivetrainConstants.kDriveKinematics, m_superstructure);
-    private Command autoCommand = autoCommands.getHighTwoSendOnetoHangar();
     private Pose2d startPosition = AutoConstants.positionOnTarmacUpper;
-    //     public Auto currentAuto = Auto.HIGH_TWO_ONE;
+    private Command autoCommand = autoCommands.getHighTwoStay();
+    public Auto currentAuto = Auto.HIGH_TWO;
 
-    //     public enum Auto {
-    //         LOW_FIVE(0),
-    //         HIGH_TWO_ONE(1),
-    //         HIGH_TWO(2),
-    //         HIGH_TWO_TWO(3);
-    //         int index;
+    public enum Auto {
+        LOW_FIVE(0),
+        HIGH_TWO_ONE(1),
+        HIGH_TWO(2),
+        HIGH_TWO_TWO(3);
+        int index;
 
-    //         Auto(int index) {
-    //             this.index = index;
-    //         }
-    //     }
+        Auto(int index) {
+            this.index = index;
+        }
+    }
 
-    //     public void chooseAuto() {
-    //         switch (currentAuto) {
-    //             case LOW_FIVE:
-    //                 startPosition = AutoConstants.positionOnTarmacParallel;
-    //                 autoCommand = autoCommands.lowFiveClean();
-    //                 break;
-    //             case HIGH_TWO_ONE:
-    //                 startPosition = AutoConstants.positionOnTarmacUpper;
-    //                 autoCommand = autoCommands.getHighTwoSendOnetoHangar();
-    //                 break;
-    //             case HIGH_TWO:
-    //                 startPosition = AutoConstants.positionOnTarmacUpper;
-    //                 autoCommand = autoCommands.getHighTwoStay();
-    //                 break;
-    //             case HIGH_TWO_TWO:
-    //                 startPosition = AutoConstants.positionOnTarmacUpper;
-    //                 autoCommand = autoCommands.getHighTwoSendTwotoHangar();
-    //                 break;
-    //             default:
-    //                 startPosition = AutoConstants.positionOnTarmacParallel;
-    //                 autoCommand = autoCommands.lowFiveClean();
-    //                 break;
-    //         }
-    //     }
+    public void chooseAuto() {
+        switch (currentAuto) {
+            case LOW_FIVE:
+                startPosition = AutoConstants.positionOnTarmacParallel;
+                autoCommand = autoCommands.lowFiveClean();
+                break;
+            case HIGH_TWO_ONE:
+                startPosition = AutoConstants.positionOnTarmacUpper;
+                autoCommand = autoCommands.getHighTwoSendOnetoHangar();
+                break;
+            case HIGH_TWO:
+                startPosition = AutoConstants.positionOnTarmacUpper;
+                autoCommand = autoCommands.getHighTwoStay();
+                break;
+            case HIGH_TWO_TWO:
+                startPosition = AutoConstants.positionOnTarmacUpper;
+                autoCommand = autoCommands.getHighTwoSendTwotoHangar();
+                break;
+            default:
+                startPosition = AutoConstants.positionOnTarmacParallel;
+                autoCommand = autoCommands.lowFiveClean();
+                break;
+        }
+    }
 }

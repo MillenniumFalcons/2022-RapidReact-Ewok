@@ -97,7 +97,7 @@ public class Trajectories {
     private static final Pose2d path7End = AutoConstants.upperOtherColorBall1;
     private static final Pose2d path8Start = path7End;
     private static final Pose2d path8End = AutoConstants.transitionPointForUpperOtherBall2;
-    private static final Pose2d path9Start = path7End;
+    private static final Pose2d path9Start = path8End;
     private static final Pose2d path9End = AutoConstants.upperOtherColorBall2;
 
     public static Trajectory upperTarmacToUpperBall1 =
@@ -108,10 +108,7 @@ public class Trajectories {
                     path7Start, List.of(), path7End, reverseTrajectoryConfigSlow);
     public static Trajectory otherBall1ToOtherBall2 =
             TrajectoryGenerator.generateTrajectory(
-                    path8Start,
-                    List.of(AutoConstants.transitionPointForS),
-                    path8End,
-                    forwardTrajectoryConfig);
+                    path8Start, List.of(), path8End, forwardTrajectoryConfig);
     public static Trajectory otherBall2ToHangar =
             TrajectoryGenerator.generateTrajectory(
                     path9Start, List.of(), path9End, reverseTrajectoryConfigSlow);
