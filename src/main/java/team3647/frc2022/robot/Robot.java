@@ -90,7 +90,7 @@ public class Robot extends TimedRobot {
     @Override
     public void autonomousInit() {
         this.m_autonomousCommand = m_robotContainer.getAutonomousCommand();
-        // updateColor();
+        updateColor();
         // schedule the autonomous command (example)
         if (m_autonomousCommand != null) {
             m_autonomousCommand.schedule();
