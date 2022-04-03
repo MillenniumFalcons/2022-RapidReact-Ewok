@@ -14,17 +14,13 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import java.util.LinkedList;
 import java.util.List;
 import team3647.frc2022.autonomous.AutoCommands;
 import team3647.frc2022.autonomous.AutoConstants;
-import team3647.frc2022.commands.ArcadeDrive;
 import team3647.frc2022.constants.*;
-import team3647.frc2022.states.ShooterState;
-import team3647.frc2022.states.TurretState;
 import team3647.frc2022.subsystems.Ballstopper;
 import team3647.frc2022.subsystems.ClimberArm;
 import team3647.frc2022.subsystems.ColumnBottom;
@@ -80,47 +76,49 @@ public class RobotContainer {
 
         // chooseAuto();
         m_drivetrain.setOdometry(startPosition, startPosition.getRotation());
+        compressor.disable();
     }
 
     private void configureDefaultCommands() {
-        m_drivetrain.setDefaultCommand(
-                new ArcadeDrive(
-                        m_drivetrain,
-                        mainController::getLeftStickY,
-                        mainController::getRightStickX,
-                        () -> mainController.rightJoyStickPress.get()));
-        m_hood.setDefaultCommand(
-                m_superstructure.hoodCommands.autoAdjustAngle(m_superstructure::getAimedHoodAngle));
-        m_ballstopper.setDefaultCommand(
-                m_superstructure.feederCommands.extendStopper().perpetually());
-        m_flywheel.setDefaultCommand(
-                new InstantCommand(
-                                () ->
-                                        m_superstructure.currentState.shooterState =
-                                                ShooterState.IDLE)
-                        .andThen(m_superstructure.flywheelCommands.waitToSpinDownThenHold(0)));
-        m_turret.setDefaultCommand(
-                new InstantCommand(
-                                () ->
-                                        m_superstructure.currentState.turretState =
-                                                TurretState.HOLD_POSITION)
-                        .andThen(m_superstructure.turretCommands.holdPositionAtCall()));
+        // m_drivetrain.setDefaultCommand(
+        //         new ArcadeDrive(
+        //                 m_drivetrain,
+        //                 mainController::getLeftStickY,
+        //                 mainController::getRightStickX,
+        //                 () -> mainController.rightJoyStickPress.get()));
+        // m_hood.setDefaultCommand(
+        //
+        // m_superstructure.hoodCommands.autoAdjustAngle(m_superstructure::getAimedHoodAngle));
+        // m_ballstopper.setDefaultCommand(
+        //         m_superstructure.feederCommands.extendStopper().perpetually());
+        // m_flywheel.setDefaultCommand(
+        //         new InstantCommand(
+        //                         () ->
+        //                                 m_superstructure.currentState.shooterState =
+        //                                         ShooterState.IDLE)
+        //                 .andThen(m_superstructure.flywheelCommands.waitToSpinDownThenHold(0)));
+        // m_turret.setDefaultCommand(
+        //         new InstantCommand(
+        //                         () ->
+        //                                 m_superstructure.currentState.turretState =
+        //                                         TurretState.HOLD_POSITION)
+        //                 .andThen(m_superstructure.turretCommands.holdPositionAtCall()));
         // m_turret.setDefaultCommand(
         //         new RunCommand(
         //                 () -> m_turret.setOpenloop(coController.getRightStickX()), m_turret));
-        m_pivotClimber.setDefaultCommand(new RunCommand(m_pivotClimber::end, m_pivotClimber));
-        m_intake.setDefaultCommand(
-                m_superstructure.intakeInThenManual(coController::getLeftStickY));
-        m_columnBottom.setDefaultCommand(
-                m_superstructure.feederInThenManual(coController::getLeftStickY));
-        m_superstructure
-                .wrongBallDetected
-                .and(new Trigger(m_columnTop::getTopBannerValue))
-                .whenActive(m_superstructure.rejectBallBottom(), false);
-        m_superstructure
-                .wrongBallDetected
-                .and(new Trigger(() -> !m_columnTop.getTopBannerValue()))
-                .whenActive(m_superstructure.rejectBallTop(), false);
+        // m_pivotClimber.setDefaultCommand(new RunCommand(m_pivotClimber::end, m_pivotClimber));
+        // m_intake.setDefaultCommand(
+        //         m_superstructure.intakeInThenManual(coController::getLeftStickY));
+        // m_columnBottom.setDefaultCommand(
+        //         m_superstructure.feederInThenManual(coController::getLeftStickY));
+        // m_superstructure
+        //         .wrongBallDetected
+        //         .and(new Trigger(m_columnTop::getTopBannerValue))
+        //         .whenActive(m_superstructure.rejectBallBottom(), false);
+        // m_superstructure
+        //         .wrongBallDetected
+        //         .and(new Trigger(() -> !m_columnTop.getTopBannerValue()))
+        //         .whenActive(m_superstructure.rejectBallTop(), false);
     }
 
     private void configureButtonBindings() {
@@ -191,6 +189,7 @@ public class RobotContainer {
                 .and(m_superstructure.isShooting.negate())
                 .whileActiveOnce(
                         m_superstructure.feederWithSensor(this::calculateIntakeSurfaceSpeed));
+
         coController.dPadDown.whileActiveOnce(
                 m_superstructure.hoodCommands.autoAdjustAngle(this::getHoodDegree));
 
@@ -206,6 +205,42 @@ public class RobotContainer {
         //             this.autoCommand = autoCommands.getHighTwo();
         //             this.startPosition = AutoConstants.upperPositionOnTarmac;
         //         });
+        shootTrigger.whileActiveOnce(
+                m_superstructure
+                        .hoodCommands
+                        .autoAdjustAngle(this::getHoodDegree)
+                        .alongWith(
+                                new FunctionalCommand(
+                                                () -> {},
+                                                () -> m_flywheel.setSurfaceSpeed(getShooterSpeed()),
+                                                interrupted -> m_flywheel.setSurfaceSpeed(0),
+                                                () -> false,
+                                                m_flywheel)
+                                        .alongWith(
+                                                new FunctionalCommand(
+                                                        () -> {},
+                                                        () -> m_columnTop.setSurfaceVelocity(1.5),
+                                                        interrupted -> m_columnTop.setOpenloop(0),
+                                                        () -> false,
+                                                        m_columnTop),
+                                                new FunctionalCommand(
+                                                        () -> {},
+                                                        () -> m_columnBottom.setOpenloop(0.5),
+                                                        interrupted ->
+                                                                m_columnBottom.setOpenloop(0),
+                                                        () -> false,
+                                                        m_columnBottom))));
+
+        hoodTrigger.whileActiveOnce(
+                new FunctionalCommand(
+                        () -> {},
+                        () -> m_hood.setOpenloop(getHoodOpenValue()),
+                        interrupted -> m_hood.setOpenloop(0),
+                        () -> false,
+                        m_hood));
+
+        setHoodAngle.whileActiveOnce(
+                m_superstructure.hoodCommands.autoAdjustAngle(this::getHoodDegree));
     }
 
     private void configureSmartDashboardLogging() {
@@ -260,7 +295,11 @@ public class RobotContainer {
         SmartDashboard.putNumber("Shooter Speed", 0.0);
         SmartDashboard.putNumber("Shooter Speed Offset", 0.0);
         SmartDashboard.putNumber("Hood angle", 15.0);
+        SmartDashboard.putNumber("Hood Open Value", 0.0);
         SmartDashboard.putNumber("extra latency", 0.0);
+        SmartDashboard.putBoolean("Shoot Manual", false);
+        SmartDashboard.putBoolean("Start Hood Open", false);
+        SmartDashboard.putBoolean("Set Hood Angle", false);
     }
 
     /**
@@ -278,6 +317,22 @@ public class RobotContainer {
 
     public double getHoodDegree() {
         return SmartDashboard.getNumber("Hood angle", 16.0);
+    }
+
+    public double getHoodOpenValue() {
+        return SmartDashboard.getNumber("Hood Open Value", 0.0);
+    }
+
+    public boolean getShootBool() {
+        return SmartDashboard.getBoolean("Shoot Manual", false);
+    }
+
+    public boolean getHoodBool() {
+        return SmartDashboard.getBoolean("Start Hood Open", false);
+    }
+
+    public boolean getHoodSetAngleBool() {
+        return SmartDashboard.getBoolean("Set Hood Angle", false);
     }
 
     public double calculateIntakeSurfaceSpeed() {
@@ -303,6 +358,9 @@ public class RobotContainer {
 
     private final Joysticks mainController = new Joysticks(0);
     private final Joysticks coController = new Joysticks(1);
+    private final Trigger shootTrigger = new Trigger(this::getShootBool);
+    private final Trigger hoodTrigger = new Trigger(this::getHoodBool);
+    private final Trigger setHoodAngle = new Trigger(this::getHoodSetAngleBool);
 
     private final GroupPrinter m_printer = GroupPrinter.getInstance();
 

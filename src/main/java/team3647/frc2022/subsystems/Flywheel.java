@@ -29,6 +29,10 @@ public class Flywheel extends TalonFXSubsystem {
         setVelocity(vel, ff.calculate(vel));
     }
 
+    public void setOpenLoop(double percent) {
+        super.setOpenloop(percent);
+    }
+
     @Override
     public String getName() {
         return "Flywheel";

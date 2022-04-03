@@ -15,20 +15,20 @@ public class HoodContants {
     public static final TalonFX kHoodMotor = new LazyTalonFX(GlobalConstants.HoodIds.kMotorId);
     public static final TalonFXInvertType kHoodMotorInvert = TalonFXInvertType.Clockwise;
     public static final TalonFXConfiguration kMasterConfig = new TalonFXConfiguration();
-    public static final double kGearboxReduction = 10.0 / 50 * 28.0 / 472;
+    public static final double kGearboxReduction = 16.0 / 48.0 * 24.0 / 436.0;
     // 280 / 23600 = 28 / 2360 = 7/590
     public static final double kFalconPositionToDegrees = kGearboxReduction / 2048.0 * 360;
     public static final double kFalconVelocityToDegpS = kFalconPositionToDegrees * 10;
-    public static final double kMaxDegree = 40;
+    public static final double kMaxDegree = 55;
     public static final double kMinDegree = 15;
     public static final double kBatterAngle = 20;
     public static final double kLowGoalAngle = 39;
     public static final double kPosThersholdDeg = 0.5;
     public static final boolean kCurrentLimitingEnable = false;
-    public static final double kS = 0.451; // 0.85317;
-    public static final double kV = 0.03; // 0.00043578;
-    public static final double kA = 0.0008;
-    public static final double kCos = 0;
+    public static final double kS = 0; // 0.28; // 0.85317;
+    public static final double kV = 0.03; // 0.03; // 0.00043578;
+    public static final double kA = 0;
+    public static final double kCos = 0; // 0.2;
     public static final ArmFeedforward kArmFeedforward = new ArmFeedforward(kS, kCos, kV);
 
     public static final double kMaxVelocityDegPs = 36;
@@ -82,9 +82,9 @@ public class HoodContants {
             kHoodAutoAimMap = new InterpolatingTreeMap<>();
 
     static {
-        kMasterConfig.slot0.kP = 0.12;
+        kMasterConfig.slot0.kP = 2.7;
         kMasterConfig.slot0.kI = 0;
-        kMasterConfig.slot0.kD = 1; // 0.45;
+        kMasterConfig.slot0.kD = 0.8;
         // kMasterConfig.slot0.allowableClosedloopError = 35; // 29;
 
         kMasterConfig.slot0.kF = kV / kNominalVoltage * kFalconVelocityToDegpS * 1023;

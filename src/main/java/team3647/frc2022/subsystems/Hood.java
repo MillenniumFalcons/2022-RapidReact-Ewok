@@ -42,11 +42,6 @@ public class Hood extends TalonFXSubsystem {
                 kS * multiplier + gravityVoltage);
     }
 
-    public void setAngle(double angle) {
-        super.setPosition(
-                MathUtil.clamp(angle, minPosDeg + posThresholdDeg, maxPosDeg - posThresholdDeg), 0);
-    }
-
     public double getAngle() {
         return super.getPosition();
     }
