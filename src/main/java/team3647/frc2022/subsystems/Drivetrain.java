@@ -41,8 +41,8 @@ public final class Drivetrain implements PeriodicSubsystem {
     private final double nominalVoltage;
     private final double kDt;
 
-    private final MovingAverage leftAverageSpeed = new MovingAverage(20);
-    private final MovingAverage rightAverageSpeed = new MovingAverage(20);
+    private final MovingAverage leftAverageSpeed = new MovingAverage(10);
+    private final MovingAverage rightAverageSpeed = new MovingAverage(10);
 
     public Drivetrain(
             TalonFX leftMaster,

@@ -98,7 +98,9 @@ public class RobotContainer {
                                 () ->
                                         m_superstructure.currentState.shooterState =
                                                 ShooterState.IDLE)
-                        .andThen(m_superstructure.flywheelCommands.waitToSpinDownThenHold(0)));
+                        .andThen(
+                                m_superstructure.flywheelCommands.waitToSpinDownThenHold(
+                                        m_superstructure::getHoldVelocity)));
         m_turret.setDefaultCommand(
                 new InstantCommand(
                                 () ->
@@ -191,8 +193,7 @@ public class RobotContainer {
                 .and(m_superstructure.isShooting.negate())
                 .whileActiveOnce(
                         m_superstructure.feederWithSensor(this::calculateIntakeSurfaceSpeed));
-        coController.dPadDown.whileActiveOnce(
-                m_superstructure.hoodCommands.autoAdjustAngle(this::getHoodDegree));
+        coController.dPadDown.whenActive(m_superstructure.singleBallOut());
 
         coController.dPadUp.whileActiveOnce(m_superstructure.clearFeederFlywheel());
 
@@ -269,7 +270,7 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() {
-        return autoCommand;
+        return autoCommands.getHighTwoSendOnetoHangar();
     }
 
     public double getShooterSpeed() {

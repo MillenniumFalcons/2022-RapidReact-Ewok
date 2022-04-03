@@ -83,7 +83,7 @@ public class Superstructure {
         intakeCommands = new IntakeCommands(m_intake);
         turretCommands = new TurretCommands(m_turret);
         isClimbing = new Trigger(this::isClimbing);
-        hasTargetTrigger = new Trigger(this::hasTarget);
+        hasTargetTrigger = new Trigger(() -> hasTarget() && !isWrongBall());
         turretAndHoodAimed = new Trigger(this::lookingAtTarget);
         newTargetTrigger = new Trigger(this::hasNewTarget);
         isShooting = new Trigger(this::isShooting);
@@ -94,7 +94,7 @@ public class Superstructure {
     }
 
     public Command autoAccelerateAndShoot() {
-        return autoAccelerateAndShoot(5, 0.5, 0);
+        return autoAccelerateAndShoot(5, 0, 0);
     }
 
     public Command autoAccelerateAndShoot(
@@ -329,6 +329,13 @@ public class Superstructure {
                                 .alongWith(intakeCommands.openLoopAndStop(-.5)));
     }
 
+    public Command singleBallOut() {
+        return feederCommands
+                .runColumnBottom(() -> -3)
+                .alongWith(intakeCommands.openLoopAndStop(-.5))
+                .withTimeout(0.3);
+    }
+
     public Command accelerateWithMinMaxDistance(double minDistance, double maxDistance) {
         return flywheelCommands.variableVelocity(
                 () -> this.getAimedFlywhelAtMinMaxDistance(minDistance, maxDistance));
@@ -460,6 +467,13 @@ public class Superstructure {
         return FlywheelConstants.kBatterVelocity + getShooterSpeedOffset();
     }
 
+    public double getHoldVelocity() {
+        if (TurretState.AIM == currentState.turretState) {
+            return 6;
+        }
+        return 3;
+    }
+
     public double getAimedFlywheelSurfaceVel() {
         return flywheelVelocity;
     }
@@ -516,7 +530,6 @@ public class Superstructure {
                         .and(newTargetTrigger.negate())
                         .and(fullyReadyToShoot)
                         .and(turretAndHoodAimed.negate())
-                        // .and(lookingAtTarget)
                         .and(isAiming);
         var newTargetReady =
                 hasTargetTrigger

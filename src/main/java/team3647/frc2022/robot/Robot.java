@@ -92,7 +92,10 @@ public class Robot extends TimedRobot {
         this.m_autonomousCommand = m_robotContainer.getAutonomousCommand();
         updateColor();
         // schedule the autonomous command (example)
+        System.out.println("Auto enabled!");
+        this.m_autonomousCommand = m_robotContainer.getAutonomousCommand();
         if (m_autonomousCommand != null) {
+            System.out.println("We have auto!");
             m_autonomousCommand.schedule();
         }
     }
