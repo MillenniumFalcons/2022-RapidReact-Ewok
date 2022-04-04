@@ -44,10 +44,14 @@ public class RamseteCommands {
     }
 
     public RamseteCommand getOtherColorBall1ToTransition() {
-        return createDefaultRamseteCommand(Trajectories.otherBall1ToOtherBall2);
+        return createDefaultRamseteCommand(Trajectories.otherBall1ToTransition);
     }
 
     public RamseteCommand getTransitionToOtherColorBall2() {
+        return createDefaultRamseteCommand(Trajectories.transitionToOtherBall2);
+    }
+
+    public RamseteCommand getOtherColorBall2ToOuttake() {
         return createDefaultRamseteCommand(Trajectories.otherBall2ToHangar);
     }
 
