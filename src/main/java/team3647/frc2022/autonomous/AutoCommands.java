@@ -133,7 +133,8 @@ public class AutoCommands {
                         new WaitCommand(2),
                         ramseteCommands.getUpperBall1ToOtherColorBall1(),
                         ramseteCommands.getOtherColorBall1ToTransition(),
-                        ramseteCommands.getTransitionToOtherColorBall2());
+                        ramseteCommands.getTransitionToOtherColorBall2(),
+                        ramseteCommands.getOtherColorBall2ToOuttake());
         Command intakeSequence =
                 CommandGroupBase.sequence(
                         superstructure
@@ -146,21 +147,15 @@ public class AutoCommands {
                         new WaitCommand(Trajectories.path8Time),
                         superstructure
                                 .deployAndRunIntake(() -> 13)
-                                .withTimeout(Trajectories.path9Time));
+                                .withTimeout(Trajectories.path9Time),
+                        new WaitCommand(Trajectories.path10Time),
+                        outtake());
         Command turretSequence =
-                superstructure
-                        .turretCommands
-                        .motionMagic(0)
-                        .andThen(superstructure.aimTurret())
-                        .withTimeout(Trajectories.path6Time + 3 + Trajectories.path7Time)
-                        .andThen(superstructure.turretCommands.motionMagic(0));
+                superstructure.turretCommands.motionMagic(0).andThen(superstructure.aimTurret());
         Command shooterFeederSequence =
-                CommandGroupBase.sequence(
-                        superstructure
-                                .autoAccelerateAndShoot(1.2, 0.4, 0)
-                                .withTimeout(2.5 + Trajectories.path6Time),
-                        new WaitCommand(0.2 + Trajectories.path8Time),
-                        superstructure.lowAccelerateAndShoot());
+                superstructure
+                        .autoAccelerateAndShoot(1.2, 0.4, 0)
+                        .withTimeout(2.5 + Trajectories.path6Time);
 
         return CommandGroupBase.parallel(
                 superstructure.disableCompressor(),

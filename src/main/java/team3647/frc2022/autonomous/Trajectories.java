@@ -99,6 +99,8 @@ public class Trajectories {
     private static final Pose2d path8End = AutoConstants.transitionPointForUpperOtherBall2;
     private static final Pose2d path9Start = path8End;
     private static final Pose2d path9End = AutoConstants.upperOtherColorBall2;
+    private static final Pose2d path10Start = path9End;
+    private static final Pose2d path10End = AutoConstants.outtakeTwoOtherColor;
 
     public static Trajectory upperTarmacToUpperBall1 =
             TrajectoryGenerator.generateTrajectory(
@@ -106,15 +108,24 @@ public class Trajectories {
     public static Trajectory upperBall1ToOtherBall1 =
             TrajectoryGenerator.generateTrajectory(
                     path7Start, List.of(), path7End, reverseTrajectoryConfigSlow);
-    public static Trajectory otherBall1ToOtherBall2 =
+    public static Trajectory otherBall1ToTransition =
             TrajectoryGenerator.generateTrajectory(
                     path8Start, List.of(), path8End, forwardTrajectoryConfig);
-    public static Trajectory otherBall2ToHangar =
+    public static Trajectory transitionToOtherBall2 =
             TrajectoryGenerator.generateTrajectory(
                     path9Start, List.of(), path9End, reverseTrajectoryConfigSlow);
+    public static Trajectory otherBall2ToHangar =
+            TrajectoryGenerator.generateTrajectory(
+                    path10Start,
+                    List.of(
+                            AutoConstants.transitionPointForDipper1,
+                            AutoConstants.transitionPointForDipper2),
+                    path10End,
+                    forwardTrajectoryConfig);
 
     public static double path6Time = upperTarmacToUpperBall1.getTotalTimeSeconds();
     public static double path7Time = upperBall1ToOtherBall1.getTotalTimeSeconds();
-    public static double path8Time = otherBall1ToOtherBall2.getTotalTimeSeconds();
-    public static double path9Time = otherBall2ToHangar.getTotalTimeSeconds();
+    public static double path8Time = otherBall1ToTransition.getTotalTimeSeconds();
+    public static double path9Time = transitionToOtherBall2.getTotalTimeSeconds();
+    public static double path10Time = otherBall2ToHangar.getTotalTimeSeconds();
 }

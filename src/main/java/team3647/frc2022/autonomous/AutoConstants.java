@@ -39,4 +39,7 @@ public class AutoConstants {
             new Pose2d(2.92, 3.28, Rotation2d.fromDegrees(180));
     public static final Pose2d upperOtherColorBall2 =
             new Pose2d(4.54, 3.28, Rotation2d.fromDegrees(180));
+    public static final Translation2d transitionPointForDipper1 = new Translation2d(1.87, 4.58);
+    public static final Pose2d outtakeTwoOtherColor =
+            new Pose2d(5.64, 6.6, Rotation2d.fromDegrees(0));
 }
