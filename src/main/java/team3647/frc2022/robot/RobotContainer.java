@@ -203,34 +203,31 @@ public class RobotContainer {
         //             this.autoCommand = autoCommands.getHighTwo();
         //             this.startPosition = AutoConstants.upperPositionOnTarmac;
         //         });
-        // shootTrigger.whileActiveOnce(
-        //         m_superstructure
-        //                 .hoodCommands
-        //                 .autoAdjustAngle(this::getHoodDegree)
-        //                 .alongWith(
-        //                         new FunctionalCommand(
-        //                                         () -> {},
-        //                                         () ->
-        // m_flywheel.setSurfaceSpeed(getShooterSpeed()),
-        //                                         interrupted -> m_flywheel.setSurfaceSpeed(0),
-        //                                         () -> false,
-        //                                         m_flywheel)
-        //                                 .alongWith(
-        //                                         new FunctionalCommand(
-        //                                                 () -> {},
-        //                                                 () ->
-        // m_columnTop.setSurfaceVelocity(1.5),
-        //                                                 interrupted ->
-        // m_columnTop.setOpenloop(0),
-        //                                                 () -> false,
-        //                                                 m_columnTop),
-        //                                         new FunctionalCommand(
-        //                                                 () -> {},
-        //                                                 () -> m_columnBottom.setOpenloop(0.5),
-        //                                                 interrupted ->
-        //                                                         m_columnBottom.setOpenloop(0),
-        //                                                 () -> false,
-        //                                                 m_columnBottom))));
+        shootTrigger.whileActiveOnce(
+                m_superstructure
+                        .hoodCommands
+                        .autoAdjustAngle(this::getHoodDegree)
+                        .alongWith(
+                                new FunctionalCommand(
+                                                () -> {},
+                                                () -> m_flywheel.setSurfaceSpeed(getShooterSpeed()),
+                                                interrupted -> m_flywheel.setSurfaceSpeed(0),
+                                                () -> false,
+                                                m_flywheel)
+                                        .alongWith(
+                                                new FunctionalCommand(
+                                                        () -> {},
+                                                        () -> m_columnTop.setSurfaceVelocity(1.5),
+                                                        interrupted -> m_columnTop.setOpenloop(0),
+                                                        () -> false,
+                                                        m_columnTop),
+                                                new FunctionalCommand(
+                                                        () -> {},
+                                                        () -> m_columnBottom.setOpenloop(0.5),
+                                                        interrupted ->
+                                                                m_columnBottom.setOpenloop(0),
+                                                        () -> false,
+                                                        m_columnBottom))));
         // mainController.leftTrigger.whenActive(
         //         m_superstructure.flywheelCommands.variableVelocity(this::getShooterSpeed));
 
@@ -302,7 +299,7 @@ public class RobotContainer {
         m_printer.addPose("Drivetrain Pose", m_drivetrain::getPose);
         SmartDashboard.putNumber("Shooter Speed", 0.0);
         SmartDashboard.putNumber("Shooter Speed Offset", 0.0);
-        SmartDashboard.putNumber("Hood angle", 16.0);
+        SmartDashboard.putNumber("Hood angle", 15.0);
         SmartDashboard.putNumber("Hood Open Value", 0.0);
         SmartDashboard.putNumber("extra latency", 0.0);
         SmartDashboard.putBoolean("Shoot Manual", false);
@@ -324,7 +321,7 @@ public class RobotContainer {
     }
 
     public double getHoodDegree() {
-        return SmartDashboard.getNumber("Hood angle", 16.0);
+        return SmartDashboard.getNumber("Hood angle", 15.0);
     }
 
     public double getHoodOpenValue() {

@@ -20,7 +20,7 @@ public class HoodContants {
     public static final double kFalconPositionToDegrees = kGearboxReduction / 2048.0 * 360;
     public static final double kFalconVelocityToDegpS = kFalconPositionToDegrees * 10;
     public static final double kMaxDegree = 55;
-    public static final double kMinDegree = 16;
+    public static final double kMinDegree = 15;
     public static final double kBatterAngle = 20;
     public static final double kLowGoalAngle = 39;
     public static final double kPosThersholdDeg = 0.5;
