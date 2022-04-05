@@ -20,15 +20,15 @@ public class HoodContants {
     public static final double kFalconPositionToDegrees = kGearboxReduction / 2048.0 * 360;
     public static final double kFalconVelocityToDegpS = kFalconPositionToDegrees * 10;
     public static final double kMaxDegree = 55;
-    public static final double kMinDegree = 15;
+    public static final double kMinDegree = 16;
     public static final double kBatterAngle = 20;
     public static final double kLowGoalAngle = 39;
     public static final double kPosThersholdDeg = 0.5;
     public static final boolean kCurrentLimitingEnable = false;
-    public static final double kS = 0; // 0.28; // 0.85317;
+    public static final double kS = 0.33; // 0.28; // 0.85317;
     public static final double kV = 0.03; // 0.03; // 0.00043578;
     public static final double kA = 0;
-    public static final double kCos = 0; // 0.2;
+    public static final double kCos = 0.175; // 0.2;
     public static final ArmFeedforward kArmFeedforward = new ArmFeedforward(kS, kCos, kV);
 
     public static final double kMaxVelocityDegPs = 36;
@@ -82,9 +82,9 @@ public class HoodContants {
             kHoodAutoAimMap = new InterpolatingTreeMap<>();
 
     static {
-        kMasterConfig.slot0.kP = 2.7;
+        kMasterConfig.slot0.kP = 0.1; // 2.7;
         kMasterConfig.slot0.kI = 0;
-        kMasterConfig.slot0.kD = 0.8;
+        kMasterConfig.slot0.kD = 0.05; // 0.8;
         // kMasterConfig.slot0.allowableClosedloopError = 35; // 29;
 
         kMasterConfig.slot0.kF = kV / kNominalVoltage * kFalconVelocityToDegpS * 1023;
