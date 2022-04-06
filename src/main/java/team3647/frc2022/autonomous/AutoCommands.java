@@ -48,20 +48,20 @@ public class AutoCommands {
                 CommandGroupBase.sequence(
                         superstructure
                                 .runFeeder(() -> 8)
-                                .alongWith(superstructure.accelerateWithMinMaxDistance(3.7, 3.8))
+                                .alongWith(superstructure.accelerateWithMinMaxDistance(3.23, 3.3))
                                 .withTimeout(
                                         Trajectories.path1Time
                                                 + Trajectories.path2Time
                                                 + Trajectories.path3Time * 0.9),
                         superstructure
-                                .autoAccelerateAndShoot(1.2, 0.4, 0)
+                                .autoAccelerateAndShoot()
                                 .withTimeout(1.5 + Trajectories.path3Time * 0.1),
                         new WaitUntilCommand(superstructure::hasTarget),
                         superstructure
                                 .runFeeder(() -> 8)
                                 .alongWith(superstructure.accelerateWithMinMaxDistance(3.1, 3.2))
                                 .withTimeout(0.5),
-                        superstructure.autoAccelerateAndShoot(1.2, 0.4, 0).withTimeout(1),
+                        superstructure.autoAccelerateAndShoot().withTimeout(1),
                         new WaitCommand(Trajectories.path4Time * 0.5),
                         superstructure
                                 .runFeeder(() -> 8)
@@ -69,16 +69,10 @@ public class AutoCommands {
                                         Trajectories.path4Time * 0.5
                                                 + Trajectories.path5Time * 0.5),
                         superstructure
-                                .feederCommands
-                                .runColumnBottomOut()
-                                .alongWith(superstructure.columnTopCommands.getRunOutwards())
-                                .withTimeout(0.1),
-                        superstructure
                                 .runFeeder(() -> 8)
-                                .alongWith(superstructure.accelerateWithMinMaxDistance(3.1, 3.2))
-                                .withTimeout(Trajectories.path5Time * 0.5 - 0.1),
-                        new WaitCommand(0.1),
-                        superstructure.autoAccelerateAndShoot(1.2, 0.4, 0));
+                                .alongWith(superstructure.accelerateWithMinMaxDistance(3.2, 3.25))
+                                .withTimeout(Trajectories.path5Time * 0.5),
+                        superstructure.autoAccelerateAndShoot());
 
         return CommandGroupBase.parallel(
                 superstructure.disableCompressor(),
@@ -102,21 +96,21 @@ public class AutoCommands {
                         new WaitCommand(1.9),
                         superstructure
                                 .deployAndRunIntake(() -> 13)
-                                .withTimeout(Trajectories.path7Time));
+                                .withTimeout(Trajectories.path7Time + 0.5));
         Command turretSequence =
                 superstructure
                         .turretCommands
                         .motionMagic(0)
                         .andThen(superstructure.aimTurret())
-                        .withTimeout(Trajectories.path6Time + 3 + Trajectories.path7Time)
-                        .andThen(superstructure.turretCommands.motionMagic(-73));
+                        .withTimeout(Trajectories.path6Time + 3)
+                        .andThen(superstructure.turretCommands.motionMagic(0));
         Command shooterFeederSequence =
                 CommandGroupBase.sequence(
+                        new WaitCommand(0.3),
                         superstructure
-                                .autoAccelerateAndShoot(1.2, 0.4, 0)
-                                .withTimeout(2.5 + Trajectories.path6Time),
-                        new WaitCommand(0.2),
-                        superstructure.lowAccelerateAndShoot());
+                                .autoAccelerateAndShoot()
+                                .withTimeout(3 + Trajectories.path6Time),
+                        superstructure.spitIntoHangar(7));
 
         return CommandGroupBase.parallel(
                 superstructure.disableCompressor(),
@@ -192,7 +186,6 @@ public class AutoCommands {
 
     private final Command outtake() {
         return CommandGroupBase.parallel(
-                superstructure.feederCommands.retractStopper(),
                 superstructure.feederCommands.runColumnBottomOut(),
                 superstructure.columnTopCommands.getRunOutwards(),
                 superstructure.flywheelCommands.openloop(-0.6));

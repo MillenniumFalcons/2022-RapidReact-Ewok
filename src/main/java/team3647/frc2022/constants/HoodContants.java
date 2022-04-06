@@ -54,7 +54,7 @@ public class HoodContants {
         {Units.feetToMeters(7.5) + GlobalConstants.kCenterOffsetMeters, 32.1},
         {Units.feetToMeters(8) + GlobalConstants.kCenterOffsetMeters, 33},
         {Units.feetToMeters(8.5) + GlobalConstants.kCenterOffsetMeters, 33.75},
-        {Units.feetToMeters(9) + GlobalConstants.kCenterOffsetMeters, 35},
+        {Units.feetToMeters(9) + GlobalConstants.kCenterOffsetMeters, 34.5},
         {Units.feetToMeters(9.5) + GlobalConstants.kCenterOffsetMeters, 36},
         {Units.feetToMeters(10) + GlobalConstants.kCenterOffsetMeters, 38},
         {Units.feetToMeters(10.5) + GlobalConstants.kCenterOffsetMeters, 38},

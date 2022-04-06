@@ -25,7 +25,6 @@ import team3647.frc2022.commands.ArcadeDrive;
 import team3647.frc2022.constants.*;
 import team3647.frc2022.states.ShooterState;
 import team3647.frc2022.states.TurretState;
-import team3647.frc2022.subsystems.Ballstopper;
 import team3647.frc2022.subsystems.ClimberArm;
 import team3647.frc2022.subsystems.ColumnBottom;
 import team3647.frc2022.subsystems.ColumnTop;
@@ -66,7 +65,6 @@ public class RobotContainer {
                 m_flywheel,
                 m_pivotClimber,
                 m_visionController,
-                m_ballstopper,
                 m_turret,
                 m_hood,
                 m_statusLED);
@@ -91,8 +89,6 @@ public class RobotContainer {
                         () -> mainController.rightJoyStickPress.get()));
         m_hood.setDefaultCommand(
                 m_superstructure.hoodCommands.autoAdjustAngle(m_superstructure::getAimedHoodAngle));
-        m_ballstopper.setDefaultCommand(
-                m_superstructure.feederCommands.extendStopper().perpetually());
         m_flywheel.setDefaultCommand(
                 new InstantCommand(
                                 () ->
@@ -227,6 +223,8 @@ public class RobotContainer {
         m_printer.addString("Color", m_columnBottom.getColorSensor()::getColorAsString);
         m_printer.addBoolean("Read Color", m_columnBottom.getColorSensor()::isReadColor);
         m_printer.addBoolean("Top Sensor", m_columnTop::getTopBannerValue);
+        m_printer.addDouble("Drivetrain X", m_drivetrain::getDrivetrainXMeters);
+        m_printer.addDouble("Drivetrain Y", m_drivetrain::getDrivetrainYMeters);
         m_printer.addPose(
                 "Vision Pose",
                 () -> {
@@ -354,8 +352,6 @@ public class RobotContainer {
                             ColorsensorConstants.kColorEntry,
                             ColorsensorConstants.kMaxReadDistance));
 
-    final Ballstopper m_ballstopper = new Ballstopper(ColumnBottomConstants.kBallstopperPiston);
-
     final ColumnTop m_columnTop =
             new ColumnTop(
                     ColumnTopConstants.kColumnMotor,
@@ -452,7 +448,6 @@ public class RobotContainer {
                     m_turret,
                     m_hood,
                     m_flywheel,
-                    m_ballstopper,
                     compressor,
                     m_statusLED,
                     m_drivetrain::isStopped);
@@ -460,7 +455,8 @@ public class RobotContainer {
     private final AutoCommands autoCommands =
             new AutoCommands(m_drivetrain, DrivetrainConstants.kDriveKinematics, m_superstructure);
     private Pose2d startPosition = AutoConstants.positionOnTarmacUpper;
-    private Command autoCommand = autoCommands.getHighTwoStay();
+    //     private Pose2d startPosition = AutoConstants.positionOnTarmacParallel;
+    //     private Command autoCommand = autoCommands.getHighTwoStay();
     //     public Auto currentAuto = Auto.HIGH_TWO;
 
     //     public enum Auto {
