@@ -58,7 +58,6 @@ public class Superstructure {
             Turret m_turret,
             Hood m_hood,
             Flywheel m_flywheel,
-            Ballstopper ballstopper,
             Compressor compressor,
             StatusLED statusLEDs,
             BooleanSupplier drivetrainStopped) {
@@ -70,7 +69,6 @@ public class Superstructure {
         this.m_turret = m_turret;
         this.m_hood = m_hood;
         this.m_flywheel = m_flywheel;
-        this.m_ballstopper = ballstopper;
         this.compressor = compressor;
         this.m_statusLED = statusLEDs;
         this.drivetrainStopped = drivetrainStopped;
@@ -79,7 +77,7 @@ public class Superstructure {
         hoodCommands = new HoodCommands(m_hood);
         climberCommands = new ClimberCommands(m_climber);
         columnTopCommands = new ColumnTopCommands(m_columnTop);
-        feederCommands = new FeederCommands(m_columnBottom, m_columnTop, m_ballstopper);
+        feederCommands = new FeederCommands(m_columnBottom, m_columnTop);
         intakeCommands = new IntakeCommands(m_intake);
         turretCommands = new TurretCommands(m_turret);
         isClimbing = new Trigger(this::isClimbing);
@@ -135,20 +133,24 @@ public class Superstructure {
 
     public Command lowAccelerateAndShoot() {
         return new WaitUntilCommand(() -> Math.abs(m_turret.getAngle() - 0) < 3)
-                .andThen(
-                        new WaitCommand(0.9),
-                        feederCommands.retractStopper(),
-                        feederCommands.feedIn(() -> 2))
+                .andThen(new WaitCommand(0.9), feederCommands.feedIn(() -> 2))
                 .alongWith(
                         flywheelCommands.variableVelocity(() -> FlywheelConstants.kLowGoalVelocity),
                         columnTopCommands.getGoVariableVelocity(
                                 () -> ColumnTopConstants.kLowGoalVelocity));
     }
 
+    public Command spitIntoHangar(double speed) {
+        return new WaitUntilCommand(() -> Math.abs(m_turret.getAngle() - 0) < 3)
+                .andThen(new WaitCommand(0.9), feederCommands.feedIn(() -> 2))
+                .alongWith(
+                        flywheelCommands.variableVelocity(() -> speed),
+                        columnTopCommands.getGoVariableVelocity(() -> speed));
+    }
+
     public Command lowShot() {
         return feederCommands
-                .retractStopper()
-                .alongWith(feederCommands.feedIn(() -> 2))
+                .feedIn(() -> 2)
                 .alongWith(
                         new FunctionalCommand(
                                 () -> {},
@@ -266,7 +268,7 @@ public class Superstructure {
     }
 
     public Command runFeeder(DoubleSupplier surfaceVelocity) {
-        return feederCommands.extendStopper().andThen(feederCommands.feedIn(surfaceVelocity));
+        return feederCommands.feedIn(surfaceVelocity);
     }
 
     public Command intakeInThenManual(DoubleSupplier manual) {
@@ -297,7 +299,6 @@ public class Superstructure {
 
     public Command clearFeederFlywheel() {
         return CommandGroupBase.parallel(
-                feederCommands.retractStopper(),
                 feederCommands.runColumnBottomOut(),
                 columnTopCommands.getRunOutwards(),
                 flywheelCommands.openloop(-0.6));
@@ -450,8 +451,11 @@ public class Superstructure {
     }
 
     public boolean isWrongBall() {
-        return m_columnBottom.getBallColor() != ourColor
-                && m_columnBottom.getBallColor() != Color.NONE;
+        if (ourColor != Color.NONE) {
+            return m_columnBottom.getBallColor() != ourColor
+                    && m_columnBottom.getBallColor() != Color.NONE;
+        }
+        return false;
     }
 
     public AimingParameters getAimingParameters() {
@@ -614,7 +618,6 @@ public class Superstructure {
     private final Turret m_turret;
     private final Hood m_hood;
     private final Flywheel m_flywheel;
-    private final Ballstopper m_ballstopper;
     private final Compressor compressor;
     private final StatusLED m_statusLED;
     private final BooleanSupplier drivetrainStopped;

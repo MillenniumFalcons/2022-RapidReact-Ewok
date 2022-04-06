@@ -90,7 +90,7 @@ public class Robot extends TimedRobot {
     @Override
     public void autonomousInit() {
         this.m_autonomousCommand = m_robotContainer.getAutonomousCommand();
-        updateColor();
+        disableColorRejection();
         // schedule the autonomous command (example)
         System.out.println("Auto enabled!");
         this.m_autonomousCommand = m_robotContainer.getAutonomousCommand();
@@ -141,5 +141,9 @@ public class Robot extends TimedRobot {
                 m_robotContainer.m_superstructure.ourColor = Color.RED;
                 break;
         }
+    }
+
+    private void disableColorRejection() {
+        m_robotContainer.m_superstructure.ourColor = Color.NONE;
     }
 }

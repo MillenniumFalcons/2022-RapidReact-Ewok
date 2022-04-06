@@ -51,7 +51,7 @@ public final class FlywheelConstants {
         {Units.feetToMeters(7.5) + GlobalConstants.kCenterOffsetMeters, 9.4 + kOffset},
         {Units.feetToMeters(8) + GlobalConstants.kCenterOffsetMeters, 9.5 + kOffset},
         {Units.feetToMeters(8.5) + GlobalConstants.kCenterOffsetMeters, 9.79 + kOffset},
-        {Units.feetToMeters(9) + GlobalConstants.kCenterOffsetMeters, 9.8 + kOffset},
+        {Units.feetToMeters(9) + GlobalConstants.kCenterOffsetMeters, 9.9 + kOffset},
         {Units.feetToMeters(9.5) + GlobalConstants.kCenterOffsetMeters, 10.1 + kOffset},
         {Units.feetToMeters(10) + GlobalConstants.kCenterOffsetMeters, 10.3 + kOffset},
         {Units.feetToMeters(10.5) + GlobalConstants.kCenterOffsetMeters, 10.5 + kOffset},
