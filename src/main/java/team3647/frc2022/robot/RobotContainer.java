@@ -270,7 +270,7 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() {
-        return autoCommands.getHighTwoSendOnetoHangar();
+        return autoCommands.getHighTwoSendTwotoHangar();
     }
 
     public double getShooterSpeed() {

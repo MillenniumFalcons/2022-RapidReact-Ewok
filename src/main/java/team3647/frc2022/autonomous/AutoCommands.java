@@ -147,15 +147,20 @@ public class AutoCommands {
                         new WaitCommand(Trajectories.path8Time),
                         superstructure
                                 .deployAndRunIntake(() -> 13)
-                                .withTimeout(Trajectories.path9Time),
-                        new WaitCommand(Trajectories.path10Time),
-                        outtake());
+                                .withTimeout(Trajectories.path9Time));
         Command turretSequence =
                 superstructure.turretCommands.motionMagic(0).andThen(superstructure.aimTurret());
         Command shooterFeederSequence =
                 superstructure
                         .autoAccelerateAndShoot(1.2, 0.4, 0)
-                        .withTimeout(2.5 + Trajectories.path6Time);
+                        .withTimeout(2.5 + Trajectories.path6Time)
+                        .andThen(
+                                new WaitCommand(
+                                        Trajectories.path7Time
+                                                + Trajectories.path8Time
+                                                + Trajectories.path9Time
+                                                + Trajectories.path10Time))
+                        .andThen(outtake());
 
         return CommandGroupBase.parallel(
                 superstructure.disableCompressor(),

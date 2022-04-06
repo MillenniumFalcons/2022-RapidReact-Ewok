@@ -121,7 +121,7 @@ public class Trajectories {
                             AutoConstants.transitionPointForDipper1,
                             AutoConstants.transitionPointForDipper2),
                     path10End,
-                    forwardTrajectoryConfig);
+                    forwardTrajectoryConfigSlow);
 
     public static double path6Time = upperTarmacToUpperBall1.getTotalTimeSeconds();
     public static double path7Time = upperBall1ToOtherBall1.getTotalTimeSeconds();

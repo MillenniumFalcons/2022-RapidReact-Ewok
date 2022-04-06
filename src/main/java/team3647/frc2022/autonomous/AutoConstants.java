@@ -42,5 +42,5 @@ public class AutoConstants {
     public static final Translation2d transitionPointForDipper1 = new Translation2d(1.87, 4.58);
     public static final Translation2d transitionPointForDipper2 = new Translation2d(1.68, 6.27);
     public static final Pose2d outtakeTwoOtherColor =
-            new Pose2d(5.64, 6.6, Rotation2d.fromDegrees(0));
+            new Pose2d(5.64, 6.8, Rotation2d.fromDegrees(0));
 }
