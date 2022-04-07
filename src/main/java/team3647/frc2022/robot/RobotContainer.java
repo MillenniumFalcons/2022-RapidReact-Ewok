@@ -53,6 +53,20 @@ import team3647.lib.vision.MultiTargetTracker;
  */
 public class RobotContainer {
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
+    public enum Auto {
+        LOW_FIVE(0),
+        HIGH_TWO_ONE(1),
+        HIGH_TWO(2),
+        HIGH_TWO_TWO(3);
+        int index;
+
+        Auto(int index) {
+            this.index = index;
+        }
+    }
+
+    public Auto currentAuto = Auto.HIGH_TWO;
+
     public RobotContainer() {
         pdp.clearStickyFaults();
 
@@ -76,7 +90,7 @@ public class RobotContainer {
         m_hood.resetEncoder();
         HoodContants.kHoodMotor.configAllSettings(HoodContants.kMasterConfig);
 
-        // chooseAuto();
+        chooseAuto();
         m_drivetrain.setOdometry(startPosition, startPosition.getRotation());
     }
 
@@ -268,7 +282,14 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() {
-        return autoCommands.getHighTwoSendTwotoHangar();
+        System.err.print(autoCommand.getName());
+        System.err.print(
+                startPosition.getX()
+                        + ", "
+                        + startPosition.getY()
+                        + ", "
+                        + startPosition.getRotation());
+        return autoCommand;
     }
 
     public double getShooterSpeed() {
@@ -454,45 +475,31 @@ public class RobotContainer {
 
     private final AutoCommands autoCommands =
             new AutoCommands(m_drivetrain, DrivetrainConstants.kDriveKinematics, m_superstructure);
-    private Pose2d startPosition = AutoConstants.positionOnTarmacUpper;
-    //     private Pose2d startPosition = AutoConstants.positionOnTarmacParallel;
-    //     private Command autoCommand = autoCommands.getHighTwoStay();
-    //     public Auto currentAuto = Auto.HIGH_TWO;
+    private Pose2d startPosition;
+    private Command autoCommand;
 
-    //     public enum Auto {
-    //         LOW_FIVE(0),
-    //         HIGH_TWO_ONE(1),
-    //         HIGH_TWO(2),
-    //         HIGH_TWO_TWO(3);
-    //         int index;
-
-    //         Auto(int index) {
-    //             this.index = index;
-    //         }
-    //     }
-
-    //     public void chooseAuto() {
-    //         switch (currentAuto) {
-    //             case LOW_FIVE:
-    //                 startPosition = AutoConstants.positionOnTarmacParallel;
-    //                 autoCommand = autoCommands.lowFiveClean();
-    //                 break;
-    //             case HIGH_TWO_ONE:
-    //                 startPosition = AutoConstants.positionOnTarmacUpper;
-    //                 autoCommand = autoCommands.getHighTwoSendOnetoHangar();
-    //                 break;
-    //             case HIGH_TWO:
-    //                 startPosition = AutoConstants.positionOnTarmacUpper;
-    //                 autoCommand = autoCommands.getHighTwoStay();
-    //                 break;
-    //             case HIGH_TWO_TWO:
-    //                 startPosition = AutoConstants.positionOnTarmacUpper;
-    //                 autoCommand = autoCommands.getHighTwoSendTwotoHangar();
-    //                 break;
-    //             default:
-    //                 startPosition = AutoConstants.positionOnTarmacParallel;
-    //                 autoCommand = autoCommands.lowFiveClean();
-    //                 break;
-    //         }
-    //     }
+    public void chooseAuto() {
+        switch (currentAuto) {
+            case LOW_FIVE:
+                startPosition = AutoConstants.positionOnTarmacParallel;
+                autoCommand = autoCommands.lowFiveClean();
+                break;
+            case HIGH_TWO_ONE:
+                startPosition = AutoConstants.positionOnTarmacUpper;
+                autoCommand = autoCommands.getHighTwoSendOnetoHangar();
+                break;
+            case HIGH_TWO:
+                startPosition = AutoConstants.positionOnTarmacUpper;
+                autoCommand = autoCommands.getHighTwoStay();
+                break;
+            case HIGH_TWO_TWO:
+                startPosition = AutoConstants.positionOnTarmacUpper;
+                autoCommand = autoCommands.getTwoGrabTwo();
+                break;
+            default:
+                startPosition = AutoConstants.positionOnTarmacParallel;
+                autoCommand = autoCommands.lowFiveClean();
+                break;
+        }
+    }
 }

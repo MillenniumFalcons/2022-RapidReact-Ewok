@@ -43,4 +43,12 @@ public class AutoConstants {
     public static final Translation2d transitionPointForDipper2 = new Translation2d(1.68, 6.27);
     public static final Pose2d outtakeTwoOtherColor =
             new Pose2d(5.64, 6.8, Rotation2d.fromDegrees(0));
+
+    public static final Pose2d upperBall1Curved =
+            new Pose2d(4.95, 5.91, Rotation2d.fromDegrees(46));
+    public static final Translation2d otherColorBall1 = new Translation2d(4.2, 3.15);
+    public static final Translation2d loopPoint = new Translation2d(1.8, 5.46);
+    public static final Translation2d flatLoopPoint = new Translation2d(3.21, 6.94);
+    public static final Pose2d endingFlatPoint =
+            new Pose2d(5.8, 7.07, Rotation2d.fromDegrees(-180));
 }

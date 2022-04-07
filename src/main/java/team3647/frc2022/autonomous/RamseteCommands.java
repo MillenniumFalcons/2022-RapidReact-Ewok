@@ -55,6 +55,14 @@ public class RamseteCommands {
         return createDefaultRamseteCommand(Trajectories.otherBall2ToHangar);
     }
 
+    public RamseteCommand getUpperTarmactoCurvedBall1() {
+        return createDefaultRamseteCommand(Trajectories.transitionToOtherBall2);
+    }
+
+    public RamseteCommand getCurvedBall1ToFlatPoint() {
+        return createDefaultRamseteCommand(Trajectories.otherBall2ToHangar);
+    }
+
     private RamseteCommand createDefaultRamseteCommand(Trajectory trajectory) {
         return new RamseteCommand(
                 trajectory,

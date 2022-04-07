@@ -189,6 +189,42 @@ public class AutoCommands {
                 shooterFeederSequence);
     }
 
+    public final Command getTwoGrabTwo() {
+        Command drivetrainSequence =
+                CommandGroupBase.sequence(
+                        ramseteCommands.getUpperTarmactoCurvedBall1(),
+                        new WaitCommand(3),
+                        ramseteCommands.getCurvedBall1ToFlatPoint());
+        Command intakeSequence =
+                CommandGroupBase.sequence(
+                        superstructure
+                                .deployAndRunIntake(() -> 13)
+                                .withTimeout(
+                                        3 + Trajectories.path11Time + .3 * Trajectories.path12Time),
+                        new WaitCommand(.5 * Trajectories.path12Time),
+                        superstructure.deployAndRunIntake(() -> 13));
+        Command turretSequence =
+                CommandGroupBase.sequence(
+                        superstructure.turretCommands.motionMagic(0),
+                        superstructure.aimTurret().withTimeout(Trajectories.path11Time + 3),
+                        superstructure.turretCommands.motionMagic(25));
+
+        Command shooterFeederSequence =
+                CommandGroupBase.sequence(
+                        new WaitCommand(Trajectories.path11Time * 0.5),
+                        superstructure
+                                .autoAccelerateAndShoot()
+                                .withTimeout(3 + Trajectories.path11Time * 0.5),
+                        new WaitCommand(Trajectories.path12Time * 0.96),
+                        superstructure.spitIntoHangar(7));
+        return CommandGroupBase.parallel(
+                drivetrainSequence,
+                intakeSequence,
+                turretSequence,
+                shooterFeederSequence,
+                superstructure.disableCompressor());
+    }
+
     private final Command outtake() {
         return CommandGroupBase.parallel(
                 superstructure.feederCommands.runColumnBottomOut(),

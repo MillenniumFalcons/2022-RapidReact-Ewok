@@ -128,4 +128,25 @@ public class Trajectories {
     public static double path8Time = otherBall1ToTransition.getTotalTimeSeconds();
     public static double path9Time = transitionToOtherBall2.getTotalTimeSeconds();
     public static double path10Time = otherBall2ToHangar.getTotalTimeSeconds();
+
+    private static final Pose2d path11Start = AutoConstants.positionOnTarmacUpper;
+    private static final Pose2d path11End = AutoConstants.upperBall1Curved;
+    private static final Pose2d path12Start = path11End;
+    private static final Pose2d path12End = AutoConstants.endingFlatPoint;
+
+    public static Trajectory upperTarmacToCurvedBall1 =
+            TrajectoryGenerator.generateTrajectory(
+                    path11Start, List.of(), path11End, reverseTrajectoryConfig);
+    public static Trajectory curvedBall1ToFlatOtherBall =
+            TrajectoryGenerator.generateTrajectory(
+                    path12Start,
+                    List.of(
+                            AutoConstants.otherColorBall1,
+                            AutoConstants.loopPoint,
+                            AutoConstants.flatLoopPoint),
+                    path12End,
+                    reverseTrajectoryConfig);
+
+    public static double path11Time = upperTarmacToCurvedBall1.getTotalTimeSeconds();
+    public static double path12Time = curvedBall1ToFlatOtherBall.getTotalTimeSeconds();
 }
