@@ -44,6 +44,8 @@ public class AutoConstants {
     public static final Pose2d outtakeTwoOtherColor =
             new Pose2d(5.64, 6.8, Rotation2d.fromDegrees(0));
 
+    public static final Pose2d positionOnTarmacHighPoint =
+            new Pose2d(6.7, 5.75, Rotation2d.fromDegrees(-44.45));
     public static final Pose2d upperBall1Curved =
             new Pose2d(4.95, 5.91, Rotation2d.fromDegrees(46));
     public static final Translation2d otherColorBall1 = new Translation2d(4.2, 3.15);

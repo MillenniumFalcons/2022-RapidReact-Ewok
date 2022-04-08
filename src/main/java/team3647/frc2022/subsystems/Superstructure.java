@@ -43,6 +43,7 @@ public class Superstructure {
 
     private AimingParameters aimingParameters;
     private double flywheelVelocity = 0;
+    private double angleToTarget = 0;
     private double kickerVelocity = 0;
     private double hoodAngle = 16;
     private double turretVelFF = 0.0;
@@ -356,6 +357,7 @@ public class Superstructure {
             flywheelVelocity = FlywheelConstants.getFlywheelRPM(aimingParameters.getRangeMeters());
             kickerVelocity = MathUtil.clamp(flywheelVelocity * 0.5, 0, 10);
             hoodAngle = HoodContants.getHoodAngle1(aimingParameters.getRangeMeters());
+            angleToTarget = aimingParameters.getTurretAngleToTarget().getDegrees();
             turretSetpoint =
                     m_turret.getAngle() + aimingParameters.getTurretAngleToTarget().getDegrees();
             Twist2d velocity = deck.getTracker().getMeasuredVelocity();
@@ -417,7 +419,8 @@ public class Superstructure {
                 getAimedTurretSetpoint() - 360.0 * Math.round(getAimedTurretSetpoint() / 360.0);
         return Math.abs(m_flywheel.getVelocity() - getAimedFlywheelSurfaceVel()) < 0.1
                 && Math.abs(m_hood.getAngle() - getAimedHoodAngle()) < 1
-                && Math.abs(m_flywheel.getVelocity()) > 5;
+                && Math.abs(m_flywheel.getVelocity()) > 5
+                && Math.abs(getAngleToTarget()) < 1;
         // && Math.abs(m_turret.getAngle() - turretSetpointNormalized) < 1;
     }
 
@@ -488,6 +491,10 @@ public class Superstructure {
 
     public double getAimedHoodAngle() {
         return hoodAngle;
+    }
+
+    public double getAngleToTarget() {
+        return angleToTarget;
     }
 
     public double getAimedTurretSetpoint() {

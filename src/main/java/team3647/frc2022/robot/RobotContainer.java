@@ -90,7 +90,7 @@ public class RobotContainer {
         m_hood.resetEncoder();
         HoodContants.kHoodMotor.configAllSettings(HoodContants.kMasterConfig);
 
-        chooseAuto();
+        // chooseAuto();
         m_drivetrain.setOdometry(startPosition, startPosition.getRotation());
     }
 
@@ -282,14 +282,14 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() {
-        System.err.print(autoCommand.getName());
-        System.err.print(
-                startPosition.getX()
-                        + ", "
-                        + startPosition.getY()
-                        + ", "
-                        + startPosition.getRotation());
-        return autoCommand;
+        // System.err.print(autoCommand.getName());
+        // System.err.print(
+        //         startPosition.getX()
+        //                 + ", "
+        //                 + startPosition.getY()
+        //                 + ", "
+        //                 + startPosition.getRotation());
+        return autoCommands.lowFiveClean();
     }
 
     public double getShooterSpeed() {
@@ -475,8 +475,8 @@ public class RobotContainer {
 
     private final AutoCommands autoCommands =
             new AutoCommands(m_drivetrain, DrivetrainConstants.kDriveKinematics, m_superstructure);
-    private Pose2d startPosition;
-    private Command autoCommand;
+    private Pose2d startPosition = AutoConstants.positionOnTarmacParallel;
+    private Command autoCommand = autoCommands.getTwoGrabTwo();
 
     public void chooseAuto() {
         switch (currentAuto) {
