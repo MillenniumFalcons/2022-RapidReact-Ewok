@@ -1,8 +1,8 @@
 package team3647.frc2022.autonomous;
 
+import com.pathplanner.lib.PathPlannerTrajectory;
 import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
-import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import team3647.frc2022.subsystems.Drivetrain;
 
@@ -15,55 +15,27 @@ public class RamseteCommands {
         this.kDriveKinematics = driveKinematics;
     }
 
-    public RamseteCommand getTarmacToBottomLeftBall1() {
-        return createDefaultRamseteCommand(Trajectories.tarmacToBottomLeftBall1);
+    public RamseteCommand getFive1() {
+        return createDefaultRamseteCommand(PathPlannerTrajectories.five1);
     }
 
-    public RamseteCommand getBottomLeftBall1ToTarmac() {
-        return createDefaultRamseteCommand(Trajectories.bottomLeftBall1ToTarmac);
+    public RamseteCommand getFive2() {
+        return createDefaultRamseteCommand(PathPlannerTrajectories.five2);
     }
 
-    public RamseteCommand getTarmacToBall2() {
-        return createDefaultRamseteCommand(Trajectories.tarmacToBall2);
+    public RamseteCommand getFive3() {
+        return createDefaultRamseteCommand(PathPlannerTrajectories.five3);
     }
 
-    public RamseteCommand getBall2ToLoad2() {
-        return createDefaultRamseteCommand(Trajectories.ball2ToLoad2);
+    public RamseteCommand getFive4() {
+        return createDefaultRamseteCommand(PathPlannerTrajectories.five4);
     }
 
-    public RamseteCommand getLoad2ToShoot() {
-        return createDefaultRamseteCommand(Trajectories.load2ToShoot);
+    public RamseteCommand getFive5() {
+        return createDefaultRamseteCommand(PathPlannerTrajectories.five5);
     }
 
-    public RamseteCommand getTarmacToUpperBall1() {
-        return createDefaultRamseteCommand(Trajectories.upperTarmacToUpperBall1);
-    }
-
-    public RamseteCommand getUpperBall1ToOtherColorBall1() {
-        return createDefaultRamseteCommand(Trajectories.upperBall1ToOtherBall1);
-    }
-
-    public RamseteCommand getOtherColorBall1ToTransition() {
-        return createDefaultRamseteCommand(Trajectories.otherBall1ToTransition);
-    }
-
-    public RamseteCommand getTransitionToOtherColorBall2() {
-        return createDefaultRamseteCommand(Trajectories.transitionToOtherBall2);
-    }
-
-    public RamseteCommand getOtherColorBall2ToOuttake() {
-        return createDefaultRamseteCommand(Trajectories.otherBall2ToHangar);
-    }
-
-    public RamseteCommand getUpperTarmactoCurvedBall1() {
-        return createDefaultRamseteCommand(Trajectories.upperTarmacToCurvedBall1);
-    }
-
-    public RamseteCommand getCurvedBall1ToFlatPoint() {
-        return createDefaultRamseteCommand(Trajectories.curvedBall1ToFlatOtherBall);
-    }
-
-    private RamseteCommand createDefaultRamseteCommand(Trajectory trajectory) {
+    private RamseteCommand createDefaultRamseteCommand(PathPlannerTrajectory trajectory) {
         return new RamseteCommand(
                 trajectory,
                 m_drivetrain::getPose,
