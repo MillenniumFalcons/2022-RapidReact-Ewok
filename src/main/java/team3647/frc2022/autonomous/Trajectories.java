@@ -57,6 +57,8 @@ public class Trajectories {
                     .addConstraint(autoVoltageConstraint)
                     .setReversed(true);
 
+    // 6 ball
+
     private static final Pose2d path1Start = AutoConstants.positionOnTarmacParallel;
     private static final Pose2d path1End = AutoConstants.bottomLeftBall1;
     private static final Pose2d path2Start = path1End;

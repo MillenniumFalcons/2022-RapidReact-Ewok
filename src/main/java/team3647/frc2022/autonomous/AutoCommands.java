@@ -23,6 +23,55 @@ public class AutoCommands {
         ramseteCommands = new RamseteCommands(drivetrain, driveKinematics);
     }
 
+    public Command sixBall() {
+        Command turretSequence =
+                superstructure.turretCommands.motionMagic(0).andThen(superstructure.aimTurret());
+
+        Command drivetrainSequence =
+                CommandGroupBase.sequence(
+                        new WaitCommand(2),
+                        ramseteCommands.getTarmacToBottomLeftBall1(),
+                        ramseteCommands.getBottomLeftBall1ToTarmac(),
+                        ramseteCommands.getTarmacToBall2(),
+                        new WaitCommand(2),
+                        ramseteCommands.getBall2ToLoad2(),
+                        new WaitCommand(1),
+                        ramseteCommands.getLoad2ToShoot());
+
+        Command intakeSequence =
+                new WaitCommand(2).andThen(superstructure.deployAndRunIntake(() -> 13));
+
+        Command shooterFeeder =
+                CommandGroupBase.sequence(
+                        superstructure.lowAccelerateAndShoot().withTimeout(2),
+                        superstructure
+                                .runFeeder(() -> 8)
+                                .alongWith(superstructure.accelerateWithMinMaxDistance(3.23, 3.3))
+                                .withTimeout(
+                                        Trajectories.path1Time
+                                                + Trajectories.path2Time
+                                                + Trajectories.path3Time),
+                        superstructure.lowAccelerateAndShoot().withTimeout(1.5),
+                        new WaitCommand(Trajectories.path4Time * 0.5),
+                        superstructure
+                                .runFeeder(() -> 8)
+                                .withTimeout(
+                                        Trajectories.path4Time * 0.5
+                                                + Trajectories.path5Time * 0.5),
+                        superstructure
+                                .runFeeder(() -> 8)
+                                .alongWith(superstructure.accelerateWithMinMaxDistance(3.2, 3.25))
+                                .withTimeout(Trajectories.path5Time * 0.5),
+                        superstructure.lowAccelerateAndShoot());
+
+        return CommandGroupBase.parallel(
+                superstructure.disableCompressor(),
+                drivetrainSequence,
+                intakeSequence,
+                shooterFeeder,
+                turretSequence);
+    }
+
     public Command lowFiveClean() {
         Command turretSequence =
                 superstructure
