@@ -24,45 +24,58 @@ public class AutoCommands {
     }
 
     public Command sixBall() {
+        // make sure 3 balls cannot be loaded at the same time
         Command turretSequence =
-                superstructure.turretCommands.motionMagic(0).andThen(superstructure.aimTurret());
-
+                superstructure
+                        .turretCommands
+                        .motionMagic(0)
+                        .andThen(
+                                new WaitCommand(Trajectories.path1Time * 0.6),
+                                superstructure.aimTurret());
         Command drivetrainSequence =
                 CommandGroupBase.sequence(
-                        new WaitCommand(2),
                         ramseteCommands.getTarmacToBottomLeftBall1(),
+                        new WaitCommand(2.5),
                         ramseteCommands.getBottomLeftBall1ToTarmac(),
                         ramseteCommands.getTarmacToBall2(),
                         new WaitCommand(2),
                         ramseteCommands.getBall2ToLoad2(),
                         new WaitCommand(1),
                         ramseteCommands.getLoad2ToShoot());
-
         Command intakeSequence =
-                new WaitCommand(2).andThen(superstructure.deployAndRunIntake(() -> 13));
-
+                CommandGroupBase.sequence(
+                        new WaitCommand(Trajectories.path1Time + 2),
+                        superstructure
+                                .deployAndRunIntake(() -> 13)
+                                .withTimeout(Trajectories.path2Time + Trajectories.path3Time),
+                        new WaitCommand(2),
+                        superstructure.deployAndRunIntake(() -> 13));
         Command shooterFeeder =
                 CommandGroupBase.sequence(
-                        superstructure.lowAccelerateAndShoot().withTimeout(2),
                         superstructure
                                 .runFeeder(() -> 8)
                                 .alongWith(superstructure.accelerateWithMinMaxDistance(3.23, 3.3))
-                                .withTimeout(
-                                        Trajectories.path1Time
-                                                + Trajectories.path2Time
-                                                + Trajectories.path3Time),
-                        superstructure.lowAccelerateAndShoot().withTimeout(1.5),
-                        new WaitCommand(Trajectories.path4Time * 0.5),
+                                .withTimeout(Trajectories.path1Time * 0.9),
+                        superstructure
+                                .autoAccelerateAndShoot()
+                                .withTimeout(2 + Trajectories.path1Time * 0.1),
                         superstructure
                                 .runFeeder(() -> 8)
+                                .alongWith(superstructure.accelerateWithMinMaxDistance(3.1, 3.2))
                                 .withTimeout(
-                                        Trajectories.path4Time * 0.5
-                                                + Trajectories.path5Time * 0.5),
+                                        Trajectories.path2Time
+                                                + Trajectories
+                                                        .path3Time), // might not be enough to pick
+                        // up the ball
+                        superstructure.autoAccelerateAndShoot().withTimeout(2),
+                        superstructure
+                                .runFeeder(() -> 8)
+                                .withTimeout(Trajectories.path4Time + Trajectories.path5Time * 0.5),
                         superstructure
                                 .runFeeder(() -> 8)
                                 .alongWith(superstructure.accelerateWithMinMaxDistance(3.2, 3.25))
                                 .withTimeout(Trajectories.path5Time * 0.5),
-                        superstructure.lowAccelerateAndShoot());
+                        superstructure.autoAccelerateAndShoot());
 
         return CommandGroupBase.parallel(
                 superstructure.disableCompressor(),
