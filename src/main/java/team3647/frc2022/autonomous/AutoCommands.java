@@ -40,7 +40,7 @@ public class AutoCommands {
                         ramseteCommands.getTarmacToBall2(),
                         new WaitCommand(2),
                         ramseteCommands.getBall2ToLoad2(),
-                        new WaitCommand(0.6),
+                        new WaitCommand(0.4),
                         ramseteCommands.getLoad2ToShoot());
         Command intakeSequence =
                 CommandGroupBase.sequence(
