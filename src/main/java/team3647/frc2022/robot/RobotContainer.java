@@ -57,7 +57,8 @@ public class RobotContainer {
         LOW_FIVE(0),
         HIGH_TWO_ONE(1),
         HIGH_TWO(2),
-        HIGH_TWO_TWO(3);
+        HIGH_TWO_TWO(3),
+        SIX_BALL(4);
         int index;
 
         Auto(int index) {
@@ -289,7 +290,7 @@ public class RobotContainer {
         //                 + startPosition.getY()
         //                 + ", "
         //                 + startPosition.getRotation());
-        return autoCommands.lowFiveClean();
+        return autoCommands.sixBall();
     }
 
     public double getShooterSpeed() {
@@ -495,6 +496,10 @@ public class RobotContainer {
             case HIGH_TWO_TWO:
                 startPosition = AutoConstants.positionOnTarmacUpper;
                 autoCommand = autoCommands.getTwoGrabTwo();
+                break;
+            case SIX_BALL:
+                startPosition = AutoConstants.positionOnTarmacParallel;
+                autoCommand = autoCommands.sixBall();
                 break;
             default:
                 startPosition = AutoConstants.positionOnTarmacParallel;

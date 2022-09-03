@@ -55,8 +55,8 @@ public final class DrivetrainConstants {
     public static final DifferentialDriveKinematics kDriveKinematics =
             new DifferentialDriveKinematics(kTrackWidth);
     public static final double kMaxSpeedMetersPerSecondSlow = 2;
-    public static final double kMaxSpeedMetersPerSecond = 3;
-    public static final double kMaxAccelerationMetersPerSecondSquared = 3.5;
+    public static final double kMaxSpeedMetersPerSecond = 3.5;
+    public static final double kMaxAccelerationMetersPerSecondSquared = 4;
 
     public static final double kGearboxReduction = 10 / 42.0 * 24 / 40.;
 
