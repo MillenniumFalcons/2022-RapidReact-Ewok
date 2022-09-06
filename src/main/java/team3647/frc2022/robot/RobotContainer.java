@@ -118,6 +118,25 @@ public class RobotContainer {
                                         m_superstructure.currentState.turretState =
                                                 TurretState.HOLD_POSITION)
                         .andThen(m_superstructure.turretCommands.holdPositionAtCall()));
+
+        // m_turret.setDefaultCommand(
+        //         new ConditionalCommand(
+        //                 new InstantCommand(
+        //                                 () ->
+        //                                         m_superstructure.currentState.turretState =
+        //                                                 TurretState.HOLD_POSITION)
+        //                         .andThen(m_superstructure.turretCommands.motionMagic(0))
+        //                         .andThen(m_superstructure.turretCommands.holdPositionAtCall()),
+        //                 new InstantCommand(
+        //                                 () ->
+        //                                         m_superstructure.currentState.turretState =
+        //                                                 TurretState.AIM)
+        //                         .andThen(
+        //                                 m_superstructure.turretCommands.aim(
+        //                                         m_superstructure::getAimedTurretSetpoint,
+        //                                         m_superstructure::getAimedTurretVelocity)),
+        //                 m_superstructure::isClimbing));
+
         // m_turret.setDefaultCommand(
         //         new RunCommand(
         //                 () -> m_turret.setOpenloop(coController.getRightStickX()), m_turret));
@@ -126,6 +145,18 @@ public class RobotContainer {
                 m_superstructure.intakeInThenManual(coController::getLeftStickY));
         m_columnBottom.setDefaultCommand(
                 m_superstructure.feederInThenManual(coController::getLeftStickY));
+
+        // defining color rejection
+        // m_superstructure
+        //         .wrongBallDetected
+        //         .and(new Trigger(m_columnTop::getTopBannerValue))
+        //         .whenActive(m_superstructure.rejectBallBottom(), false);
+        // don't want to take up intaking area. Commenting this out means always reject top only
+
+        // m_superstructure.wrongBallDetected
+        //         // .and(new Trigger(() -> !m_columnTop.getTopBannerValue()))
+        //         .whenActive(m_superstructure.rejectBallTop(), false);
+
         m_superstructure
                 .wrongBallDetected
                 .and(new Trigger(m_columnTop::getTopBannerValue))
@@ -290,7 +321,7 @@ public class RobotContainer {
         //                 + startPosition.getY()
         //                 + ", "
         //                 + startPosition.getRotation());
-        return autoCommands.sixBall();
+        return autoCommands.mikeJordanSixBall();
     }
 
     public double getShooterSpeed() {

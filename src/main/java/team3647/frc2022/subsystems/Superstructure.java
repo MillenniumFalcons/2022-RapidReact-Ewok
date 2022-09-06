@@ -48,6 +48,7 @@ public class Superstructure {
     private double hoodAngle = 16;
     private double turretVelFF = 0.0;
     private double turretSetpoint = TurretConstants.kStartingAngle;
+    // change color here to enable color rejection (defined in RobotContainer.java)
     public Color ourColor = Color.NONE;
 
     public Superstructure(

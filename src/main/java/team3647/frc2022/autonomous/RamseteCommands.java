@@ -15,6 +15,10 @@ public class RamseteCommands {
         this.kDriveKinematics = driveKinematics;
     }
 
+    public RamseteCommand getBall1ToLoad() {
+        return createDefaultRamseteCommand(Trajectories.ball1ToLoad);
+    }
+
     public RamseteCommand getTarmacToBottomLeftBall1() {
         return createDefaultRamseteCommand(Trajectories.tarmacToBottomLeftBall1);
     }
@@ -33,6 +37,10 @@ public class RamseteCommands {
 
     public RamseteCommand getLoad2ToShoot() {
         return createDefaultRamseteCommand(Trajectories.load2ToShoot);
+    }
+
+    public RamseteCommand getLoad2ToFarShoot() {
+        return createDefaultRamseteCommand(Trajectories.load2ToFarShoot);
     }
 
     public RamseteCommand getTarmacToUpperBall1() {

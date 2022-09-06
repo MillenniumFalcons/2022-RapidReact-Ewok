@@ -23,6 +23,54 @@ public class AutoCommands {
         ramseteCommands = new RamseteCommands(drivetrain, driveKinematics);
     }
 
+    public Command mikeJordanSixBall() {
+        Command turretSequence =
+                superstructure
+                        .turretCommands
+                        .motionMagic(0)
+                        .andThen(
+                                new WaitCommand(Trajectories.path1Time * 0.6),
+                                superstructure.aimTurret());
+        Command drivetrainSequence =
+                CommandGroupBase.sequence(
+                        ramseteCommands.getTarmacToBottomLeftBall1(),
+                        new WaitCommand(2.9),
+                        ramseteCommands.getBottomLeftBall1ToTarmac(),
+                        // ramseteCommands.getTarmacToBall2(),
+                        // ramseteCommands.getBall2ToLoad2()
+                        ramseteCommands.getBall1ToLoad(),
+                        ramseteCommands.getLoad2ToFarShoot());
+
+        Command intakeSequence =
+                CommandGroupBase.sequence(
+                        new WaitCommand(Trajectories.path1Time + 1.2),
+                        superstructure.deployAndRunIntake(() -> 10));
+
+        Command shooterFeeder =
+                CommandGroupBase.sequence(
+                        superstructure
+                                .runFeeder(() -> 8)
+                                .alongWith(superstructure.accelerateWithMinMaxDistance(3.23, 3.3))
+                                .withTimeout(Trajectories.path1Time + 0.1),
+                        superstructure.autoAccelerateAndShoot().withTimeout(2.6),
+                        superstructure
+                                .runFeeder(() -> 8)
+                                .alongWith(superstructure.accelerateWithMinMaxDistance(3.2, 3.25))
+                                .withTimeout(
+                                        Trajectories.path2Time
+                                                + Trajectories.path3Time
+                                                + Trajectories.path4Time
+                                                + 0.2),
+                        superstructure.autoAccelerateAndShoot());
+
+        return CommandGroupBase.parallel(
+                superstructure.disableCompressor(),
+                drivetrainSequence,
+                intakeSequence,
+                shooterFeeder,
+                turretSequence);
+    }
+
     public Command sixBall() {
         // make sure 3 balls cannot be loaded at the same time
         Command turretSequence =
@@ -46,10 +94,10 @@ public class AutoCommands {
                 CommandGroupBase.sequence(
                         new WaitCommand(Trajectories.path1Time + 2),
                         superstructure
-                                .deployAndRunIntake(() -> 13)
+                                .deployAndRunIntake(() -> 10)
                                 .withTimeout(Trajectories.path2Time + Trajectories.path3Time + 0.2),
                         new WaitCommand(2),
-                        superstructure.deployAndRunIntake(() -> 13));
+                        superstructure.deployAndRunIntake(() -> 10));
         Command shooterFeeder =
                 CommandGroupBase.sequence(
                         superstructure
