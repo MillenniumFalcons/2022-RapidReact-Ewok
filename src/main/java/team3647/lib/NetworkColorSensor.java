@@ -70,7 +70,7 @@ public final class NetworkColorSensor {
     private static Color updateColor(
             double red, double green, double blue, boolean withinDistance) {
         Color result;
-        if (green > red && green > blue || !withinDistance) {
+        if (!withinDistance) {
             result = Color.NONE;
         } else if (blue > red) {
             result = Color.BLUE;
