@@ -530,7 +530,7 @@ public class RobotContainer {
                 break;
             case SIX_BALL:
                 startPosition = AutoConstants.positionOnTarmacParallel;
-                autoCommand = autoCommands.sixBall();
+                autoCommand = autoCommands.mikeJordanSixBall();
                 break;
             default:
                 startPosition = AutoConstants.positionOnTarmacParallel;
