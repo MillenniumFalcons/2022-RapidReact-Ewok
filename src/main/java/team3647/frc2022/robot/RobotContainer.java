@@ -508,7 +508,7 @@ public class RobotContainer {
     private final AutoCommands autoCommands =
             new AutoCommands(m_drivetrain, DrivetrainConstants.kDriveKinematics, m_superstructure);
     private Pose2d startPosition = AutoConstants.positionOnTarmacParallel;
-    private Command autoCommand = autoCommands.getTwoGrabTwo();
+    private Command autoCommand = autoCommands.mikeJordanSixBall();
 
     public void chooseAuto() {
         switch (currentAuto) {
@@ -518,16 +518,16 @@ public class RobotContainer {
                 break;
             case HIGH_TWO_ONE:
                 startPosition = AutoConstants.positionOnTarmacUpper;
-                autoCommand = autoCommands.getHighTwoSendOnetoHangar();
+                autoCommand = autoCommands.getHighThreeSendOnetoHangar();
                 break;
             case HIGH_TWO:
                 startPosition = AutoConstants.positionOnTarmacUpper;
-                autoCommand = autoCommands.getHighTwoStay();
+                autoCommand = autoCommands.getHighThreeStay();
                 break;
-            case HIGH_TWO_TWO:
-                startPosition = AutoConstants.positionOnTarmacUpper;
-                autoCommand = autoCommands.getTwoGrabTwo();
-                break;
+                //     case HIGH_TWO_TWO:
+                //         startPosition = AutoConstants.positionOnTarmacUpper;
+                //         autoCommand = autoCommands.getTwoGrabTwo();
+                //         break;
             case SIX_BALL:
                 startPosition = AutoConstants.positionOnTarmacParallel;
                 autoCommand = autoCommands.mikeJordanSixBall();
