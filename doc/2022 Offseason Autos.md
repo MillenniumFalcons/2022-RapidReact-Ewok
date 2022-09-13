@@ -1,11 +1,11 @@
 # Low five/Mike Jordan Start Pose
-![[lowFiveStart.png]]
+<img src="images\lowFiveStart.png" alt="drawing" width="400"/>
 
 # High Two Send One Into Hangar Start Pose
-![[HighTwosStart.png]]
+<img src="images\HighTwosStart.png" alt="drawing" width="400"/>
 
 # High Two Stay
-![[HighTwosStart.png]]
+<img src="images\HighTwosStart.png" alt="drawing" width="400"/>
 
 # Get Two Grab Two
-![[HighTwoGrabTwoStart.png]]
+<img src="images\HighTwoGrabTwoStart.png" alt="drawing" width="400"/>
