@@ -55,8 +55,8 @@ public class RobotContainer {
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public enum Auto {
         LOW_FIVE(0),
-        HIGH_TWO_ONE(1),
-        HIGH_TWO(2),
+        HIGH_THREE_ONE(1),
+        HIGH_THREE(2),
         HIGH_TWO_TWO(3),
         SIX_BALL(4);
         int index;
@@ -66,7 +66,7 @@ public class RobotContainer {
         }
     }
 
-    public Auto currentAuto = Auto.HIGH_TWO;
+    public Auto currentAuto = Auto.HIGH_THREE;
 
     public RobotContainer() {
         pdp.clearStickyFaults();
@@ -91,7 +91,7 @@ public class RobotContainer {
         m_hood.resetEncoder();
         HoodContants.kHoodMotor.configAllSettings(HoodContants.kMasterConfig);
 
-        // chooseAuto();
+        chooseAuto();
         m_drivetrain.setOdometry(startPosition, startPosition.getRotation());
     }
 
@@ -321,7 +321,7 @@ public class RobotContainer {
         //                 + startPosition.getY()
         //                 + ", "
         //                 + startPosition.getRotation());
-        return autoCommands.mikeJordanSixBall();
+        return autoCommand;
     }
 
     public double getShooterSpeed() {
@@ -516,11 +516,11 @@ public class RobotContainer {
                 startPosition = AutoConstants.positionOnTarmacParallel;
                 autoCommand = autoCommands.lowFiveClean();
                 break;
-            case HIGH_TWO_ONE:
+            case HIGH_THREE_ONE:
                 startPosition = AutoConstants.positionOnTarmacUpper;
                 autoCommand = autoCommands.getHighThreeSendOnetoHangar();
                 break;
-            case HIGH_TWO:
+            case HIGH_THREE:
                 startPosition = AutoConstants.positionOnTarmacUpper;
                 autoCommand = autoCommands.getHighThreeStay();
                 break;

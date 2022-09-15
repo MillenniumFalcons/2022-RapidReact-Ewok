@@ -231,23 +231,16 @@ public class AutoCommands {
     public final Command getHighThreeStay() {
         Command drivetrainSequence =
                 CommandGroupBase.sequence(
-                        new WaitCommand(2.5),
-                        ramseteCommands.getTarmacToUpperBall1(),
-                        new WaitCommand(1.5));
+                        ramseteCommands.getTarmacToUpperBall1(), new WaitCommand(1.5));
         Command intakeSequence =
-                new WaitCommand(2.5)
-                        .andThen(
-                                superstructure
-                                        .deployAndRunIntake(() -> 13)
-                                        .withTimeout(Trajectories.path6Time));
+                new WaitCommand(Trajectories.path6Time + 1)
+                        .andThen(superstructure.deployAndRunIntake(() -> 13).withTimeout(2.2));
         Command turretSequence =
                 superstructure.turretCommands.motionMagic(0).andThen(superstructure.aimTurret());
         Command shooterFeederSequence =
                 CommandGroupBase.sequence(
-                        new WaitCommand(0.3),
-                        superstructure.autoAccelerateAndShoot().withTimeout(2.2),
-                        runFeederAndAccelerate(3.04, 3.14).withTimeout(Trajectories.path6Time),
-                        superstructure.autoAccelerateAndShoot(1.2, 0.4, 0).withTimeout(1.5));
+                        new WaitCommand(Trajectories.path6Time + 0.3),
+                        superstructure.autoAccelerateAndShoot().withTimeout(3.5));
 
         return CommandGroupBase.parallel(
                 superstructure.disableCompressor(),

@@ -105,7 +105,7 @@ public class Trajectories {
 
     // 2 ball
     private static final Pose2d path6Start = AutoConstants.positionOnTarmacUpper;
-    private static final Pose2d path6End = AutoConstants.upperBall1Straight;
+    private static final Pose2d path6End = AutoConstants.almostUpperBall1Straight;
     private static final Pose2d path7Start = path6End;
     private static final Pose2d path7End = AutoConstants.upperOtherColorBall1;
     private static final Pose2d path8Start = path7End;
