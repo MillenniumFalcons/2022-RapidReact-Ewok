@@ -43,8 +43,12 @@ public class RamseteCommands {
         return createDefaultRamseteCommand(Trajectories.load2ToFarShoot);
     }
 
-    public RamseteCommand getTarmacToUpperBall1() {
-        return createDefaultRamseteCommand(Trajectories.upperTarmacToUpperBall1);
+    public RamseteCommand getTarmacToShootHigh() {
+        return createDefaultRamseteCommand(Trajectories.upperTarmacToShootHigh);
+    }
+
+    public RamseteCommand getTinyPathToLastHighBall() {
+        return createDefaultRamseteCommand(Trajectories.upperTarmacTinyPathToBall);
     }
 
     public RamseteCommand getUpperBall1ToOtherColorBall1() {

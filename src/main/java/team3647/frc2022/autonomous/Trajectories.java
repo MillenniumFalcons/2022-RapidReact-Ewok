@@ -105,8 +105,10 @@ public class Trajectories {
 
     // 2 ball
     private static final Pose2d path6Start = AutoConstants.positionOnTarmacUpper;
-    private static final Pose2d path6End = AutoConstants.almostUpperBall1Straight;
-    private static final Pose2d path7Start = path6End;
+    private static final Pose2d path6End = AutoConstants.highShoot;
+    private static final Pose2d path6TinyPathStart = path6End;
+    private static final Pose2d path6TinyPathEnd = AutoConstants.upperBall1Straight;
+    private static final Pose2d path7Start = path6TinyPathEnd;
     private static final Pose2d path7End = AutoConstants.upperOtherColorBall1;
     private static final Pose2d path8Start = path7End;
     private static final Pose2d path8End = AutoConstants.transitionPointForUpperOtherBall2;
@@ -115,9 +117,12 @@ public class Trajectories {
     private static final Pose2d path10Start = path9End;
     private static final Pose2d path10End = AutoConstants.outtakeTwoOtherColor;
 
-    public static Trajectory upperTarmacToUpperBall1 =
+    public static Trajectory upperTarmacToShootHigh =
             TrajectoryGenerator.generateTrajectory(
                     path6Start, List.of(), path6End, reverseTrajectoryConfigSlow);
+    public static Trajectory upperTarmacTinyPathToBall =
+            TrajectoryGenerator.generateTrajectory(
+                    path6TinyPathStart, List.of(), path6TinyPathEnd, reverseTrajectoryConfigSlow);
     public static Trajectory upperBall1ToOtherBall1 =
             TrajectoryGenerator.generateTrajectory(
                     path7Start, List.of(), path7End, reverseTrajectoryConfigSlow);
@@ -136,7 +141,8 @@ public class Trajectories {
                     path10End,
                     forwardTrajectoryConfigSlow);
 
-    public static double path6Time = upperTarmacToUpperBall1.getTotalTimeSeconds();
+    public static double path6Time = upperTarmacToShootHigh.getTotalTimeSeconds();
+    public static double path6TinyPathTime = upperTarmacTinyPathToBall.getTotalTimeSeconds();
     public static double path7Time = upperBall1ToOtherBall1.getTotalTimeSeconds();
     public static double path8Time = otherBall1ToTransition.getTotalTimeSeconds();
     public static double path9Time = transitionToOtherBall2.getTotalTimeSeconds();

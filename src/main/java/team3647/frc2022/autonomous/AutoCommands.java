@@ -138,41 +138,37 @@ public class AutoCommands {
     public Command getHighThreeSendOnetoHangar() {
         Command drivetrainSequence =
                 CommandGroupBase.sequence(
-                        new WaitCommand(2.5),
-                        ramseteCommands.getTarmacToUpperBall1(),
+                        ramseteCommands.getTarmacToShootHigh(),
                         new WaitCommand(2.2),
+                        ramseteCommands.getTinyPathToLastHighBall(),
+                        new WaitCommand(1.5),
                         ramseteCommands.getUpperBall1ToOtherColorBall1());
         Command intakeSequence =
-                CommandGroupBase.sequence(
-                        new WaitCommand(2.5),
-                        superstructure
-                                .deployAndRunIntake(() -> 10)
-                                .withTimeout(Trajectories.path6Time + .1),
-                        new WaitCommand(1.9),
-                        superstructure
-                                .deployAndRunIntake(() -> 10)
-                                .withTimeout(Trajectories.path7Time + 0.5));
+                new WaitCommand(Trajectories.path6Time + 2.4)
+                        .andThen(superstructure.deployAndRunIntake(() -> 10).withTimeout(1.5))
+                        .andThen(new WaitCommand(Trajectories.path7Time - 3))
+                        .andThen(superstructure.deployAndRunIntake(() -> 10));
         Command turretSequence =
                 superstructure
                         .turretCommands
                         .motionMagic(0)
-                        .andThen(superstructure.aimTurret())
-                        .withTimeout(2.5)
+                        .andThen(new WaitCommand(0.4))
                         .andThen(
-                                new WaitCommand(Trajectories.path6Time * 0.5),
-                                superstructure.aimTurret())
-                        .withTimeout(Trajectories.path6Time + 3)
+                                superstructure
+                                        .aimTurret()
+                                        .withTimeout(
+                                                Trajectories.path6TinyPathTime
+                                                        + 2.2
+                                                        + Trajectories.path7Time
+                                                        + 1.7))
                         .andThen(superstructure.turretCommands.motionMagic(0));
         Command shooterFeederSequence =
                 CommandGroupBase.sequence(
-                        new WaitCommand(0.3),
-                        superstructure
-                                .autoAccelerateAndShoot()
-                                .withTimeout(2.2)
-                                .andThen(
-                                        new WaitCommand(Trajectories.path6Time * 0.5),
-                                        superstructure.autoAccelerateAndShoot())
-                                .withTimeout(Trajectories.path6Time + 3),
+                        new WaitCommand(Trajectories.path6Time + 0.3),
+                        superstructure.autoAccelerateAndShoot().withTimeout(2.2),
+                        new WaitCommand(Trajectories.path6TinyPathTime),
+                        superstructure.autoAccelerateAndShoot().withTimeout(1.5),
+                        new WaitCommand(Trajectories.path7Time + 0.5),
                         superstructure.spitIntoHangar(7));
 
         return CommandGroupBase.parallel(
@@ -181,6 +177,52 @@ public class AutoCommands {
                 intakeSequence,
                 turretSequence,
                 shooterFeederSequence);
+
+        // Command drivetrainSequence =
+        //         CommandGroupBase.sequence(
+        //                 new WaitCommand(2.5),
+        //                 ramseteCommands.getTarmacToUpperBall1(),
+        //                 new WaitCommand(2.2),
+        //                 ramseteCommands.getUpperBall1ToOtherColorBall1());
+        // Command intakeSequence =
+        //         CommandGroupBase.sequence(
+        //                 new WaitCommand(2.5),
+        //                 superstructure
+        //                         .deployAndRunIntake(() -> 10)
+        //                         .withTimeout(Trajectories.path6Time + .1),
+        //                 new WaitCommand(1.9),
+        //                 superstructure
+        //                         .deployAndRunIntake(() -> 10)
+        //                         .withTimeout(Trajectories.path7Time + 0.5));
+        // Command turretSequence =
+        //         superstructure
+        //                 .turretCommands
+        //                 .motionMagic(0)
+        //                 .andThen(superstructure.aimTurret())
+        //                 .withTimeout(2.5)
+        //                 .andThen(
+        //                         new WaitCommand(Trajectories.path6Time * 0.5),
+        //                         superstructure.aimTurret())
+        //                 .withTimeout(Trajectories.path6Time + 3)
+        //                 .andThen(superstructure.turretCommands.motionMagic(0));
+        // Command shooterFeederSequence =
+        //         CommandGroupBase.sequence(
+        //                 new WaitCommand(0.3),
+        //                 superstructure
+        //                         .autoAccelerateAndShoot()
+        //                         .withTimeout(2.2)
+        //                         .andThen(
+        //                                 new WaitCommand(Trajectories.path6Time * 0.5),
+        //                                 superstructure.autoAccelerateAndShoot())
+        //                         .withTimeout(Trajectories.path6Time + 3),
+        //                 superstructure.spitIntoHangar(7));
+
+        // return CommandGroupBase.parallel(
+        //         superstructure.disableCompressor(),
+        //         drivetrainSequence,
+        //         intakeSequence,
+        //         turretSequence,
+        //         shooterFeederSequence);
     }
 
     //     public Command getHighTwoSendTwotoHangar() {
@@ -231,16 +273,25 @@ public class AutoCommands {
     public final Command getHighThreeStay() {
         Command drivetrainSequence =
                 CommandGroupBase.sequence(
-                        ramseteCommands.getTarmacToUpperBall1(), new WaitCommand(1.5));
+                        ramseteCommands.getTarmacToShootHigh(),
+                        new WaitCommand(2.2),
+                        ramseteCommands.getTinyPathToLastHighBall(),
+                        new WaitCommand(1.5));
         Command intakeSequence =
-                new WaitCommand(Trajectories.path6Time + 1)
-                        .andThen(superstructure.deployAndRunIntake(() -> 13).withTimeout(2.2));
+                new WaitCommand(Trajectories.path6Time + 2.4)
+                        .andThen(superstructure.deployAndRunIntake(() -> 10).withTimeout(1.5));
         Command turretSequence =
-                superstructure.turretCommands.motionMagic(0).andThen(superstructure.aimTurret());
+                superstructure
+                        .turretCommands
+                        .motionMagic(0)
+                        .andThen(new WaitCommand(0.4))
+                        .andThen(superstructure.aimTurret());
         Command shooterFeederSequence =
                 CommandGroupBase.sequence(
                         new WaitCommand(Trajectories.path6Time + 0.3),
-                        superstructure.autoAccelerateAndShoot().withTimeout(3.5));
+                        superstructure.autoAccelerateAndShoot().withTimeout(2.2),
+                        new WaitCommand(Trajectories.path6TinyPathTime),
+                        superstructure.autoAccelerateAndShoot().withTimeout(1.5));
 
         return CommandGroupBase.parallel(
                 superstructure.disableCompressor(),
