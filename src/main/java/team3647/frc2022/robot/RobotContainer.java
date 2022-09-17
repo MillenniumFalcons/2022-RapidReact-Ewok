@@ -214,8 +214,6 @@ public class RobotContainer {
                                 .motionMagic(HoodContants.kLowGoalAngle)
                                 .perpetually());
 
-        coController.leftBumper.whileActiveOnce(m_superstructure.aimTurret());
-
         coController
                 .rightTrigger
                 .whileActiveOnce(
