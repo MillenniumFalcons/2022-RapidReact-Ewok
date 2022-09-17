@@ -112,34 +112,21 @@ public class RobotContainer {
                         .andThen(
                                 m_superstructure.flywheelCommands.waitToSpinDownThenHold(
                                         m_superstructure::getHoldVelocity)));
+        // m_turret.setDefaultCommand(
+        //         new InstantCommand(
+        //                         () ->
+        //                                 m_superstructure.currentState.turretState =
+        //                                         TurretState.HOLD_POSITION)
+        //                 .andThen(m_superstructure.turretCommands.holdPositionAtCall()));
+
         m_turret.setDefaultCommand(
                 new InstantCommand(
-                                () ->
-                                        m_superstructure.currentState.turretState =
-                                                TurretState.HOLD_POSITION)
-                        .andThen(m_superstructure.turretCommands.holdPositionAtCall()));
+                                () -> m_superstructure.currentState.turretState = TurretState.AIM)
+                        .andThen(
+                                m_superstructure.turretCommands.aim(
+                                        m_superstructure::getAimedTurretSetpoint,
+                                        m_superstructure::getAimedTurretVelocity)));
 
-        // m_turret.setDefaultCommand(
-        //         new ConditionalCommand(
-        //                 new InstantCommand(
-        //                                 () ->
-        //                                         m_superstructure.currentState.turretState =
-        //                                                 TurretState.HOLD_POSITION)
-        //                         .andThen(m_superstructure.turretCommands.motionMagic(0))
-        //                         .andThen(m_superstructure.turretCommands.holdPositionAtCall()),
-        //                 new InstantCommand(
-        //                                 () ->
-        //                                         m_superstructure.currentState.turretState =
-        //                                                 TurretState.AIM)
-        //                         .andThen(
-        //                                 m_superstructure.turretCommands.aim(
-        //                                         m_superstructure::getAimedTurretSetpoint,
-        //                                         m_superstructure::getAimedTurretVelocity)),
-        //                 m_superstructure::isClimbing));
-
-        // m_turret.setDefaultCommand(
-        //         new RunCommand(
-        //                 () -> m_turret.setOpenloop(coController.getRightStickX()), m_turret));
         m_pivotClimber.setDefaultCommand(new RunCommand(m_pivotClimber::end, m_pivotClimber));
         m_intake.setDefaultCommand(
                 m_superstructure.intakeInThenManual(coController::getLeftStickY));

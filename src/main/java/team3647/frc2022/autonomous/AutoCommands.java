@@ -160,15 +160,17 @@ public class AutoCommands {
                                                 Trajectories.path6TinyPathTime
                                                         + 2.2
                                                         + Trajectories.path7Time
-                                                        + 1.7))
+                                                        + 1))
                         .andThen(superstructure.turretCommands.motionMagic(0));
         Command shooterFeederSequence =
                 CommandGroupBase.sequence(
                         new WaitCommand(Trajectories.path6Time + 0.3),
                         superstructure.autoAccelerateAndShoot().withTimeout(2.2),
-                        new WaitCommand(Trajectories.path6TinyPathTime),
-                        superstructure.autoAccelerateAndShoot().withTimeout(1.5),
-                        new WaitCommand(Trajectories.path7Time + 0.5),
+                        new WaitCommand(.5 * Trajectories.path6TinyPathTime),
+                        superstructure
+                                .autoAccelerateAndShoot()
+                                .withTimeout(.5 * Trajectories.path6TinyPathTime + 1.5),
+                        new WaitCommand(Trajectories.path7Time * .6 + 0.5),
                         superstructure.spitIntoHangar(7));
 
         return CommandGroupBase.parallel(

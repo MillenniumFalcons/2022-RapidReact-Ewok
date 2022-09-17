@@ -147,7 +147,13 @@ public class Superstructure {
                 .andThen(new WaitCommand(0.9), feederCommands.feedIn(() -> 2))
                 .alongWith(
                         flywheelCommands.variableVelocity(() -> speed),
-                        columnTopCommands.getGoVariableVelocity(() -> speed));
+                        columnTopCommands.getGoVariableVelocity(() -> speed),
+                        new FunctionalCommand(
+                                () -> {},
+                                () -> m_hood.setAngle(35),
+                                interrupted -> {},
+                                () -> false,
+                                m_hood));
     }
 
     public Command lowShot() {
