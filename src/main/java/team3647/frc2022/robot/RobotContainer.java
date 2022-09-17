@@ -66,6 +66,7 @@ public class RobotContainer {
         }
     }
 
+    // CHANGE AUTO HERE
     public Auto currentAuto = Auto.HIGH_THREE_ONE;
 
     public RobotContainer() {
@@ -222,9 +223,13 @@ public class RobotContainer {
                 .and(m_superstructure.isShooting.negate())
                 .whileActiveOnce(
                         m_superstructure.feederWithSensor(this::calculateIntakeSurfaceSpeed));
-        coController.dPadDown.whenActive(m_superstructure.singleBallOut());
+        coController.dPadLeft.whenActive(m_superstructure.singleBallOut());
 
-        coController.dPadUp.whileActiveOnce(m_superstructure.clearFeederFlywheel());
+        coController.dPadRight.whileActiveOnce(m_superstructure.clearFeederFlywheel());
+
+        // manual reject when color sensor being dum
+        coController.dPadUp.whileActiveOnce(m_superstructure.rejectBallTop());
+        coController.dPadDown.whileActiveOnce(m_superstructure.rejectBallBottom());
 
         // mainController.buttonA.whenActive(
         //         () -> {
@@ -511,17 +516,13 @@ public class RobotContainer {
                 startPosition = AutoConstants.positionOnTarmacUpper;
                 autoCommand = autoCommands.getHighThreeStay();
                 break;
-                //     case HIGH_TWO_TWO:
-                //         startPosition = AutoConstants.positionOnTarmacUpper;
-                //         autoCommand = autoCommands.getTwoGrabTwo();
-                //         break;
             case SIX_BALL:
                 startPosition = AutoConstants.positionOnTarmacParallel;
                 autoCommand = autoCommands.mikeJordanSixBall();
                 break;
             default:
                 startPosition = AutoConstants.positionOnTarmacParallel;
-                autoCommand = autoCommands.lowFiveClean();
+                autoCommand = autoCommands.mikeJordanSixBall();
                 break;
         }
     }
