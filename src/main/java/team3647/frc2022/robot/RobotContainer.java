@@ -195,15 +195,6 @@ public class RobotContainer {
         mainController.dPadDown.whenHeld(m_superstructure.extendClimberIfClimbing());
 
         coController
-                .buttonY
-                .whileActiveOnce(m_superstructure.batterAccelerateAndShoot())
-                .whileActiveOnce(m_superstructure.turretCommands.motionMagic(-180).perpetually())
-                .whileActiveOnce(
-                        m_superstructure
-                                .hoodCommands
-                                .motionMagic(HoodContants.kBatterAngle)
-                                .perpetually());
-        coController
                 .buttonA
                 .whileActiveOnce(m_superstructure.lowAccelerateAndShoot())
                 .whileActiveOnce(m_superstructure.turretCommands.motionMagic(0).perpetually())
@@ -215,12 +206,23 @@ public class RobotContainer {
                                 .perpetually());
 
         coController
+                .leftTrigger
+                .whileActiveOnce(m_superstructure.batterAccelerateAndShoot())
+                .whileActiveOnce(m_superstructure.turretCommands.motionMagic(-180).perpetually())
+                .whileActiveOnce(
+                        m_superstructure
+                                .hoodCommands
+                                .motionMagic(HoodContants.kBatterAngle)
+                                .perpetually());
+
+        coController
                 .rightTrigger
                 .whileActiveOnce(
                         m_superstructure.deployAndRunIntake(this::calculateIntakeSurfaceSpeed))
                 .and(m_superstructure.isShooting.negate())
                 .whileActiveOnce(
                         m_superstructure.feederWithSensor(this::calculateIntakeSurfaceSpeed));
+
         coController.dPadLeft.whenActive(m_superstructure.singleBallOut());
 
         coController.dPadRight.whileActiveOnce(m_superstructure.clearFeederFlywheel());
