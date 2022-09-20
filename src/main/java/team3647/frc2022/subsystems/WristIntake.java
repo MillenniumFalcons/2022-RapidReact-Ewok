@@ -29,6 +29,8 @@ public class WristIntake implements PeriodicSubsystem {
 
     private final double nominalVoltage;
 
+    private final double intakableDeg;
+
     public WristIntake(
             TalonFX deployMotor,
             TalonFX intakeMotor,
@@ -39,7 +41,8 @@ public class WristIntake implements PeriodicSubsystem {
             double deployVelocityConversion,
             double deployPositionConversion,
             double nominalVoltage,
-            double maxDeployVel) {
+            double maxDeployVel,
+            double intakableDeg) {
         // pid configured in constants for both
         this.deployMotor = deployMotor;
         this.intakeMotor = intakeMotor;
@@ -54,6 +57,7 @@ public class WristIntake implements PeriodicSubsystem {
         this.intakeVelocityConversion = intakeVelocityConversion;
         this.deployVelocityConversion = deployVelocityConversion;
         this.deployPositionConversion = deployPositionConversion;
+        this.intakableDeg = intakableDeg;
         this.kDt = kDt;
         this.nominalVoltage = nominalVoltage;
     }
@@ -91,6 +95,12 @@ public class WristIntake implements PeriodicSubsystem {
                 periodicIO.intakeDemand,
                 DemandType.ArbitraryFeedForward,
                 periodicIO.intakeff / nominalVoltage);
+
+        deployMotor.set(
+                periodicIO.deployControlMode,
+                periodicIO.deployDemand,
+                DemandType.ArbitraryFeedForward,
+                periodicIO.deployff / nominalVoltage);
     }
 
     @Override
@@ -101,13 +111,12 @@ public class WristIntake implements PeriodicSubsystem {
 
     public void extend() {
         // check sign
-        double intakableDeg = 45;
         setDegMotionMagic(
                 intakableDeg, degff.calculate(Units.degreesToRadians(intakableDeg), maxDeployVel));
     }
 
     public void retract() {
-        double zeroDeg = 0;
+        double zeroDeg = 10;
         setDegMotionMagic(zeroDeg, degff.calculate(Units.degreesToRadians(zeroDeg), maxDeployVel));
     }
 
@@ -124,6 +133,12 @@ public class WristIntake implements PeriodicSubsystem {
         periodicIO.deployff = feedforward;
         // convert to set to native
         periodicIO.deployDemand = position / deployPositionConversion;
+    }
+
+    public void setOpenloop(double output) {
+        periodicIO.intakeControlMode = ControlMode.PercentOutput;
+        periodicIO.intakeDemand = output;
+        periodicIO.intakeff = 0;
     }
 
     public double getVelocity() {

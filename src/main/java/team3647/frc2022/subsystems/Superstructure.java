@@ -55,7 +55,7 @@ public class Superstructure {
             PivotClimber m_climber,
             ColumnBottom m_columnBottom,
             ColumnTop m_columnTop,
-            Intake m_intake,
+            WristIntake m_intake,
             Turret m_turret,
             Hood m_hood,
             Flywheel m_flywheel,
@@ -621,7 +621,7 @@ public class Superstructure {
     private final PivotClimber m_climber;
     private final ColumnBottom m_columnBottom;
     private final ColumnTop m_columnTop;
-    private final Intake m_intake;
+    private final WristIntake m_intake;
     private final Turret m_turret;
     private final Hood m_hood;
     private final Flywheel m_flywheel;

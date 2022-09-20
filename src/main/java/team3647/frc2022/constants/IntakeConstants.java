@@ -19,7 +19,8 @@ public final class IntakeConstants {
             new SimpleMotorFeedforward(kS, kV, kA);
     public static final double kNominalVoltage = 10;
 
-    public static final TalonFX kIntakeMotor = new LazyTalonFX(GlobalConstants.IntakeIds.kMotorId);
+    public static final TalonFX kIntakeMotor =
+            new LazyTalonFX(GlobalConstants.IntakeIds.kIntakeMotorId);
     public static final Solenoid kPistons =
             new Solenoid(GlobalConstants.kPCMType, GlobalConstants.IntakeIds.kSolenoidPin);
 

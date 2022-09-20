@@ -4,12 +4,12 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import java.util.function.DoubleSupplier;
-import team3647.frc2022.subsystems.Intake;
+import team3647.frc2022.subsystems.WristIntake;
 
 public class IntakeCommands {
-    private final Intake intake;
+    private final WristIntake intake;
 
-    public IntakeCommands(Intake intake) {
+    public IntakeCommands(WristIntake intake) {
         this.intake = intake;
     }
 

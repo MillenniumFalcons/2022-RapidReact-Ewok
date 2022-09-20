@@ -31,11 +31,11 @@ import team3647.frc2022.subsystems.ColumnTop;
 import team3647.frc2022.subsystems.Drivetrain;
 import team3647.frc2022.subsystems.Flywheel;
 import team3647.frc2022.subsystems.Hood;
-import team3647.frc2022.subsystems.Intake;
 import team3647.frc2022.subsystems.PivotClimber;
 import team3647.frc2022.subsystems.StatusLED;
 import team3647.frc2022.subsystems.Superstructure;
 import team3647.frc2022.subsystems.Turret;
+import team3647.frc2022.subsystems.WristIntake;
 import team3647.frc2022.subsystems.vision.VisionController;
 import team3647.lib.GroupPrinter;
 import team3647.lib.NetworkColorSensor;
@@ -350,15 +350,28 @@ public class RobotContainer {
                     FlywheelConstants.kFollower,
                     FlywheelConstants.kFeedForward);
 
-    final Intake m_intake =
-            new Intake(
-                    IntakeConstants.kIntakeMotor,
-                    IntakeConstants.nativeVelToSurfaceMpS,
-                    0,
-                    IntakeConstants.kNominalVoltage,
+    //     final Intake m_intake =
+    //             new Intake(
+    //                     IntakeConstants.kIntakeMotor,
+    //                     IntakeConstants.nativeVelToSurfaceMpS,
+    //                     0,
+    //                     IntakeConstants.kNominalVoltage,
+    //                     GlobalConstants.kDt,
+    //                     IntakeConstants.kFeedForward,
+    //                     IntakeConstants.kPistons);
+    final WristIntake m_intake =
+            new WristIntake(
+                    WristIntakeConstants.kDeployMotor,
+                    WristIntakeConstants.kIntakeMotor,
+                    WristIntakeConstants.kDeployFeedForward,
+                    WristIntakeConstants.kIntakeFeedForward,
                     GlobalConstants.kDt,
-                    IntakeConstants.kFeedForward,
-                    IntakeConstants.kPistons);
+                    WristIntakeConstants.kIntakeNativeVelToSurfaceMpS,
+                    WristIntakeConstants.kDeployNativeVelocityToDegpS,
+                    WristIntakeConstants.kDeployNativePositionToDegrees,
+                    WristIntakeConstants.kNominalVoltage,
+                    WristIntakeConstants.maxDeployVelocityDegPerSec,
+                    WristIntakeConstants.intakableDegree);
 
     final ColumnBottom m_columnBottom =
             new ColumnBottom(

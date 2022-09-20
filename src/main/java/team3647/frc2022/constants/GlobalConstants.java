@@ -21,7 +21,8 @@ public final class GlobalConstants {
     }
 
     public static final class IntakeIds {
-        public static final int kMotorId = 5;
+        public static final int kIntakeMotorId = 5;
+        public static final int kDeployMotorId = 15;
         public static final int kSolenoidPin = 0;
     }
 
