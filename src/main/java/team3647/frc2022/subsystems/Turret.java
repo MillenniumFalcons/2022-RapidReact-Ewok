@@ -52,8 +52,14 @@ public class Turret extends TalonFXSubsystem {
         angle -= 360.0 * Math.round(angle / 360.0); // angles in [-180, 180]
         if (angle < minAngle) {
             angle += 360;
+            if (angle > maxAngle) {
+                angle = maxAngle;
+            }
         } else if (angle > maxAngle) {
             angle -= 360;
+            if (angle < minAngle) {
+                angle = minAngle;
+            }
         }
         profile =
                 new TrapezoidProfile(
