@@ -66,7 +66,7 @@ public class RobotContainer {
     }
 
     // CHANGE AUTO HERE
-    public Auto currentAuto = Auto.HIGH_THREE_ONE;
+    public Auto currentAuto = Auto.SIX_BALL;
 
     public RobotContainer() {
         pdp.clearStickyFaults();
@@ -187,6 +187,12 @@ public class RobotContainer {
                 .whileActiveOnce(m_superstructure.aimTurret())
                 .whileActiveOnce(m_superstructure.intakeCommands.runOpenLoop(.6).withTimeout(0.5));
 
+        mainController
+                .rightBumper
+                .whileActiveOnce(m_superstructure.fastAutoAccelerateAndShoot())
+                .whileActiveOnce(m_superstructure.aimTurret())
+                .whileActiveOnce(m_superstructure.intakeCommands.runOpenLoop(.6).withTimeout(0.5));
+
         mainController.buttonX.whenPressed(m_superstructure.autoClimbSequnce());
         mainController.leftBumper.whenHeld(m_superstructure.climberManualControl(() -> 0.5));
         mainController.rightBumper.whenHeld(m_superstructure.climberManualControl(() -> -0.6));
@@ -229,6 +235,7 @@ public class RobotContainer {
         // manual reject when color sensor being dum
         coController.dPadUp.whileActiveOnce(m_superstructure.rejectBallTop());
         coController.dPadDown.whileActiveOnce(m_superstructure.rejectBallBottom());
+        coController.leftBumper.whileActiveOnce(m_superstructure.turretCommands.motionMagic(90));
 
         // mainController.buttonA.whenActive(
         //         () -> {

@@ -120,6 +120,22 @@ public class Superstructure {
                 0);
     }
 
+    public Command fastAutoAccelerateAndShoot() {
+        return fastAutoAccelerateAndShoot(5, 0, 0);
+    }
+
+    public Command fastAutoAccelerateAndShoot(
+            double feederSpeed, double delayBetweenShots, double timeoutAfterDrivetrainStops) {
+        return fastAccelerateAndShoot(
+                this::getAimedFlywheelSurfaceVel,
+                this::getAimedKickerVelocity,
+                this::readyToAutoShoot,
+                this::autoShootBallWentThrough,
+                feederSpeed,
+                delayBetweenShots,
+                timeoutAfterDrivetrainStops);
+    }
+
     public Command batterAccelerateAndShoot() {
         return new WaitUntilCommand(() -> Math.abs(m_turret.getAngle() + 180) < 3)
                 .andThen(
@@ -212,6 +228,39 @@ public class Superstructure {
                                         .alongWith(
                                                 columnTopCommands.getGoVariableVelocity(
                                                         topSpeed)))));
+    }
+
+    public Command fastAccelerateAndShoot(
+            DoubleSupplier flywhelVelocity,
+            DoubleSupplier kickerVelocity,
+            BooleanSupplier readyToShoot,
+            BooleanSupplier ballWentThrough,
+            double feederSpeed,
+            double delayBetweenShots,
+            double delayAfterDrivetrainStops) {
+
+        DoubleSupplier feederSpeedSup = () -> feederSpeed;
+        DoubleSupplier topSpeed = () -> 0.8;
+
+        return CommandGroupBase.parallel(
+                new InstantCommand(() -> currentState.shooterState = ShooterState.SHOOT),
+                flywheelCommands.variableVelocity(flywhelVelocity),
+                CommandGroupBase.sequence(
+                        new ConditionalCommand(
+                                new InstantCommand(),
+                                new WaitUntilCommand(drivetrainStopped)
+                                        .andThen(new WaitCommand(delayAfterDrivetrainStops)),
+                                drivetrainStopped),
+                        CommandGroupBase.sequence(
+                                feederCommands
+                                        .feedIn(feederSpeedSup)
+                                        .alongWith(
+                                                columnTopCommands.getGoVariableVelocity(topSpeed))
+                                        .until(m_columnTop::getTopBannerValue),
+                                new WaitUntilCommand(readyToShoot),
+                                columnTopCommands
+                                        .getGoVariableVelocity(topSpeed)
+                                        .alongWith(feederCommands.feedIn(feederSpeedSup)))));
     }
 
     public Command autoClimbSequnce() {
