@@ -141,7 +141,7 @@ public class AutoCommands {
                         ramseteCommands.getTarmacToShootHigh(),
                         new WaitCommand(2.2),
                         ramseteCommands.getTinyPathToLastHighBall(),
-                        new WaitCommand(1.5),
+                        new WaitCommand(1.8),
                         ramseteCommands.getUpperBall1ToOtherColorBall1());
         Command intakeSequence =
                 new WaitCommand(Trajectories.path6Time + 2.4)
@@ -161,14 +161,14 @@ public class AutoCommands {
                                                         + 0.3
                                                         + 2.2
                                                         + Trajectories.path6TinyPathTime
-                                                        + 1.5))
+                                                        + 1.8))
                         .andThen(superstructure.turretCommands.motionMagic(0));
         Command shooterFeederSequence =
                 CommandGroupBase.sequence(
                         new WaitCommand(Trajectories.path6Time + 0.3),
                         superstructure.autoAccelerateAndShoot().withTimeout(2.2),
                         new WaitCommand(Trajectories.path6TinyPathTime),
-                        superstructure.autoAccelerateAndShoot().withTimeout(1.5),
+                        superstructure.autoAccelerateAndShoot().withTimeout(1.8),
                         superstructure.spitIntoHangar(7));
 
         return CommandGroupBase.parallel(

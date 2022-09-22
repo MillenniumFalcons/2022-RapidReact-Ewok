@@ -144,15 +144,11 @@ public class Superstructure {
 
     public Command spitIntoHangar(double speed) {
         return new WaitUntilCommand(() -> Math.abs(m_turret.getAngle() - 0) < 3)
-                .andThen(new WaitCommand(0.9), feederCommands.feedIn(() -> 2))
+                .andThen(feederCommands.feedIn(() -> 4))
                 .alongWith(columnTopCommands.getGoVariableVelocity(() -> speed))
                 .alongWith(
-                        new FunctionalCommand(
-                                () -> {},
-                                () -> m_hood.setAngleMotionMagic(36),
-                                interrupted -> {},
-                                () -> false,
-                                m_hood));
+                        flywheelCommands.variableVelocity(
+                                () -> FlywheelConstants.kLowGoalVelocity));
     }
 
     public Command lowShot() {

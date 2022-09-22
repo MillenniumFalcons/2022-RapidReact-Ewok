@@ -4,5 +4,5 @@ public class ColorsensorConstants {
     public static String kProximityEntry = "/proximity1";
     public static String kColorEntry = "/rawcolor1";
 
-    public static int kMaxReadDistance = 600;
+    public static int kMaxReadDistance = 400;
 }
