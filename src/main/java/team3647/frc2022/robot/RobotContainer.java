@@ -182,13 +182,13 @@ public class RobotContainer {
         mainController.leftTrigger.whileActiveOnce(
                 m_superstructure.flywheelCommands.variableVelocity(this::getShooterSpeed));
         mainController
-                .rightTrigger
+                .rightBumper
                 .whileActiveOnce(m_superstructure.autoAccelerateAndShoot())
                 .whileActiveOnce(m_superstructure.aimTurret())
                 .whileActiveOnce(m_superstructure.intakeCommands.runOpenLoop(.6).withTimeout(0.5));
 
         mainController
-                .rightBumper
+                .rightTrigger
                 .whileActiveOnce(m_superstructure.fastAutoAccelerateAndShoot())
                 .whileActiveOnce(m_superstructure.aimTurret())
                 .whileActiveOnce(m_superstructure.intakeCommands.runOpenLoop(.6).withTimeout(0.5));
