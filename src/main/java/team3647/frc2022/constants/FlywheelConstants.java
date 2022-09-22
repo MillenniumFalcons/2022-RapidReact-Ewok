@@ -37,7 +37,7 @@ public final class FlywheelConstants {
             10 * kWheelRotationMeters / GlobalConstants.kFalconTicksPerRotation * kGearboxReduction;
 
     public static final double kLowGoalVelocity = 3;
-    public static final double kBatterVelocity = 8.7;
+    public static final double kBatterVelocity = 9.5;
     private static final double kOffset = 0.41;
     private static final double kFarOffset = -0.4;
 
