@@ -130,10 +130,8 @@ public class Superstructure {
                 this::getAimedFlywheelSurfaceVel,
                 this::getAimedKickerVelocity,
                 this::readyToAutoShoot,
-                this::autoShootBallWentThrough,
                 feederSpeed,
-                delayBetweenShots,
-                timeoutAfterDrivetrainStops);
+                0);
     }
 
     public Command batterAccelerateAndShoot() {
@@ -147,6 +145,17 @@ public class Superstructure {
                                 2,
                                 0.5,
                                 0));
+    }
+
+    public Command fastBatterAccelerateAndShoot() {
+        return new WaitUntilCommand(() -> Math.abs(m_turret.getAngle() + 180) < 3)
+                .andThen(
+                        fastAccelerateAndShoot(
+                                this::getBatterVelocity,
+                                () -> ColumnTopConstants.kBatterVelocity,
+                                this::readyToBatter,
+                                2,
+                                0.5));
     }
 
     public Command lowAccelerateAndShoot() {
@@ -234,9 +243,7 @@ public class Superstructure {
             DoubleSupplier flywhelVelocity,
             DoubleSupplier kickerVelocity,
             BooleanSupplier readyToShoot,
-            BooleanSupplier ballWentThrough,
             double feederSpeed,
-            double delayBetweenShots,
             double delayAfterDrivetrainStops) {
 
         DoubleSupplier feederSpeedSup = () -> feederSpeed;

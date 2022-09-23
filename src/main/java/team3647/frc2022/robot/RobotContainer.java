@@ -212,13 +212,19 @@ public class RobotContainer {
 
         coController
                 .leftTrigger
-                .whileActiveOnce(m_superstructure.batterAccelerateAndShoot())
+                .whileActiveOnce(m_superstructure.fastBatterAccelerateAndShoot())
                 .whileActiveOnce(m_superstructure.turretCommands.motionMagic(-180).perpetually())
                 .whileActiveOnce(
                         m_superstructure
                                 .hoodCommands
                                 .motionMagic(HoodContants.kBatterAngle)
                                 .perpetually());
+
+        coController.leftBumper.whileActiveOnce(
+                m_superstructure.turretCommands.motionMagic(90).perpetually());
+
+        coController.rightBumper.whileActiveOnce(
+                m_superstructure.turretCommands.motionMagic(-90).perpetually());
 
         coController
                 .rightTrigger
@@ -235,8 +241,6 @@ public class RobotContainer {
         // manual reject when color sensor being dum
         coController.dPadUp.whileActiveOnce(m_superstructure.rejectBallTop());
         coController.dPadDown.whileActiveOnce(m_superstructure.rejectBallBottom());
-        coController.leftBumper.whileActiveOnce(
-                m_superstructure.turretCommands.motionMagic(90).perpetually());
 
         // mainController.buttonA.whenActive(
         //         () -> {
