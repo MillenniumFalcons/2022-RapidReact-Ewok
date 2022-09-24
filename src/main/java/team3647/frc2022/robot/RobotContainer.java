@@ -16,7 +16,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import java.util.LinkedList;
 import java.util.List;
 import team3647.frc2022.autonomous.AutoCommands;
@@ -58,7 +57,8 @@ public class RobotContainer {
         HIGH_THREE_ONE(1),
         HIGH_THREE(2),
         HIGH_TWO_TWO(3),
-        SIX_BALL(4);
+        SIX_BALL(4),
+        TWO_BALL(5);
         int index;
 
         Auto(int index) {
@@ -67,7 +67,7 @@ public class RobotContainer {
     }
 
     // CHANGE AUTO HERE
-    public Auto currentAuto = Auto.HIGH_THREE_ONE;
+    public Auto currentAuto = Auto.SIX_BALL;
 
     public RobotContainer() {
         pdp.clearStickyFaults();
@@ -146,14 +146,14 @@ public class RobotContainer {
         //         // .and(new Trigger(() -> !m_columnTop.getTopBannerValue()))
         //         .whenActive(m_superstructure.rejectBallTop(), false);
 
-        m_superstructure
-                .wrongBallDetected
-                .and(new Trigger(m_columnTop::getTopBannerValue))
-                .whenActive(m_superstructure.rejectBallBottom(), false);
-        m_superstructure
-                .wrongBallDetected
-                .and(new Trigger(() -> !m_columnTop.getTopBannerValue()))
-                .whenActive(m_superstructure.rejectBallTop(), false);
+        // m_superstructure
+        //         .wrongBallDetected
+        //         .and(new Trigger(m_columnTop::getTopBannerValue))
+        //         .whenActive(m_superstructure.rejectBallBottom(), false);
+        // m_superstructure
+        //         .wrongBallDetected
+        //         .and(new Trigger(() -> !m_columnTop.getTopBannerValue()))
+        //         .whenActive(m_superstructure.rejectBallTop(), false);
     }
 
     private void configureButtonBindings() {
@@ -531,6 +531,10 @@ public class RobotContainer {
             case SIX_BALL:
                 startPosition = AutoConstants.positionOnTarmacParallel;
                 autoCommand = autoCommands.mikeJordanSixBall();
+                break;
+            case TWO_BALL:
+                startPosition = AutoConstants.positionOnTarmacUpper;
+                autoCommand = autoCommands.getHighTwoNoMove();
                 break;
             default:
                 startPosition = AutoConstants.positionOnTarmacParallel;

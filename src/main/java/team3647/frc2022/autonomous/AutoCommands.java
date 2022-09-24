@@ -255,6 +255,27 @@ public class AutoCommands {
                 shooterFeederSequence);
     }
 
+    public final Command getHighTwoNoMove() {
+        Command drivetrainSequence =
+                CommandGroupBase.sequence(ramseteCommands.getTarmacToShootHigh());
+        Command turretSequence =
+                superstructure
+                        .turretCommands
+                        .motionMagic(0)
+                        .andThen(new WaitCommand(0.4))
+                        .andThen(superstructure.aimTurret());
+        Command shooterFeederSequence =
+                CommandGroupBase.sequence(
+                        new WaitCommand(Trajectories.path6Time + 0.3),
+                        superstructure.autoAccelerateAndShoot().withTimeout(2.2));
+
+        return CommandGroupBase.parallel(
+                superstructure.disableCompressor(),
+                drivetrainSequence,
+                turretSequence,
+                shooterFeederSequence);
+    }
+
     //     public final Command getTwoGrabTwo() {
     //         Command drivetrainSequence =
     //                 CommandGroupBase.sequence(
