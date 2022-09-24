@@ -285,6 +285,16 @@ public class Superstructure {
                 .alongWith(new ScheduleCommand(flywheelCommands.stop()));
     }
 
+    public Command setAutoClimbSequence() {
+        return CommandGroupBase.sequence(
+                new InstantCommand(
+                        () -> {
+                            currentState.climberState = ClimberState.CLIMB;
+                            currentState.turretState = TurretState.HOLD_POSITION;
+                        }),
+                turretCommands.motionMagic(0, 2));
+    }
+
     public Command extendClimberIfClimbing() {
         return new ConditionalCommand(
                 climberCommands.setAngled(), new InstantCommand(), this::isClimbing);

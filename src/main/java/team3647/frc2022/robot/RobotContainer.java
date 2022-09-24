@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import java.util.LinkedList;
 import java.util.List;
 import team3647.frc2022.autonomous.AutoCommands;
@@ -66,7 +67,7 @@ public class RobotContainer {
     }
 
     // CHANGE AUTO HERE
-    public Auto currentAuto = Auto.SIX_BALL;
+    public Auto currentAuto = Auto.HIGH_THREE_ONE;
 
     public RobotContainer() {
         pdp.clearStickyFaults();
@@ -112,20 +113,21 @@ public class RobotContainer {
                         .andThen(
                                 m_superstructure.flywheelCommands.waitToSpinDownThenHold(
                                         m_superstructure::getHoldVelocity)));
-        // m_turret.setDefaultCommand(
-        //         new InstantCommand(
-        //                         () ->
-        //                                 m_superstructure.currentState.turretState =
-        //                                         TurretState.HOLD_POSITION)
-        //                 .andThen(m_superstructure.turretCommands.holdPositionAtCall()));
-
         m_turret.setDefaultCommand(
                 new InstantCommand(
-                                () -> m_superstructure.currentState.turretState = TurretState.AIM)
-                        .andThen(
-                                m_superstructure.turretCommands.aim(
-                                        m_superstructure::getAimedTurretSetpoint,
-                                        m_superstructure::getAimedTurretVelocity)));
+                                () ->
+                                        m_superstructure.currentState.turretState =
+                                                TurretState.HOLD_POSITION)
+                        .andThen(m_superstructure.turretCommands.holdPositionAtCall()));
+
+        // m_turret.setDefaultCommand(
+        //         new InstantCommand(
+        //                         () -> m_superstructure.currentState.turretState =
+        // TurretState.AIM)
+        //                 .andThen(
+        //                         m_superstructure.turretCommands.aim(
+        //                                 m_superstructure::getAimedTurretSetpoint,
+        //                                 m_superstructure::getAimedTurretVelocity)));
 
         m_pivotClimber.setDefaultCommand(new RunCommand(m_pivotClimber::end, m_pivotClimber));
         m_intake.setDefaultCommand(
@@ -144,14 +146,14 @@ public class RobotContainer {
         //         // .and(new Trigger(() -> !m_columnTop.getTopBannerValue()))
         //         .whenActive(m_superstructure.rejectBallTop(), false);
 
-        // m_superstructure
-        //         .wrongBallDetected
-        //         .and(new Trigger(m_columnTop::getTopBannerValue))
-        //         .whenActive(m_superstructure.rejectBallBottom(), false);
-        // m_superstructure
-        //         .wrongBallDetected
-        //         .and(new Trigger(() -> !m_columnTop.getTopBannerValue()))
-        //         .whenActive(m_superstructure.rejectBallTop(), false);
+        m_superstructure
+                .wrongBallDetected
+                .and(new Trigger(m_columnTop::getTopBannerValue))
+                .whenActive(m_superstructure.rejectBallBottom(), false);
+        m_superstructure
+                .wrongBallDetected
+                .and(new Trigger(() -> !m_columnTop.getTopBannerValue()))
+                .whenActive(m_superstructure.rejectBallTop(), false);
     }
 
     private void configureButtonBindings() {
@@ -184,16 +186,16 @@ public class RobotContainer {
         mainController
                 .leftTrigger
                 .whileActiveOnce(m_superstructure.autoAccelerateAndShoot())
-                .whileActiveOnce(m_superstructure.aimTurret())
                 .whileActiveOnce(m_superstructure.intakeCommands.runOpenLoop(.6).withTimeout(0.5));
 
         mainController
                 .rightTrigger
                 .whileActiveOnce(m_superstructure.fastAutoAccelerateAndShoot())
-                .whileActiveOnce(m_superstructure.aimTurret())
                 .whileActiveOnce(m_superstructure.intakeCommands.runOpenLoop(.6).withTimeout(0.5));
 
         mainController.buttonX.whenPressed(m_superstructure.autoClimbSequnce());
+        // mainController.buttonX.whenPressed(m_superstructure.setAutoClimbSequence());
+
         mainController.leftBumper.whenHeld(m_superstructure.climberManualControl(() -> 0.5));
         mainController.rightBumper.whenHeld(m_superstructure.climberManualControl(() -> -0.6));
         mainController.dPadUp.whenHeld(m_superstructure.retractClimberIfClimbing());
@@ -221,7 +223,13 @@ public class RobotContainer {
                                 .perpetually());
 
         coController.leftBumper.whileActiveOnce(
-                m_superstructure.turretCommands.motionMagic(90).perpetually());
+                m_superstructure
+                        .aimTurret()
+                        .alongWith(
+                                new InstantCommand(
+                                        () ->
+                                                m_superstructure.currentState.turretState =
+                                                        TurretState.AIM)));
 
         coController.rightBumper.whileActiveOnce(
                 m_superstructure.turretCommands.motionMagic(-90).perpetually());
@@ -317,13 +325,6 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() {
-        // System.err.print(autoCommand.getName());
-        // System.err.print(
-        //         startPosition.getX()
-        //                 + ", "
-        //                 + startPosition.getY()
-        //                 + ", "
-        //                 + startPosition.getRotation());
         return autoCommand;
     }
 
