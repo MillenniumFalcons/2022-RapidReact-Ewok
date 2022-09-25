@@ -197,7 +197,7 @@ public class RobotContainer {
         // mainController.buttonX.whenPressed(m_superstructure.setAutoClimbSequence());
 
         mainController.leftBumper.whenHeld(m_superstructure.climberManualControl(() -> 0.5));
-        mainController.rightBumper.whenHeld(m_superstructure.climberManualControl(() -> -0.6));
+        mainController.rightBumper.whenHeld(m_superstructure.climberManualControl(() -> -0.8));
         mainController.dPadUp.whenHeld(m_superstructure.retractClimberIfClimbing());
         mainController.dPadDown.whenHeld(m_superstructure.extendClimberIfClimbing());
 

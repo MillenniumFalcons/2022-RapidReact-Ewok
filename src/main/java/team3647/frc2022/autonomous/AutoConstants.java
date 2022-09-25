@@ -17,7 +17,7 @@ public class AutoConstants {
     public static final Pose2d positionOnTarmacParallel =
             new Pose2d(7.62, 1.8, Rotation2d.fromDegrees(90));
     public static final Pose2d bottomMidPoint = new Pose2d(7.62, 0.65, Rotation2d.fromDegrees(90));
-    public static final Pose2d bottomLeftBall1 = new Pose2d(7.62, 1, Rotation2d.fromDegrees(90));
+    public static final Pose2d bottomLeftBall1 = new Pose2d(7.62, 0.93, Rotation2d.fromDegrees(90));
     public static final Pose2d positionEndPath2 =
             new Pose2d(7.62, 2.74, Rotation2d.fromDegrees(90));
     public static final Pose2d bottomLeftBall2At20Left =
