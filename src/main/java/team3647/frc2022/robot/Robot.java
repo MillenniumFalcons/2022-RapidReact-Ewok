@@ -115,6 +115,8 @@ public class Robot extends TimedRobot {
             m_autonomousCommand.cancel();
         }
         m_robotContainer.m_superstructure.enableCompressor().schedule();
+        // CommandScheduler.getInstance()
+        //         .schedule(new InstantCommand(() -> {}, m_robotContainer.m_turret));
     }
 
     /** This function is called periodically during operator control. */

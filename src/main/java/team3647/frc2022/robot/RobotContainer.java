@@ -67,7 +67,7 @@ public class RobotContainer {
     }
 
     // CHANGE AUTO HERE
-    public Auto currentAuto = Auto.SIX_BALL;
+    public Auto currentAuto = Auto.HIGH_THREE;
 
     public RobotContainer() {
         pdp.clearStickyFaults();
