@@ -183,15 +183,6 @@ public class RobotContainer {
         //                         .perpetually());
         // mainController.leftTrigger.whileActiveOnce(
         //         m_superstructure.flywheelCommands.variableVelocity(this::getShooterSpeed));
-        mainController
-                .leftTrigger
-                .whileActiveOnce(m_superstructure.autoAccelerateAndShoot())
-                .whileActiveOnce(m_superstructure.intakeCommands.runOpenLoop(.6).withTimeout(0.5));
-
-        mainController
-                .rightTrigger
-                .whileActiveOnce(m_superstructure.fastAutoAccelerateAndShoot())
-                .whileActiveOnce(m_superstructure.intakeCommands.runOpenLoop(.6).withTimeout(0.5));
 
         mainController.buttonX.whenPressed(m_superstructure.autoClimbSequnce());
         // mainController.buttonX.whenPressed(m_superstructure.setAutoClimbSequence());
@@ -213,7 +204,7 @@ public class RobotContainer {
                                 .perpetually());
 
         coController
-                .leftTrigger
+                .buttonY
                 .whileActiveOnce(m_superstructure.fastBatterAccelerateAndShoot())
                 .whileActiveOnce(m_superstructure.turretCommands.motionMagic(-180).perpetually())
                 .whileActiveOnce(
@@ -223,24 +214,41 @@ public class RobotContainer {
                                 .perpetually());
 
         coController.leftBumper.whileActiveOnce(
-                m_superstructure
-                        .aimTurret()
-                        .alongWith(
-                                new InstantCommand(
-                                        () ->
-                                                m_superstructure.currentState.turretState =
-                                                        TurretState.AIM)));
-
-        coController.rightBumper.whileActiveOnce(
                 m_superstructure.turretCommands.motionMagic(-90).perpetually());
 
         coController
-                .rightTrigger
+                .rightBumper
                 .whileActiveOnce(
                         m_superstructure.deployAndRunIntake(this::calculateIntakeSurfaceSpeed))
                 .and(m_superstructure.isShooting.negate())
                 .whileActiveOnce(
                         m_superstructure.feederWithSensor(this::calculateIntakeSurfaceSpeed));
+
+        coController
+                .leftTrigger
+                .whileActiveOnce(
+                        m_superstructure
+                                .aimTurret()
+                                .alongWith(
+                                        new InstantCommand(
+                                                () ->
+                                                        m_superstructure.currentState.turretState =
+                                                                TurretState.AIM)))
+                .whileActiveOnce(m_superstructure.autoAccelerateAndShoot())
+                .whileActiveOnce(m_superstructure.intakeCommands.runOpenLoop(.6).withTimeout(0.5));
+
+        coController
+                .rightTrigger
+                .whileActiveOnce(
+                        m_superstructure
+                                .aimTurret()
+                                .alongWith(
+                                        new InstantCommand(
+                                                () ->
+                                                        m_superstructure.currentState.turretState =
+                                                                TurretState.AIM)))
+                .whileActiveOnce(m_superstructure.fastAutoAccelerateAndShoot())
+                .whileActiveOnce(m_superstructure.intakeCommands.runOpenLoop(.6).withTimeout(0.5));
 
         coController.dPadLeft.whenActive(m_superstructure.singleBallOut());
 
