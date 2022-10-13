@@ -48,6 +48,10 @@ public class Superstructure {
     private double hoodAngle = 16;
     private double turretVelFF = 0.0;
     private double turretSetpoint = TurretConstants.kStartingAngle;
+
+    private double adjustDistance = 0.0;
+    private double x_adjustDistance = 0.0;
+    private double y_adjustDistance = 0.0;
     // change color here to enable color rejection (defined in RobotContainer.java)
     public Color ourColor = Color.NONE;
 
@@ -207,11 +211,11 @@ public class Superstructure {
                 new InstantCommand(() -> currentState.shooterState = ShooterState.SHOOT),
                 flywheelCommands.variableVelocity(flywhelVelocity),
                 CommandGroupBase.sequence(
-                        new ConditionalCommand(
-                                new InstantCommand(),
-                                new WaitUntilCommand(drivetrainStopped)
-                                        .andThen(new WaitCommand(delayAfterDrivetrainStops)),
-                                drivetrainStopped),
+                        // new ConditionalCommand(
+                        //         new InstantCommand(),
+                        //         new WaitUntilCommand(drivetrainStopped)
+                        //                 .andThen(new WaitCommand(delayAfterDrivetrainStops)),
+                        //         drivetrainStopped),
                         CommandGroupBase.sequence(
                                 feederCommands
                                         .feedIn(feederSpeedSup)
@@ -421,26 +425,119 @@ public class Superstructure {
 
     public void periodic(double timestamp) {
         aimingParameters = deck.getLatestParameters();
+
         if (aimingParameters != null) {
-            flywheelVelocity = FlywheelConstants.getFlywheelRPM(aimingParameters.getRangeMeters());
-            kickerVelocity = MathUtil.clamp(flywheelVelocity * 0.5, 0, 10);
-            hoodAngle = HoodContants.getHoodAngle1(aimingParameters.getRangeMeters());
-            angleToTarget = aimingParameters.getTurretAngleToTarget().getDegrees();
-            turretSetpoint =
-                    m_turret.getAngle() + aimingParameters.getTurretAngleToTarget().getDegrees();
+
             Twist2d velocity = deck.getTracker().getMeasuredVelocity();
             double tangential_component =
                     aimingParameters.getRobotToTargetTransform().getRotation().getSin()
                             * velocity.dx
                             / aimingParameters.getRangeMeters();
             double angular_component = Units.radiansToDegrees(velocity.dtheta);
-            // Add (opposite) of tangential velocity about goal + angular velocity in local frame.
+
+            double currentDistanceToTarget = getDistanceToTarget();
+            double currentAngleToTarget = aimingParameters.getTurretAngleToTarget().getDegrees();
+            double x_comp_distance =
+                    currentDistanceToTarget
+                            * Math.cos(Units.degreesToRadians(currentAngleToTarget));
+            double y_comp_distance =
+                    currentDistanceToTarget
+                            * Math.sin(Units.degreesToRadians(currentAngleToTarget));
+            double x_comp_robot_velocity = velocity.dx;
+            double y_comp_robot_velocity = velocity.dy;
+            double robot_velocity =
+                    Math.sqrt(
+                            x_comp_robot_velocity * x_comp_robot_velocity
+                                    + y_comp_robot_velocity * y_comp_robot_velocity);
+
+            this.adjustDistance =
+                    (Math.sqrt(
+                                            4.0
+                                                            * robot_velocity
+                                                            * robot_velocity
+                                                            * (-36.0
+                                                                            * x_comp_distance
+                                                                            * x_comp_distance
+                                                                    - 36.0
+                                                                            * y_comp_distance
+                                                                            * y_comp_distance
+                                                                    + 81.0)
+                                                            * (36.0
+                                                                            * x_comp_robot_velocity
+                                                                            * x_comp_robot_velocity
+                                                                    + 36.0
+                                                                            * y_comp_robot_velocity
+                                                                            * y_comp_robot_velocity
+                                                                    - 100.0)
+                                                    + robot_velocity
+                                                            * robot_velocity
+                                                            * Math.pow(
+                                                                    (-72.0
+                                                                                    * x_comp_distance
+                                                                                    * x_comp_robot_velocity
+                                                                            - 72.0
+                                                                                    * y_comp_distance
+                                                                                    * y_comp_robot_velocity
+                                                                            + 180.0),
+                                                                    2))
+                                    - robot_velocity
+                                            * (-72.0 * x_comp_distance * x_comp_robot_velocity
+                                                    - 72.0 * y_comp_distance * y_comp_robot_velocity
+                                                    + 180.0))
+                            / (2.0
+                                    * (36.0 * x_comp_robot_velocity * x_comp_robot_velocity
+                                            + 36.0 * y_comp_robot_velocity * y_comp_robot_velocity
+                                            - 100.0));
+            this.x_adjustDistance =
+                    (adjustDistance * x_comp_robot_velocity) / (robot_velocity * 1.0);
+            this.y_adjustDistance =
+                    (adjustDistance * y_comp_robot_velocity) / (robot_velocity * 1.0);
+            angleToTarget = aimingParameters.getTurretAngleToTarget().getDegrees();
+            double current_x_distance =
+                    aimingParameters.getRangeMeters()
+                            * Math.sin(Units.degreesToRadians(angleToTarget));
+            double current_y_distance =
+                    aimingParameters.getRangeMeters()
+                            * Math.cos(Units.degreesToRadians(angleToTarget));
+            current_x_distance += this.x_adjustDistance;
+            current_y_distance += this.y_adjustDistance;
+            // adjust angle to target
+            angleToTarget =
+                    Units.radiansToDegrees(Math.atan(current_x_distance / current_y_distance));
+            // angleToTarget = aimingParameters.getTurretAngleToTarget().getDegrees();
+            double adjustedDistanceToTarget =
+                    Math.sqrt(
+                            current_x_distance * current_x_distance
+                                    + current_y_distance * current_y_distance);
+            flywheelVelocity = FlywheelConstants.getFlywheelRPM(adjustedDistanceToTarget);
+            kickerVelocity = MathUtil.clamp(flywheelVelocity * 0.5, 0, 10);
+            hoodAngle = HoodContants.getHoodAngle1(adjustedDistanceToTarget);
+
+            turretSetpoint = m_turret.getAngle() + angleToTarget;
+            /// m_turret.getAngle() +
+            SmartDashboard.putNumber("adjust distance", adjustDistance);
+            SmartDashboard.putNumber("Aim Angle Demand", angleToTarget);
+            SmartDashboard.putNumber("Aim Distance Demand", adjustedDistanceToTarget);
+            SmartDashboard.putNumber("Robot x Velocity", x_comp_robot_velocity);
+            SmartDashboard.putNumber("Robot y Velocity", y_comp_robot_velocity);
+            SmartDashboard.putNumber("CURRENT AIM PARAMETER RANGE", angleToTarget);
+            SmartDashboard.putNumber("TURRET SETPOINT", turretSetpoint);
+
+            // has direction
             turretVelFF = -(angular_component + tangential_component);
         }
 
         if (ClimberState.CLIMB == currentState.climberState) {
             hoodAngle = 15;
         }
+    }
+
+    public double get_x_adjust_distance() {
+        return this.x_adjustDistance;
+    }
+
+    public double get_y_adjust_distance() {
+        return this.y_adjustDistance;
     }
 
     public boolean hasNewTarget() {
