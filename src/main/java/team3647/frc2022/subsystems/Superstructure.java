@@ -488,10 +488,17 @@ public class Superstructure {
                                     * (36.0 * x_comp_robot_velocity * x_comp_robot_velocity
                                             + 36.0 * y_comp_robot_velocity * y_comp_robot_velocity
                                             - 100.0));
-            this.x_adjustDistance =
-                    (adjustDistance * x_comp_robot_velocity) / (robot_velocity * 1.0);
-            this.y_adjustDistance =
-                    (adjustDistance * y_comp_robot_velocity) / (robot_velocity * 1.0);
+
+            this.x_adjustDistance = 0.0;
+            this.y_adjustDistance = 0.0;
+
+            if (robot_velocity != 0) {
+                this.x_adjustDistance =
+                        (adjustDistance * x_comp_robot_velocity) / (robot_velocity * 1.0);
+                this.y_adjustDistance =
+                        (adjustDistance * y_comp_robot_velocity) / (robot_velocity * 1.0);
+            }
+
             angleToTarget = aimingParameters.getTurretAngleToTarget().getDegrees();
             double current_x_distance =
                     aimingParameters.getRangeMeters()
