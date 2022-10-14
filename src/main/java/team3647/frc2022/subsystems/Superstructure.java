@@ -502,10 +502,10 @@ public class Superstructure {
             angleToTarget = aimingParameters.getTurretAngleToTarget().getDegrees();
             double current_x_distance =
                     aimingParameters.getRangeMeters()
-                            * Math.sin(Units.degreesToRadians(angleToTarget));
+                            * Math.cos(Units.degreesToRadians(angleToTarget));
             double current_y_distance =
                     aimingParameters.getRangeMeters()
-                            * Math.cos(Units.degreesToRadians(angleToTarget));
+                            * Math.sin(Units.degreesToRadians(angleToTarget));
             current_x_distance += this.x_adjustDistance;
             current_y_distance += this.y_adjustDistance;
             // adjust angle to target
@@ -520,15 +520,13 @@ public class Superstructure {
             kickerVelocity = MathUtil.clamp(flywheelVelocity * 0.5, 0, 10);
             hoodAngle = HoodContants.getHoodAngle1(adjustedDistanceToTarget);
 
-            turretSetpoint = m_turret.getAngle() + angleToTarget;
+            turretSetpoint =
+                    m_turret.getAngle()
+                            + aimingParameters
+                                    .getTurretAngleToTarget()
+                                    .getDegrees(); // - angleToTarget;
             /// m_turret.getAngle() +
-            SmartDashboard.putNumber("adjust distance", adjustDistance);
-            SmartDashboard.putNumber("Aim Angle Demand", angleToTarget);
-            SmartDashboard.putNumber("Aim Distance Demand", adjustedDistanceToTarget);
-            SmartDashboard.putNumber("Robot x Velocity", x_comp_robot_velocity);
-            SmartDashboard.putNumber("Robot y Velocity", y_comp_robot_velocity);
-            SmartDashboard.putNumber("CURRENT AIM PARAMETER RANGE", angleToTarget);
-            SmartDashboard.putNumber("TURRET SETPOINT", turretSetpoint);
+            SmartDashboard.putNumber("Turret angle needed shoot while move", turretSetpoint);
 
             // has direction
             turretVelFF = -(angular_component + tangential_component);
