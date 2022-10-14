@@ -510,7 +510,7 @@ public class Superstructure {
             current_y_distance += this.y_adjustDistance;
             // adjust angle to target
             angleToTarget =
-                    Units.radiansToDegrees(Math.atan(current_x_distance / current_y_distance));
+                    Units.radiansToDegrees(Math.atan(current_y_distance / current_x_distance));
             // angleToTarget = aimingParameters.getTurretAngleToTarget().getDegrees();
             double adjustedDistanceToTarget =
                     Math.sqrt(
@@ -520,11 +520,7 @@ public class Superstructure {
             kickerVelocity = MathUtil.clamp(flywheelVelocity * 0.5, 0, 10);
             hoodAngle = HoodContants.getHoodAngle1(adjustedDistanceToTarget);
 
-            turretSetpoint =
-                    m_turret.getAngle()
-                            + aimingParameters
-                                    .getTurretAngleToTarget()
-                                    .getDegrees(); // - angleToTarget;
+            turretSetpoint = m_turret.getAngle() + angleToTarget;
             /// m_turret.getAngle() +
             SmartDashboard.putNumber("Turret angle needed shoot while move", turretSetpoint);
 
