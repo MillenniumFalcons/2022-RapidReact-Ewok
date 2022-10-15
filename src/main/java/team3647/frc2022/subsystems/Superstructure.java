@@ -521,6 +521,11 @@ public class Superstructure {
             hoodAngle = HoodContants.getHoodAngle1(adjustedDistanceToTarget);
 
             turretSetpoint = m_turret.getAngle() + angleToTarget;
+            if (turretSetpoint >= TurretConstants.kMaxDegree
+                    || turretSetpoint <= TurretConstants.kMinDegree) {
+                turretSetpoint = m_turret.getAngle();
+            }
+
             /// m_turret.getAngle() +
             SmartDashboard.putNumber("Turret angle needed shoot while move", turretSetpoint);
 
