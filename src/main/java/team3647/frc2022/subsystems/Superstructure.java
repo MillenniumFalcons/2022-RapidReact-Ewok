@@ -207,11 +207,6 @@ public class Superstructure {
                 new InstantCommand(() -> currentState.shooterState = ShooterState.SHOOT),
                 flywheelCommands.variableVelocity(flywhelVelocity),
                 CommandGroupBase.sequence(
-                        new ConditionalCommand(
-                                new InstantCommand(),
-                                new WaitUntilCommand(drivetrainStopped)
-                                        .andThen(new WaitCommand(delayAfterDrivetrainStops)),
-                                drivetrainStopped),
                         CommandGroupBase.sequence(
                                 feederCommands
                                         .feedIn(feederSpeedSup)
@@ -253,11 +248,6 @@ public class Superstructure {
                 new InstantCommand(() -> currentState.shooterState = ShooterState.SHOOT),
                 flywheelCommands.variableVelocity(flywhelVelocity),
                 CommandGroupBase.sequence(
-                        new ConditionalCommand(
-                                new InstantCommand(),
-                                new WaitUntilCommand(drivetrainStopped)
-                                        .andThen(new WaitCommand(delayAfterDrivetrainStops)),
-                                drivetrainStopped),
                         CommandGroupBase.sequence(
                                 feederCommands
                                         .feedIn(feederSpeedSup)
@@ -434,6 +424,54 @@ public class Superstructure {
                             * velocity.dx
                             / aimingParameters.getRangeMeters();
             double angular_component = Units.radiansToDegrees(velocity.dtheta);
+            double x_comp_robot_velocity = velocity.dx;
+            double y_comp_robot_velocity = velocity.dy;
+            double adjustedTurret =
+                    Math.atan(
+                            (flywheelVelocity
+                                                    * Math.cos(
+                                                            Units.degreesToRadians(hoodAngle)
+                                                                    * Math.sin(
+                                                                            Units.degreesToRadians(
+                                                                                    turretSetpoint)))
+                                            + y_comp_robot_velocity)
+                                    / (flywheelVelocity
+                                                    * Math.cos(
+                                                            Units.degreesToRadians(hoodAngle)
+                                                                    * Math.cos(
+                                                                            Units.degreesToRadians(
+                                                                                    turretSetpoint)))
+                                            + x_comp_robot_velocity));
+            adjustedTurret = Units.radiansToDegrees(adjustedTurret);
+
+            double adjustedHood =
+                    1.0
+                            / Math.tan(
+                                    (flywheelVelocity
+                                                            * Math.cos(
+                                                                    Units.degreesToRadians(
+                                                                                    hoodAngle)
+                                                                            * Math.sin(
+                                                                                    Units
+                                                                                            .degreesToRadians(
+                                                                                                    turretSetpoint)))
+                                                    + x_comp_robot_velocity)
+                                            / (flywheelVelocity
+                                                            * Math.cos(
+                                                                    Units.degreesToRadians(
+                                                                            adjustedTurret))
+                                                            * Math.sin(
+                                                                    Units.degreesToRadians(
+                                                                            hoodAngle))
+                                                    + x_comp_robot_velocity));
+            adjustedHood = Units.radiansToDegrees(adjustedHood);
+
+            double adjustedVelocity =
+                    (flywheelVelocity * Math.sin(Units.degreesToRadians(hoodAngle)))
+                            / Math.sin(Units.degreesToRadians(adjustedHood));
+            flywheelVelocity = adjustedVelocity;
+            turretSetpoint = adjustedTurret;
+            hoodAngle = adjustedHood;
             // Add (opposite) of tangential velocity about goal + angular velocity in local frame.
             turretVelFF = -(angular_component + tangential_component);
         }

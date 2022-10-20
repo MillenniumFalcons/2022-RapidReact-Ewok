@@ -224,7 +224,7 @@ public class RobotContainer {
                 .whileActiveOnce(
                         m_superstructure.feederWithSensor(this::calculateIntakeSurfaceSpeed));
 
-        coController
+        mainController
                 .leftTrigger
                 .whileActiveOnce(
                         m_superstructure
@@ -237,7 +237,7 @@ public class RobotContainer {
                 .whileActiveOnce(m_superstructure.autoAccelerateAndShoot())
                 .whileActiveOnce(m_superstructure.intakeCommands.runOpenLoop(.6).withTimeout(0.5));
 
-        coController
+        mainController
                 .rightTrigger
                 .whileActiveOnce(
                         m_superstructure
