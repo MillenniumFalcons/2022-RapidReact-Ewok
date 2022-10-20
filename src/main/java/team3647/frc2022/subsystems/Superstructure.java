@@ -429,18 +429,14 @@ public class Superstructure {
             double adjustedTurret =
                     Math.atan(
                             (flywheelVelocity
-                                                    * Math.cos(
-                                                            Units.degreesToRadians(hoodAngle)
-                                                                    * Math.sin(
-                                                                            Units.degreesToRadians(
-                                                                                    turretSetpoint)))
+                                                    * Math.cos(Units.degreesToRadians(hoodAngle))
+                                                    * Math.sin(
+                                                            Units.degreesToRadians(turretSetpoint))
                                             + y_comp_robot_velocity)
                                     / (flywheelVelocity
+                                                    * Math.cos(Units.degreesToRadians(hoodAngle))
                                                     * Math.cos(
-                                                            Units.degreesToRadians(hoodAngle)
-                                                                    * Math.cos(
-                                                                            Units.degreesToRadians(
-                                                                                    turretSetpoint)))
+                                                            Units.degreesToRadians(turretSetpoint))
                                             + x_comp_robot_velocity));
             adjustedTurret = Units.radiansToDegrees(adjustedTurret);
 
@@ -450,11 +446,10 @@ public class Superstructure {
                                     (flywheelVelocity
                                                             * Math.cos(
                                                                     Units.degreesToRadians(
-                                                                                    hoodAngle)
-                                                                            * Math.sin(
-                                                                                    Units
-                                                                                            .degreesToRadians(
-                                                                                                    turretSetpoint)))
+                                                                            hoodAngle))
+                                                            * Math.sin(
+                                                                    Units.degreesToRadians(
+                                                                            turretSetpoint))
                                                     + x_comp_robot_velocity)
                                             / (flywheelVelocity
                                                             * Math.cos(
