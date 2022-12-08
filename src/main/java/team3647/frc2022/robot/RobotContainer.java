@@ -15,14 +15,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.RunCommand;
 import java.util.LinkedList;
 import java.util.List;
 import team3647.frc2022.autonomous.AutoCommands;
 import team3647.frc2022.autonomous.AutoConstants;
-import team3647.frc2022.commands.ArcadeDrive;
+import team3647.frc2022.commands.ArcadeWithAim;
 import team3647.frc2022.constants.*;
-import team3647.frc2022.states.ShooterState;
 import team3647.frc2022.states.TurretState;
 import team3647.frc2022.subsystems.ClimberArm;
 import team3647.frc2022.subsystems.ColumnBottom;
@@ -72,18 +70,16 @@ public class RobotContainer {
     public RobotContainer() {
         pdp.clearStickyFaults();
 
-        m_commandScheduler.registerSubsystem(
-                m_drivetrain,
-                m_printer,
-                m_columnTop,
-                m_columnBottom,
-                m_intake,
-                m_flywheel,
-                m_pivotClimber,
-                m_visionController,
-                m_turret,
-                m_hood,
-                m_statusLED);
+        m_commandScheduler.registerSubsystem(m_drivetrain, m_printer);
+        // m_columnTop,
+        // m_columnBottom,
+        // m_intake,
+        // m_flywheel,
+        // m_pivotClimber,
+        // m_visionController,
+        // m_turret,
+        // m_hood,
+        // m_statusLED);
         // Configure the button bindings
         // m_drivetrain.init();
         configureDefaultCommands();
@@ -97,28 +93,38 @@ public class RobotContainer {
     }
 
     private void configureDefaultCommands() {
+        // m_drivetrain.setDefaultCommand(
+        //         new ArcadeDrive(
+        //                 m_drivetrain,
+        //                 mainController::getLeftStickY,
+        //                 mainController::getRightStickX,
+        //                 () -> mainController.rightJoyStickPress.get()));
         m_drivetrain.setDefaultCommand(
-                new ArcadeDrive(
+                new ArcadeWithAim(
                         m_drivetrain,
                         mainController::getLeftStickY,
                         mainController::getRightStickX,
-                        () -> mainController.rightJoyStickPress.get()));
-        m_hood.setDefaultCommand(
-                m_superstructure.hoodCommands.autoAdjustAngle(m_superstructure::getAimedHoodAngle));
-        m_flywheel.setDefaultCommand(
-                new InstantCommand(
-                                () ->
-                                        m_superstructure.currentState.shooterState =
-                                                ShooterState.IDLE)
-                        .andThen(
-                                m_superstructure.flywheelCommands.waitToSpinDownThenHold(
-                                        m_superstructure::getHoldVelocity)));
-        m_turret.setDefaultCommand(
-                new InstantCommand(
-                                () ->
-                                        m_superstructure.currentState.turretState =
-                                                TurretState.HOLD_POSITION)
-                        .andThen(m_superstructure.turretCommands.holdPositionAtCall()));
+                        () -> mainController.rightJoyStickPress.get(),
+                        () -> mainController.leftJoyStickPress.get(),
+                        () -> m_randomTarget));
+
+        // m_hood.setDefaultCommand(
+        //
+        // m_superstructure.hoodCommands.autoAdjustAngle(m_superstructure::getAimedHoodAngle));
+        // m_flywheel.setDefaultCommand(
+        //         new InstantCommand(
+        //                         () ->
+        //                                 m_superstructure.currentState.shooterState =
+        //                                         ShooterState.IDLE)
+        //                 .andThen(
+        //                         m_superstructure.flywheelCommands.waitToSpinDownThenHold(
+        //                                 m_superstructure::getHoldVelocity)));
+        // m_turret.setDefaultCommand(
+        //         new InstantCommand(
+        //                         () ->
+        //                                 m_superstructure.currentState.turretState =
+        //                                         TurretState.HOLD_POSITION)
+        //                 .andThen(m_superstructure.turretCommands.holdPositionAtCall()));
 
         // m_turret.setDefaultCommand(
         //         new InstantCommand(
@@ -129,11 +135,11 @@ public class RobotContainer {
         //                                 m_superstructure::getAimedTurretSetpoint,
         //                                 m_superstructure::getAimedTurretVelocity)));
 
-        m_pivotClimber.setDefaultCommand(new RunCommand(m_pivotClimber::end, m_pivotClimber));
-        m_intake.setDefaultCommand(
-                m_superstructure.intakeInThenManual(coController::getLeftStickY));
-        m_columnBottom.setDefaultCommand(
-                m_superstructure.feederInThenManual(coController::getLeftStickY));
+        // m_pivotClimber.setDefaultCommand(new RunCommand(m_pivotClimber::end, m_pivotClimber));
+        // m_intake.setDefaultCommand(
+        //         m_superstructure.intakeInThenManual(coController::getLeftStickY));
+        // m_columnBottom.setDefaultCommand(
+        //         m_superstructure.feederInThenManual(coController::getLeftStickY));
 
         // defining color rejection
         // m_superstructure
@@ -321,6 +327,7 @@ public class RobotContainer {
                     return camPose;
                 });
         m_printer.addPose("Drivetrain Pose", m_drivetrain::getPose);
+        m_printer.addPose("Aim to", () -> new Pose2d(m_randomTarget, new Rotation2d()));
         SmartDashboard.putNumber("Shooter Speed", 0.0);
         SmartDashboard.putNumber("Shooter Speed Offset", 0.0);
         SmartDashboard.putNumber("Hood angle", 15.0);
@@ -369,6 +376,8 @@ public class RobotContainer {
     private final Joysticks coController = new Joysticks(1);
 
     private final GroupPrinter m_printer = GroupPrinter.getInstance();
+
+    private final Translation2d m_randomTarget = new Translation2d(8, 5);
 
     final Drivetrain m_drivetrain =
             new Drivetrain(
